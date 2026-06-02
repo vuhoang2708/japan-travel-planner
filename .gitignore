@@ -1,0 +1,13 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.env
+*.key
+
+# Windows
+Thumbs.db
+desktop.ini
+
+# macOS
+.DS_Store

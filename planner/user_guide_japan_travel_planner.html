@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cẩm Nang Sử Dụng - Japan Travel Planner</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #f8f9fa; --paper: #ffffff; --navy: #1e3a5f; --orange: #f97316;
+      --orange-light: #fff7ed; --green: #16a34a; --green-light: #f0fdf4;
+      --blue: #2563eb; --blue-light: #eff6ff; --red: #dc2626; --red-light: #fef2f2;
+      --yellow: #f59e0b; --yellow-light: #fefce8; --muted: #6b7280; --line: #e5e7eb; --radius: 10px;
+      --teal: #0d9488;
+    }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: var(--bg); color: #1f2937; line-height: 1.6; padding: 24px 16px 48px; }
+    .container { max-width: 960px; margin: 0 auto; }
+    .header { background: var(--navy); color: #fff; border-radius: var(--radius); padding: 24px 28px; margin-bottom: 24px; }
+    .phase-badge { display: inline-block; background: var(--teal); color: #fff; font-size: 11px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; padding: 3px 10px; border-radius: 20px; margin-bottom: 10px; }
+    .header h1 { font-size: 22px; font-weight: 700; margin-bottom: 6px; }
+    .header p { font-size: 14px; opacity: .85; }
+    .card { background: var(--paper); border: 1px solid var(--line); border-radius: var(--radius); padding: 24px; margin-bottom: 20px; }
+    .card h2 { font-size: 18px; font-weight: 700; color: var(--navy); margin-bottom: 16px; display: flex; align-items: center; gap: 8px; border-bottom: 1px solid var(--line); padding-bottom: 10px; }
+    .card h3 { font-size: 15px; font-weight: 700; margin-top: 16px; margin-bottom: 8px; color: var(--navy); }
+    
+    /* Typography & Layout */
+    p { margin-bottom: 12px; font-size: 14px; }
+    ul, ol { margin-bottom: 16px; padding-left: 20px; font-size: 14px; }
+    li { margin-bottom: 6px; }
+    
+    /* Flow Diagram */
+    .flow-diagram { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin: 20px 0; flex-wrap: wrap; }
+    .flow-box { flex: 1; min-width: 120px; background: linear-gradient(135deg, #2563eb, #7c3aed, #16a34a); color: #fff; padding: 12px 10px; border-radius: 8px; text-align: center; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); }
+    .flow-box .phase-title { font-size: 11px; font-weight: 700; text-transform: uppercase; opacity: 0.9; margin-bottom: 4px; }
+    .flow-box .phase-name { font-size: 13px; font-weight: 700; line-height: 1.3; }
+    .flow-arrow { color: var(--muted); font-size: 18px; font-weight: bold; }
+    @media (max-width: 768px) {
+      .flow-diagram { flex-direction: column; align-items: stretch; }
+      .flow-arrow { text-align: center; transform: rotate(90deg); margin: 4px 0; }
+    }
+
+    /* Accordion Details */
+    details { margin-bottom: 10px; border: 1px solid var(--line); border-radius: 8px; overflow: hidden; background: #fff; }
+    summary { background: #f9fafb; padding: 14px 16px; font-size: 14px; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 8px; list-style: none; transition: background 0.2s; }
+    summary::-webkit-details-marker { display: none; }
+    summary:hover { background: #f3f4f6; }
+    details[open] summary { background: #e0e7ff; color: #3730a3; border-bottom: 1px solid var(--line); }
+    .details-content { padding: 16px; font-size: 14px; }
+    
+    /* Placeholders & Badges */
+    .file-badge { display: inline-block; background: var(--bg); border: 1px solid var(--line); font-family: monospace; font-size: 12px; padding: 2px 6px; border-radius: 4px; color: var(--navy); margin-bottom: 8px; }
+    .placeholder-box { background: var(--bg); border: 1px dashed var(--muted); border-radius: 6px; padding: 16px; text-align: center; color: var(--muted); font-size: 13px; margin-top: 12px; }
+
+    /* Tables */
+    .data-table { width: 100%; border-collapse: collapse; font-size: 13px; margin-bottom: 16px; }
+    .data-table th { background: var(--navy); color: #fff; padding: 10px 12px; text-align: left; font-size: 12px; font-weight: 700; border: 1px solid var(--navy); }
+    .data-table td { padding: 10px 12px; border: 1px solid var(--line); vertical-align: top; }
+    .data-table tr:nth-child(even) td { background: #f9fafb; }
+    @media (max-width: 640px) { .data-table { display: block; overflow-x: auto; white-space: nowrap; } }
+
+    /* Info notes */
+    .warning-note { background: var(--yellow-light); border: 1px solid #fde68a; border-left: 4px solid var(--yellow); border-radius: 8px; padding: 16px; font-size: 13px; color: #92400e; margin-top: 24px; }
+    .warning-note p:last-child { margin-bottom: 0; }
+    
+    .open-link {
+      display: inline-block;
+      background: var(--teal);
+      color: #fff;
+      text-decoration: none;
+      padding: 8px 16px;
+      border-radius: 6px;
+      font-size: 13px;
+      font-weight: 600;
+      margin-top: 12px;
+      transition: background .15s;
+    }
+    .open-link:hover { background: #0f766e; }
+  </style>
+</head>
+<body>
+<div class="container">
+  
+  <!-- Phần 3.1 Header -->
+  <div class="header">
+    <div class="phase-badge">User Guide · v1.0</div>
+    <h1>Japan Travel Planner — Cẩm Nang Sử Dụng</h1>
+    <p>Hướng dẫn sử dụng bộ công cụ lập kế hoạch du lịch Nhật Bản từ A đến Z</p>
+  </div>
+
+  <!-- Phần 3.2 Tổng quan -->
+  <div class="card">
+    <h2><span>📌</span> Tổng quan</h2>
+    <p><strong>Japan Travel Planner</strong> là bộ công cụ tối ưu hóa tự động quá trình lên lịch trình và ngân sách du lịch Nhật Bản, kết hợp sức mạnh của <strong>Travel Optimizer AI</strong>.</p>
+    <p><strong>Dành cho ai:</strong> Gia đình, nhóm bạn, hoặc bất kỳ ai muốn tự lập lịch trình đi Nhật chuyên nghiệp với chi phí được tính toán minh bạch.</p>
+    <p><strong>Tiện ích vượt trội:</strong> Không cần cài đặt bất cứ ứng dụng nào, không cần API Key, không đòi hỏi cấu hình máy chủ. Chỉ cần click đúp vào các tệp HTML (chạy offline trên trình duyệt web) là dùng được ngay!</p>
+  </div>
+
+  <!-- Phần 3.3 Sơ đồ luồng 5 Phase -->
+  <div class="card">
+    <h2><span>🔄</span> Sơ đồ luồng 5 Phase</h2>
+    <p>Quy trình lập kế hoạch được chia thành 5 giai đoạn nối tiếp nhau:</p>
+    <div class="flow-diagram">
+      <div class="flow-box">
+        <div class="phase-title">Phase 1</div>
+        <div class="phase-name">Prompt<br>Assistant</div>
+      </div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-box">
+        <div class="phase-title">Phase 2</div>
+        <div class="phase-name">Lịch trình<br>nháp</div>
+      </div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-box">
+        <div class="phase-title">Phase 3</div>
+        <div class="phase-name">So sánh vé<br>máy bay</div>
+      </div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-box">
+        <div class="phase-title">Phase 4</div>
+        <div class="phase-name">Kiểm chứng<br>& Deals</div>
+      </div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-box">
+        <div class="phase-title">Phase 5</div>
+        <div class="phase-name">Kế hoạch<br>cuối</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Phần 3.4 Hướng dẫn từng Phase -->
+  <div class="card">
+    <h2><span>📖</span> Hướng dẫn từng Phase</h2>
+    
+    <details>
+      <summary>Phase 1 — Prompt Assistant</summary>
+      <div class="details-content">
+        <span class="file-badge">📄 File: japan_travel_prompt_assistant_phase1_20260529.html</span>
+        <p><strong>Làm gì:</strong> Điền thông tin cơ bản về chuyến đi (số người, ngân sách, số ngày, nhịp độ). Hệ thống sẽ phân tích để đưa ra 5 câu hỏi làm rõ nhu cầu và một đoạn Prompt "sạch".</p>
+        <p><strong>Output:</strong> Câu lệnh Prompt chuẩn SEO dùng để copy-paste thẳng vào các công cụ AI như ChatGPT, Gemini, hay Claude nhằm lấy được một lịch trình hoàn chỉnh.</p>
+        <a href="japan_travel_prompt_assistant_phase1_20260529.html" target="_blank" class="open-link">→ Mở Phase 1 (mở tab mới)</a>
+      </div>
+    </details>
+
+    <details>
+      <summary>Phase 2 — Lịch trình nháp</summary>
+      <div class="details-content">
+        <span class="file-badge">📄 File: japan-planner-phase2.html</span>
+        <p><strong>Làm gì:</strong> AI sinh ra lịch trình gợi ý dựa trên đoạn prompt bạn đã copy từ Phase 1. Hệ thống sẽ kết xuất tự động một lịch trình nháp dạng bảng, thể hiện rõ các điểm đến phân chia theo buổi sáng, chiều, tối.</p>
+        <p><strong>Output:</strong> Bảng lịch trình nháp theo ngày và theo nhịp độ (Thư thả, Cân bằng, Tối ưu nhiều điểm).</p>
+        <a href="japan-planner-phase2.html" target="_blank" class="open-link">→ Mở Phase 2 (mở tab mới)</a>
+      </div>
+    </details>
+
+    <details>
+      <summary>Phase 3 — So sánh vé máy bay</summary>
+      <div class="details-content">
+        <span class="file-badge">📄 File: japan-planner-phase3.html</span>
+        <p><strong>Làm gì:</strong> Tự động tạo prompt để yêu cầu <em>Travel Optimizer</em> tìm các chuyến bay. Bạn copy JSON do AI tạo ra và dán ngược lại công cụ.</p>
+        <p><strong>Lưu ý:</strong> Dùng chế độ <strong>AI-Knowledge Mode</strong> không đòi hỏi API Key thật nên có thể dễ dàng chạy mô phỏng kết quả cho bài lab giảng dạy.</p>
+        <p><strong>Output:</strong> Bảng 3 phương án vé chi tiết bao gồm giá trị thực và phân bổ ngân sách du lịch tổng thể.</p>
+        <a href="japan-planner-phase3.html" target="_blank" class="open-link">→ Mở Phase 3 (mở tab mới)</a>
+      </div>
+    </details>
+
+    <details>
+      <summary>Phase 4 — Verification Gate (Cổng kiểm chứng)</summary>
+      <div class="details-content">
+        <span class="file-badge">📄 File: japan-planner-phase4.html</span>
+        <p><strong>Làm gì:</strong> Hệ thống tự sinh Prompt để kiểm tra rủi ro (verification). Bạn copy JSON trả về từ AI và dán vào, sau đó nhấn "Render Checklist".</p>
+        <p><strong>Output:</strong> Checklist 5 hạng mục của từng ngày hiển thị trạng thái (confirmed, assumption, needs_verification) cùng danh sách deals khuyến mãi khả dụng.</p>
+        <a href="japan-planner-phase4.html" target="_blank" class="open-link">→ Mở Phase 4 (mở tab mới)</a>
+      </div>
+    </details>
+
+    <details>
+      <summary>Phase 5 — Kế hoạch cuối</summary>
+      <div class="details-content">
+        <span class="file-badge">📄 File: japan-planner-phase5.html</span>
+        <p><strong>Làm gì:</strong> Tất cả quá trình từ Phase 1 - 4 hội tụ về đây. Tự động xuất 3 Artifacts cực kỳ hữu ích chỉ qua một click chuột.</p>
+        <p><strong>Output gồm 3 Tab:</strong></p>
+        <ul>
+          <li><strong>Tab 1: Lịch trình cuối:</strong> Bảng tổng hợp theo từng ngày (accordion), chi tiết đến từng địa điểm và có summary vé máy bay nổi bật.</li>
+          <li><strong>Tab 2: Email / Zalo message:</strong> Soạn sẵn văn bản thuần, sẵn sàng gửi. Tự động đi kèm deal/mã giảm giá hợp lệ.</li>
+          <li><strong>Tab 3: Todo List:</strong> Danh sách việc cần làm có thể tick, phân rõ Nhóm A (Cần làm ngay), Nhóm B (Sau khi chốt vé) và Nhóm C (Việc cần kiểm chứng thêm từ Verification Gate).</li>
+        </ul>
+        <a href="japan-planner-phase5.html" target="_blank" class="open-link">→ Mở Phase 5 (mở tab mới)</a>
+      </div>
+    </details>
+  </div>
+
+  <!-- Phần 3.5 Travel Optimizer: 8 Skills -->
+  <div class="card">
+    <h2><span>⚙️</span> Travel Optimizer: 8 Skills</h2>
+    <p>Travel Optimizer Engine tự động hóa việc tối ưu chi phí vé với 8 AI Skills:</p>
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Skill</th>
+          <th>Dùng khi nào</th>
+          <th>Ví dụ</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>date-optimization</strong></td>
+          <td>Linh hoạt ngày bay</td>
+          <td>Bay thứ 3 rẻ hơn thứ 6 bao nhiêu?</td>
+        </tr>
+        <tr>
+          <td><strong>flight-search</strong></td>
+          <td>Mọi lần tìm vé</td>
+          <td>Tìm vé HAN→NRT tháng 7</td>
+        </tr>
+        <tr>
+          <td><strong>fee-analysis</strong></td>
+          <td>So sánh LCC vs FSC</td>
+          <td>Vietjet thực ra tốn bao nhiêu?</td>
+        </tr>
+        <tr>
+          <td><strong>route-optimization</strong></td>
+          <td>Route quốc tế dài</td>
+          <td>HAN→NRT qua ICN có rẻ hơn không?</td>
+        </tr>
+        <tr>
+          <td><strong>deals-verification</strong></td>
+          <td>Mọi lần booking</td>
+          <td>Mã SUMMER2026 còn hiệu lực không?</td>
+        </tr>
+        <tr>
+          <td><strong>flexibility-analysis</strong></td>
+          <td>Lịch trình chưa chắc</td>
+          <td>Non-refundable có đáng mua không?</td>
+        </tr>
+        <tr>
+          <td><strong>negotiation-email</strong></td>
+          <td>Doanh nghiệp 50+ chuyến/năm</td>
+          <td>Soạn email xin giá corporate</td>
+        </tr>
+        <tr>
+          <td><strong>hidden-city-strategy</strong></td>
+          <td>Nâng cao</td>
+          <td>Chỉ dùng khi hiểu rõ rủi ro</td>
+        </tr>
+      </tbody>
+    </table>
+    
+    <h3>Hai Chế Độ Hoạt Động:</h3>
+    <ul>
+      <li><strong>AI-Knowledge Mode:</strong> Sử dụng kiến thức AI để ước lượng giá. Hoàn toàn miễn phí, không cần API, chạy được lập tức. Đủ tốt cho phần lớn use cases.</li>
+      <li><strong>API-Enhanced Mode:</strong> Kết nối trực tiếp với Kiwi hoặc Amadeus bằng Python để lấy giá vé thời gian thực.</li>
+    </ul>
+  </div>
+
+  <!-- Phần 3.6 FAQ -->
+  <div class="card">
+    <h2><span>❓</span> Câu Hỏi Thường Gặp (FAQ)</h2>
+    
+    <details>
+      <summary>1. Tôi không biết code, dùng được không?</summary>
+      <div class="details-content">
+        Có, rất đơn giản! Các tệp công cụ là HTML thuần, không cần cài đặt. Bạn chỉ cần double-click (nhấp đúp chuột) vào file để mở trên Chrome, Edge hoặc Safari và bắt đầu sử dụng.
+      </div>
+    </details>
+
+    <details>
+      <summary>2. Giá vé trong tool có chính xác 100% không?</summary>
+      <div class="details-content">
+        Tất cả dữ liệu về giá vé là <strong>ước tính</strong> (estimated) để lên ngân sách dựa trên kiến thức của AI. Bạn luôn cần truy cập Google Flights, Skyscanner, hoặc website chính thức để kiểm chứng và đặt chỗ thật.
+      </div>
+    </details>
+
+    <details>
+      <summary>3. Phase nào bắt buộc phải làm?</summary>
+      <div class="details-content">
+        Phase 1 và Phase 2 là <strong>bắt buộc</strong> để tạo ra kế hoạch cơ bản. Phase 3, 4, và 5 tùy chọn nhưng rất khuyến khích thực hiện để bạn có bản kế hoạch hoàn hảo nhất.
+      </div>
+    </details>
+
+    <details>
+      <summary>4. Travel Optimizer cần cài đặt gì không?</summary>
+      <div class="details-content">
+        Nếu sử dụng <strong>AI-Knowledge Mode</strong>, bạn không cần cài gì cả. Mở file HTML lên và dùng ngay. Nếu muốn dùng <strong>API Mode</strong>, bạn cần Python + API key (chi tiết xem tại README của Travel Optimizer).
+      </div>
+    </details>
+
+    <details>
+      <summary>5. Dùng AI nào (Gemini, ChatGPT, Claude) tốt nhất?</summary>
+      <div class="details-content">
+        Bộ công cụ cung cấp Prompt tương thích tốt với mọi LLM lớn. Bạn có thể sử dụng Gemini 1.5, ChatGPT (GPT-4o), hoặc Claude 3.5 Sonnet đều sinh ra kết quả JSON cực kỳ chất lượng để dán vào công cụ.
+      </div>
+    </details>
+  </div>
+
+  <!-- Phần 3.7 Footer - Disclaimer -->
+  <div class="warning-note">
+    <p><strong>⚠ Khuyến cáo quan trọng:</strong> Tất cả thông tin giá vé, giờ mở cửa, và lịch trình trong tool này là ước tính do AI tạo ra. Luôn kiểm chứng thực tế trên Google Flights, Booking.com, và trang web chính thức trước khi đặt dịch vụ.</p>
+  </div>
+  
+</div>
+</body>
+</html>

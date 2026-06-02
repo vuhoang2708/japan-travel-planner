@@ -5,6 +5,13 @@
 
 ---
 
+## Live Demo
+
+🌐 **User Guide:** https://japan-travel-planner.vercel.app/planner/user_guide_japan_travel_planner.html  
+✈️ **Phase 5 (Final Plan):** https://japan-travel-planner.vercel.app/planner/japan-planner-phase5.html
+
+---
+
 ## Mục Tiêu
 
 Workspace tích hợp hai dự án AI Agent cho lĩnh vực du lịch:

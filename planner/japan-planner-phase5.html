@@ -1,0 +1,688 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Japan Travel Planner – Phase 5</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #f8f9fa; --paper: #ffffff; --navy: #1e3a5f; --orange: #f97316;
+      --orange-light: #fff7ed; --green: #16a34a; --green-light: #f0fdf4;
+      --blue: #2563eb; --blue-light: #eff6ff; --red: #dc2626; --red-light: #fef2f2;
+      --yellow: #f59e0b; --yellow-light: #fefce8; --muted: #6b7280; --line: #e5e7eb; --radius: 10px;
+    }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: var(--bg); color: #1f2937; line-height: 1.6; padding: 24px 16px 48px; }
+    .container { max-width: 960px; margin: 0 auto; }
+    .header { background: var(--navy); color: #fff; border-radius: var(--radius); padding: 24px 28px; margin-bottom: 24px; }
+    .phase-badge { display: inline-block; background: #059669; color: #fff; font-size: 11px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; padding: 3px 10px; border-radius: 20px; margin-bottom: 10px; }
+    .header h1 { font-size: 22px; font-weight: 700; margin-bottom: 6px; }
+    .header p { font-size: 14px; opacity: .85; }
+    .card { background: var(--paper); border: 1px solid var(--line); border-radius: var(--radius); padding: 24px; margin-bottom: 20px; }
+    .card h2 { font-size: 15px; font-weight: 700; color: var(--navy); margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
+    .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    @media (max-width: 540px) { .form-grid { grid-template-columns: 1fr; } }
+    .field { display: flex; flex-direction: column; gap: 5px; }
+    .field.full { grid-column: 1 / -1; }
+    label { font-size: 13px; font-weight: 600; color: #374151; }
+    input, select, textarea { border: 1px solid var(--line); border-radius: 7px; padding: 9px 12px; font-size: 14px; font-family: inherit; color: #1f2937; background: #fff; width: 100%; transition: border-color .15s; }
+    input:focus, select:focus, textarea:focus { outline: none; border-color: var(--navy); }
+    textarea { resize: vertical; min-height: 72px; }
+    .btn { display: inline-flex; align-items: center; gap: 8px; background: var(--orange); color: #fff; border: none; border-radius: 8px; padding: 11px 22px; font-size: 14px; font-weight: 700; cursor: pointer; transition: background .15s; }
+    .btn:hover { background: #ea6c0a; }
+    .btn-secondary { background: transparent; color: var(--navy); border: 1.5px solid var(--navy); }
+    .btn-secondary:hover { background: #f0f4f8; }
+    .btn-blue { background: var(--blue); }
+    .btn-blue:hover { background: #1d4ed8; }
+    .btn-purple { background: #7c3aed; }
+    .btn-purple:hover { background: #6d28d9; }
+    .btn-sm { padding: 7px 14px; font-size: 13px; }
+    .actions { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 20px; }
+    .output { display: none; }
+    .output.visible { display: block; }
+    .output-block { background: var(--paper); border: 1px solid var(--line); border-radius: var(--radius); margin-bottom: 20px; overflow: hidden; }
+    .output-block-header { background: var(--navy); color: #fff; padding: 12px 20px; font-size: 14px; font-weight: 700; display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+    .output-block-body { padding: 20px; }
+    .question-list { list-style: none; display: flex; flex-direction: column; gap: 10px; }
+    .question-list li { display: flex; gap: 12px; align-items: flex-start; background: #f9fafb; border: 1px solid var(--line); border-radius: 8px; padding: 12px 14px; font-size: 14px; }
+    .q-num { background: var(--orange); color: #fff; font-size: 12px; font-weight: 700; min-width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 1px; }
+    .prompt-box { background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 8px; padding: 16px; font-size: 13px; line-height: 1.7; white-space: pre-wrap; word-break: break-word; font-family: 'Courier New', monospace; color: #1e293b; }
+    .checklist { list-style: none; display: flex; flex-direction: column; gap: 8px; }
+    .checklist li { display: flex; align-items: flex-start; gap: 10px; font-size: 14px; padding: 9px 12px; border-radius: 7px; background: var(--green-light); border: 1px solid #bbf7d0; }
+    .checklist li::before { content: '☐'; font-size: 16px; color: var(--green); flex-shrink: 0; }
+    .copy-feedback { font-size: 12px; color: var(--green); font-weight: 600; opacity: 0; transition: opacity .3s; }
+    .copy-feedback.show { opacity: 1; }
+    .warning-note { background: var(--orange-light); border: 1px solid #fed7aa; border-left: 4px solid var(--orange); border-radius: 8px; padding: 12px 16px; font-size: 13px; color: #92400e; margin-top: 16px; }
+    .info-note { background: var(--blue-light); border: 1px solid #bfdbfe; border-left: 4px solid var(--blue); border-radius: 8px; padding: 12px 16px; font-size: 13px; color: #1e40af; margin-bottom: 16px; }
+    .stale-banner { background: #fff7ed; border: 1px solid #fed7aa; border-left: 4px solid var(--yellow); border-radius: 8px; padding: 12px 16px; font-size: 13px; color: #92400e; margin-bottom: 16px; }
+    .error-note { background: var(--red-light); border: 1px solid #fecaca; border-radius: 8px; padding: 12px 16px; font-size: 13px; color: #991b1b; margin-top: 12px; }
+    .reset-link { display: block; text-align: center; margin-top: 24px; font-size: 13px; color: var(--muted); cursor: pointer; text-decoration: underline; }
+    .reset-link:hover { color: var(--navy); }
+    /* Itinerary */
+    .itin-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    .itin-table th { background: var(--navy); color: #fff; padding: 10px 12px; text-align: left; font-size: 12px; font-weight: 700; }
+    .itin-table td { padding: 10px 12px; border-bottom: 1px solid var(--line); vertical-align: top; }
+    .itin-table tr:last-child td { border-bottom: none; }
+    .itin-table tr:nth-child(even) td { background: #f9fafb; }
+    .day-badge { display: inline-block; background: var(--navy); color: #fff; font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 12px; white-space: nowrap; }
+    .est-note { font-size: 11px; color: var(--muted); }
+    .est-mark { color: var(--orange); font-weight: 700; }
+    .dense-warn { display: inline-block; background: #fef3c7; border: 1px solid #fcd34d; color: #92400e; font-size: 11px; padding: 2px 8px; border-radius: 12px; margin-top: 4px; }
+    .itin-note { background: #f9fafb; border: 1px solid var(--line); border-radius: 8px; padding: 14px 16px; font-size: 13px; color: var(--muted); margin-top: 16px; line-height: 1.7; }
+    /* Comparison */
+    .comp-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    .comp-table th { background: var(--navy); color: #fff; padding: 10px 12px; text-align: left; font-size: 12px; font-weight: 700; }
+    .comp-table td { padding: 10px 12px; border-bottom: 1px solid var(--line); vertical-align: top; }
+    .comp-table tr:last-child td { border-bottom: none; }
+    .comp-table tr.recommended td { background: #f0fdf4; }
+    .rec-badge { display: inline-block; background: var(--green); color: #fff; font-size: 10px; font-weight: 700; padding: 1px 7px; border-radius: 10px; margin-left: 6px; }
+    .tag { display: inline-block; background: #e0e7ff; color: #3730a3; font-size: 10px; font-weight: 700; padding: 1px 6px; border-radius: 8px; margin-right: 3px; }
+    .conf-live { color: var(--green); font-weight: 700; font-size: 12px; }
+    .conf-cached { color: var(--blue); font-weight: 700; font-size: 12px; }
+    .conf-est { color: var(--orange); font-weight: 700; font-size: 12px; }
+    /* Budget */
+    .budget-table { width: 100%; border-collapse: collapse; font-size: 13px; margin-top: 16px; }
+    .budget-table th { background: #374151; color: #fff; padding: 9px 12px; text-align: left; font-size: 12px; font-weight: 700; }
+    .budget-table td { padding: 9px 12px; border-bottom: 1px solid var(--line); }
+    .budget-table tr:last-child td { border-bottom: none; font-weight: 700; background: #f9fafb; }
+    .budget-warning { background: var(--red-light); border: 1px solid #fecaca; border-left: 4px solid var(--red); border-radius: 8px; padding: 14px 16px; font-size: 13px; color: #991b1b; margin-bottom: 16px; }
+    .budget-warning ul { margin-top: 8px; padding-left: 18px; }
+    .est-banner { background: var(--yellow-light); border: 1px solid #fde68a; border-left: 4px solid var(--yellow); border-radius: 8px; padding: 12px 16px; font-size: 13px; color: #92400e; margin-bottom: 16px; }
+    /* Verification */
+    .deals-table { width: 100%; border-collapse: collapse; font-size: 13px; margin-bottom: 20px; }
+    .deals-table th { background: #374151; color: #fff; padding: 9px 12px; text-align: left; font-size: 12px; font-weight: 700; }
+    .deals-table td { padding: 9px 12px; border-bottom: 1px solid var(--line); vertical-align: top; }
+    .deals-table tr:last-child td { border-bottom: none; }
+    .deal-expired td { text-decoration: line-through; color: var(--muted); }
+    .badge-expired { display: inline-block; background: #fee2e2; color: var(--red); font-size: 10px; font-weight: 700; padding: 1px 7px; border-radius: 10px; margin-left: 6px; }
+    .badge-unverified { display: inline-block; background: #fef3c7; color: #92400e; font-size: 10px; font-weight: 700; padding: 1px 7px; border-radius: 10px; margin-left: 4px; }
+    .badge-confirmed { display: inline-block; background: var(--green-light); color: var(--green); font-size: 10px; font-weight: 700; padding: 1px 7px; border-radius: 10px; }
+    .badge-likely { display: inline-block; background: var(--blue-light); color: var(--blue); font-size: 10px; font-weight: 700; padding: 1px 7px; border-radius: 10px; }
+    /* Day checklist accordion */
+    .day-accordion { margin-bottom: 10px; border: 1px solid var(--line); border-radius: 8px; overflow: hidden; }
+    .day-accordion summary { background: #f3f4f6; padding: 12px 16px; font-size: 14px; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 8px; list-style: none; }
+    .day-accordion summary::-webkit-details-marker { display: none; }
+    .day-accordion[open] summary { background: #e0e7ff; color: #3730a3; }
+    .day-accordion .check-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    .day-accordion .check-table th { background: #f9fafb; padding: 8px 12px; text-align: left; font-size: 12px; font-weight: 700; border-bottom: 1px solid var(--line); }
+    .day-accordion .check-table td { padding: 9px 12px; border-bottom: 1px solid var(--line); vertical-align: top; }
+    .day-accordion .check-table tr:last-child td { border-bottom: none; }
+    .status-confirmed { color: var(--green); font-weight: 700; }
+    .status-assumption { color: var(--yellow); font-weight: 700; }
+    .status-needs { color: var(--red); font-weight: 700; }
+    .action-required { font-size: 12px; color: #1e40af; background: var(--blue-light); border-radius: 6px; padding: 6px 10px; margin-top: 6px; }
+    
+    /* Phase 5 Tab System styling */
+    .btn-tab { background: transparent; color: var(--navy); border: 1.5px solid var(--navy); padding: 8px 16px; font-size: 13px; font-weight: 600; border-radius: 6px; }
+    .btn-tab:hover { background: #f0f4f8; }
+    .btn-tab-active { background: var(--navy); color: #fff; border-color: var(--navy); }
+    .btn-tab-active:hover { background: #152942; }
+    
+    .flight-summary-card { background: var(--green-light); border: 1px solid #bbf7d0; border-radius: 8px; padding: 14px 16px; margin-bottom: 16px; font-size: 13px; color: #15803d; }
+    .flight-summary-card strong { color: #166534; }
+    
+    .todo-group { margin-bottom: 16px; }
+    .todo-group h4 { font-size: 13px; font-weight: 700; color: #374151; margin-bottom: 8px; }
+    .todo-items { list-style: none; display: flex; flex-direction: column; gap: 6px; }
+    .todo-item { display: flex; align-items: flex-start; gap: 8px; font-size: 13px; padding: 6px 10px; border-radius: 6px; background: #f9fafb; border: 1px solid var(--line); transition: background .15s; }
+    .todo-item input[type="checkbox"] { margin-top: 4px; cursor: pointer; width: auto; }
+    .todo-item-text { cursor: pointer; transition: color .15s; width: 100%; }
+    .todo-item.done { text-decoration: line-through; color: var(--muted); background: #f3f4f6; }
+
+    @media (max-width: 640px) { .itin-table, .comp-table, .budget-table, .deals-table { display: block; overflow-x: auto; } }
+  </style>
+</head>
+<body>
+<div class="container">
+  <div class="header">
+    <div class="phase-badge">Phase 5 · Final Plan</div>
+    <h1>Japan Travel Planner</h1>
+    <p>Phase 5 xuất 3 loại artifact phục vụ chuyến đi: lịch trình cuối tích hợp kiểm chứng thực tế, mẫu tin nhắn gửi Zalo/Email cho nhóm và danh sách việc cần làm (Todo List) có thể check-off trực tiếp.</p>
+  </div>
+  <div class="card" id="form-card">
+    <h2><span>✏️</span> Nhập thông tin chuyến đi</h2>
+    <div class="form-grid">
+      <div class="field"><label for="destination">Điểm đến</label><input type="text" id="destination" value="Nhật Bản" /></div>
+      <div class="field"><label for="travelers">Số người</label><input type="text" id="travelers" value="3 người lớn" /></div>
+      <div class="field"><label for="month">Tháng đi</label><input type="text" id="month" value="Tháng 7" /></div>
+      <div class="field"><label for="days">Số ngày</label><input type="text" id="days" value="5 ngày" /></div>
+      <div class="field"><label for="budget">Ngân sách mỗi người</label><input type="text" id="budget" value="35–40 triệu VND" /></div>
+      <div class="field"><label for="pace">Nhịp độ</label>
+        <select id="pace">
+          <option value="thư thả">Thư thả, không quá vội</option>
+          <option value="cân bằng" selected>Cân bằng</option>
+          <option value="tối ưu nhiều điểm">Tối ưu nhiều điểm tham quan</option>
+        </select>
+      </div>
+      <div class="field full"><label for="interests">Sở thích chính</label><input type="text" id="interests" value="Cảnh đẹp tự nhiên, quán ăn local ngon" /></div>
+      <div class="field full"><label for="constraints">Ràng buộc đặc biệt</label><textarea id="constraints">Hạn chế đổi khách sạn quá nhiều</textarea></div>
+    </div>
+    <div class="actions">
+      <button class="btn" onclick="generate()">🚀 Tạo câu hỏi, prompt và lịch trình nháp</button>
+    </div>
+  </div>
+  <div class="output" id="output-section">
+    <!-- Output 1 -->
+    <div class="output-block">
+      <div class="output-block-header"><span>❓ 5 Câu hỏi làm rõ trước khi lập lịch</span></div>
+      <div class="output-block-body">
+        <ul class="question-list" id="questions-list"></ul>
+        <div class="warning-note">💡 Trả lời 5 câu hỏi này trước khi copy prompt xuống.</div>
+      </div>
+    </div>
+    <!-- Output 2 -->
+    <div class="output-block">
+      <div class="output-block-header">
+        <span>📋 Prompt sạch — copy sang Gemini / ChatGPT / Claude</span>
+        <div style="display:flex;align-items:center;gap:10px;">
+          <span class="copy-feedback" id="copy-feedback">✓ Đã copy!</span>
+          <button class="btn btn-secondary btn-sm" onclick="copyPrompt()">Copy prompt</button>
+        </div>
+      </div>
+      <div class="output-block-body">
+        <div class="prompt-box" id="prompt-box"></div>
+        <div class="warning-note">⚠️ Prompt yêu cầu AI ghi rõ giả định và không bịa giá/giờ mở cửa/visa.</div>
+      </div>
+    </div>
+    <!-- Output 3 -->
+    <div class="output-block">
+      <div class="output-block-header"><span>✅ Checklist kiểm chứng trước khi tin kết quả</span></div>
+      <div class="output-block-body">
+        <ul class="checklist" id="checklist-list"></ul>
+        <div class="warning-note">🔍 Kiểm chứng từng mục trước khi đặt dịch vụ.</div>
+      </div>
+    </div>
+    <!-- Output 4 -->
+    <div class="output-block">
+      <div class="output-block-header"><span>🗓️ Lịch trình nháp từng ngày</span></div>
+      <div class="output-block-body">
+        <div id="itin-container"></div>
+        <div class="itin-note">⚠️ <strong>Lưu ý:</strong> Lịch trình này do công cụ tạo tự động. Giờ mở cửa, giá vé tham quan, thời tiết <strong>chưa được kiểm chứng</strong>. Tất cả giá có dấu * là ước tính minh họa.</div>
+      </div>
+    </div>
+    <!-- Output 5: Travel Optimizer prompt -->
+    <div class="output-block">
+      <div class="output-block-header">
+        <span>✈️ Bước 5 — Lấy dữ liệu vé từ Travel Optimizer</span>
+        <div style="display:flex;align-items:center;gap:10px;">
+          <span class="copy-feedback" id="copy-to-feedback">✓ Đã copy!</span>
+          <button class="btn btn-blue btn-sm" onclick="copyToPrompt()">Copy prompt TO</button>
+        </div>
+      </div>
+      <div class="output-block-body">
+        <div class="info-note">📋 <strong>3 bước:</strong> (1) Copy prompt TO → (2) Paste vào AI → (3) Paste JSON kết quả vào ô bên dưới</div>
+        <div class="prompt-box" id="to-prompt-box"></div>
+      </div>
+    </div>
+    <!-- Output 6: Comparison + Budget -->
+    <div class="output-block">
+      <div class="output-block-header"><span>📊 Bước 6 — Bảng so sánh vé và phân bổ ngân sách</span></div>
+      <div class="output-block-body">
+        <div class="field" style="margin-bottom:12px;">
+          <label for="json-input">Dán kết quả JSON từ Travel Optimizer</label>
+          <textarea id="json-input" style="min-height:100px;font-family:'Courier New',monospace;font-size:12px;" placeholder='{"options":[...],"recommended_option_id":"OPT-001","budget_alert":{"over_budget":false}}'></textarea>
+        </div>
+        <div class="actions" style="margin-top:0;">
+          <button class="btn btn-blue" onclick="analyzeResult()">📊 Phân tích kết quả</button>
+          <button class="btn btn-secondary btn-sm" onclick="skipTO()">Bỏ qua — dùng ước tính mặc định</button>
+        </div>
+        <div id="analysis-output"></div>
+      </div>
+    </div>
+    <!-- Output 7: Verification Gate -->
+    <div class="output-block" id="verify-block" style="display:none;">
+      <div class="output-block-header">
+        <span>🔐 Bước 7 — Verification Gate</span>
+        <div style="display:flex;align-items:center;gap:10px;">
+          <span class="copy-feedback" id="copy-vg-feedback">✓ Đã copy!</span>
+          <button class="btn btn-purple btn-sm" onclick="copyVGPrompt()">Copy prompt VG</button>
+        </div>
+      </div>
+      <div class="output-block-body">
+        <div class="info-note">📋 <strong>3 bước:</strong> (1) Copy prompt VG → (2) Paste vào AI → (3) Paste JSON kết quả vào ô bên dưới rồi nhấn "Render Checklist"</div>
+        <div class="prompt-box" id="vg-prompt-box"></div>
+        <div class="field" style="margin-top:16px;margin-bottom:12px;">
+          <label for="vg-json-input">Dán kết quả JSON Verification từ AI</label>
+          <textarea id="vg-json-input" style="min-height:100px;font-family:'Courier New',monospace;font-size:12px;" placeholder='{"deals":[...],"checklist_per_day":[...],"budget_alert":{},"generated_at":"2026-06-01T10:00:00Z"}'></textarea>
+        </div>
+        <div class="actions" style="margin-top:0;">
+          <button class="btn btn-purple" onclick="renderChecklist()">🔐 Render Checklist</button>
+        </div>
+        <div id="vg-output"></div>
+      </div>
+    </div>
+    
+    <!-- Output 8: Final Plan Export -->
+    <div class="output-block" id="final-block" style="display:none;">
+      <div class="output-block-header">
+        <span>🎯 Bước 8 — Kế hoạch cuối + Email + Todo List</span>
+      </div>
+      <div class="output-block-body">
+        <div class="tab-buttons" style="display:flex;gap:10px;margin-bottom:20px;flex-wrap:wrap;">
+          <button class="btn btn-tab btn-tab-active" onclick="switchTab('tab-itin')">📅 Lịch trình cuối</button>
+          <button class="btn btn-tab" onclick="switchTab('tab-message')">📨 Email / Zalo</button>
+          <button class="btn btn-tab" onclick="switchTab('tab-todo')">✅ Todo List</button>
+        </div>
+
+        <!-- Tab 1: Lịch trình cuối -->
+        <div id="tab-itin" class="tab-content-panel">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;flex-wrap:wrap;gap:8px;">
+            <h3 id="tab-itin-header" style="font-size:14px;font-weight:700;color:var(--navy);">📅 Lịch trình cuối</h3>
+            <div style="display:flex;align-items:center;gap:10px;">
+              <span class="copy-feedback" id="copy-itin-feedback">✓ Đã copy!</span>
+              <button class="btn btn-secondary btn-sm" onclick="copyItinerary()">Copy lịch trình</button>
+            </div>
+          </div>
+          <div id="itin-flight-summary"></div>
+          <div id="itin-final-table-container" style="margin-bottom:16px;"></div>
+          <div id="itin-final-details-container" style="margin-top:20px;"></div>
+          <div class="itin-note">⚠️ <strong>Lưu ý:</strong> Đây là lịch trình và chi phí ước tính dựa trên thông tin tại thời điểm lập kế hoạch. Các yếu tố thực tế như thời tiết, thay đổi giờ bay, hoặc điều kiện vận hành của các điểm tham quan có thể ảnh hưởng đến lịch trình thực tế. Vui lòng kiểm chứng lại các thông tin quan trọng trước chuyến đi.</div>
+        </div>
+
+        <!-- Tab 2: Email / Zalo Message -->
+        <div id="tab-message" class="tab-content-panel" style="display:none;">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;flex-wrap:wrap;gap:8px;">
+            <h3 style="font-size:14px;font-weight:700;color:var(--navy);">📨 Email / Zalo Message — sẵn sàng copy gửi gia đình</h3>
+            <div style="display:flex;align-items:center;gap:10px;">
+              <span class="copy-feedback" id="copy-msg-feedback">✓ Đã copy!</span>
+              <button class="btn btn-secondary btn-sm" onclick="copyMessage()">Copy tin nhắn</button>
+            </div>
+          </div>
+          <div class="prompt-box" id="message-box" style="margin-bottom:0;"></div>
+        </div>
+
+        <!-- Tab 3: Todo List -->
+        <div id="tab-todo" class="tab-content-panel" style="display:none;">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;flex-wrap:wrap;gap:8px;">
+            <h3 style="font-size:14px;font-weight:700;color:var(--navy);">✅ Todo List — việc người thật cần làm tiếp</h3>
+            <div style="display:flex;align-items:center;gap:10px;">
+              <span class="copy-feedback" id="copy-todo-feedback">✓ Đã copy!</span>
+              <button class="btn btn-secondary btn-sm" onclick="copyTodoList()">Copy todo list</button>
+            </div>
+          </div>
+          <div id="todo-list-container"></div>
+        </div>
+      </div>
+    </div>
+    
+    <a class="reset-link" onclick="resetForm()">← Nhập lại thông tin chuyến đi</a>
+  </div>
+</div>
+
+<script>
+var REGIONS=[{name:"Tokyo - Shinjuku",spots:["Shinjuku Gyoen","Meiji Shrine","Harajuku","Shibuya Crossing","Akihabara"]},{name:"Tokyo - Asakusa",spots:["Senso-ji Temple","Nakamise Street","Sumida River","Tokyo Skytree","Ueno Park"]},{name:"Nikko",spots:["Tosho-gu Shrine","Kegon Falls","Lake Chuzenji","Rinnoji Temple","Kanmangafuchi"]},{name:"Hakone",spots:["Mt. Fuji viewpoint","Hakone Open Air Museum","Lake Ashi cruise","Owakudani","Hakone Ropeway"]},{name:"Kyoto - Higashiyama",spots:["Fushimi Inari","Kinkaku-ji","Arashiyama Bamboo","Gion district","Nishiki Market"]},{name:"Osaka",spots:["Dotonbori","Osaka Castle","Kuromon Market","Shinsekai","Namba"]},{name:"Nara",spots:["Nara Park (deer)","Todai-ji Temple","Kasuga Taisha","Naramachi","Isuien Garden"]}];
+var MEALS=["Ramen dia phuong","Sushi conveyor belt","Udon tuoi","Tonkatsu","Okonomiyaki","Izakaya dia phuong","Tempura tai cho","Yakitori pho dem"];
+var _tripCtx={};var _flightResult=null;var _vgResult=null;
+function parseDays(s){var m=s.match(/(\d+)/);return m?parseInt(m[1]):5;}
+function parseAdults(s){var m=s.match(/(\d+)/);return m?parseInt(m[1]):1;}
+function parseBudgetMax(s){var m=s.match(/(\d+)/g);if(!m)return 40000000;var nums=m.map(Number);return Math.max.apply(null,nums)*1000000;}
+function mapDest(s){var l=s.toLowerCase();if(l.indexOf("nhat")>=0||l.indexOf("japan")>=0)return"TYO";return"TYO";}
+function mapFlexibility(pace){if(pace.indexOf("thu")>=0)return"high";if(pace.indexOf("toi")>=0)return"low";return"medium";}
+function getBudget(pace,i){var b={a:["~150k-250k","~200k-350k","~100k-200k"],b:["~200k-350k","~250k-400k","~150k-250k"],c:["~250k-400k","~300k-500k","~200k-350k"]};var key=pace.indexOf("thu")>=0?"a":pace.indexOf("toi")>=0?"c":"b";return b[key][i%3];}
+function buildRows(n,pace,interests,constraints){var spd=pace.indexOf("thu")>=0?2:pace.indexOf("toi")>=0?4:3;var rows=[];for(var d=0;d<n;d++){var reg=REGIONS[d%REGIONS.length];var spots=reg.spots.slice(0,spd);var meal=MEALS[d%MEALS.length];var morning,afternoon,evening;if(d===0){morning="Den san bay, check-in";afternoon=spots[0]+(spots[1]?" - "+spots[1]:"");evening="An toi: "+meal;}else if(d===n-1){morning=spots[0]+(spots[1]?" - "+spots[1]:"");afternoon="Mua qua, chuan bi hanh ly";evening="Ra san bay, bay ve";}else{morning=spots[0]+(spots[1]?" - "+spots[1]:"");afternoon=spots[2]?(spots[2]+(spots[3]?" - "+spots[3]:"")):"Tu do kham pha";evening="An toi: "+meal;}var rname=reg.name;if(constraints.toLowerCase().indexOf("khach san")>=0&&d>0&&d<n-1)rname+=" (giu khach san)";rows.push({day:d+1,region:rname,morning:morning,afternoon:afternoon,evening:evening,budget:getBudget(pace,d),dense:spd>=4});}return rows;}
+function renderItinTable(rows){var h="<table class='itin-table'><thead><tr><th>Ngay</th><th>Khu vuc</th><th>Sang</th><th>Chieu</th><th>Toi</th><th>Ngan sach</th></tr></thead><tbody>";rows.forEach(function(r){h+="<tr><td><span class='day-badge'>Ngay "+r.day+"</span></td><td>"+r.region+"</td><td>"+r.morning+"</td><td>"+r.afternoon+(r.dense?"<br><span class='dense-warn'>Lich day</span>":"")+"</td><td>"+r.evening+"</td><td><span class='est-note'>"+r.budget+"/nguoi<br><span class='est-mark'>*uoc tinh</span></span></td></tr>";});return h+"</tbody></table>";}
+function buildTOPrompt(ctx){return "Ban la Travel Optimizer. Tim toi da 3 phuong an ve cho hanh trinh "+ctx.origin+" -> "+ctx.destination+" -> "+ctx.origin+", khoi hanh "+ctx.departure_date+", ve "+ctx.return_date+", "+ctx.adults+" nguoi lon, economy, checked_bag. Tinh true_total_per_person_vnd cho moi phuong an. Tra ve JSON voi fields: options[], recommended_option_id, budget_alert. Khong bia gia - neu khong co du lieu live, danh dau data_confidence=estimated.";}
+function buildVGPrompt(ctx,fr){var recId=fr?fr.recommended_option_id:"OPT-001";var n=parseDays(document.getElementById("days").value);return "Ban la Travel Optimizer. Chay verification gate cho option "+recId+":\n\n1. deals-verification: Tim deal/promo con hieu luc.\n2. checklist_per_day: Voi moi ngay trong "+n+" ngay, tao checklist 5 hang muc: weather_season, opening_hours, transport_cost, distance_between_spots, schedule_density_risk. Phan loai: confirmed/assumption/needs_verification. Khi needs_verification, ghi action_required cu the.\n3. budget_alert: Tinh tong uoc tinh vs budget_max="+ctx.budget_max+" VND/nguoi.\n\nTra ver JSON: {deals:[], checklist_per_day:[], budget_alert:{}, generated_at:\"ISO8601\"}. Khong de xuat dat ve hoac thanh toan.";}
+function val(id){return document.getElementById(id).value.trim();}
+function fmt(n){if(!n&&n!==0)return"--";return n.toLocaleString("vi-VN")+" VND";}
+function generate(){
+  var dest=val("destination")||"diem den";var travelers=val("travelers")||"nhom";var month=val("month")||"thang 7";var days=val("days")||"5 ngay";var budget=val("budget")||"ngan sach";var pace=val("pace")||"can bang";var interests=val("interests")||"so thich";var constraints=val("constraints")||"rang buoc";
+  var n=parseDays(days);var adults=parseAdults(travelers);var budgetMax=parseBudgetMax(budget);var iataCode=mapDest(dest);var depDate="2026-07-10";var retDate="2026-07-"+(10+n-1);
+  _tripCtx={origin:"HAN",destination:iataCode,departure_date:depDate,return_date:retDate,adults:adults,budget_min:Math.round(budgetMax*0.875),budget_max:budgetMax,flexibility:mapFlexibility(pace),month:month,interests:interests,constraints:constraints,pace:pace};
+  var questions=["Ban muon tap trung o mot vung hay di nhieu thanh pho tai "+dest+"?","Ngan sach "+budget+"/nguoi da bao gom ve may bay khu hoi va khach san chua?","Trong nhom "+travelers+", co ai can han che di bo nhieu hoac co yeu cau an uong dac biet khong?","Uu tien cua ban theo thu tu nao: "+interests+"?","Ban muon lich trinh "+pace+" - va co muon giu nguyen mot khach san lam base camp khong?"];
+  var prompt="Toi muon ban giup lap ke hoach du lich "+dest+" tu tuc.\n\nDung lap lich trinh ngay. Truoc tien hay hoi toi toi da 5 cau hoi de lam ro cac diem con thieu.\n\nBoi canh hien co:\n- Nhom di: "+travelers+".\n- Thoi gian: "+month+", di "+days+".\n- Ngan sach: "+budget+"/nguoi.\n- Uu tien: "+interests+".\n- Phong cach: "+pace+".\n- Rang buoc: "+constraints+".\n\nSau khi toi tra loi, hay lap ke hoach theo 4 phan:\n1. Cac gia dinh ban dang dung.\n2. Lich trinh tung ngay dang bang.\n3. Uoc tinh ngan sach theo hang muc.\n4. Danh sach diem can kiem chung lai truoc khi dat dich vu.\n\nQuy tac: Neu thong tin nao khong chac, ghi ro can kiem chung. Khong bia gia ve, gio mo cua cu the.";
+  var checklist=["Ve may bay: kiem tra gia thuc te tren Skyscanner, Google Flights - "+month+" la mua cao diem","Khach san: kiem tra gia va tinh trang phong tren Booking.com / Agoda - dat som","Gio mo cua: xac minh gio mo cua thuc te cua tung diem tham quan","Thoi tiet "+month+": "+dest+" "+month+" co the nong am hoac mua nhieu","Visa / giay to: xac minh yeu cau visa hien tai cho cong dan Viet Nam","Khoang cach di chuyen: kiem tra thoi gian thuc te giua cac diem (Google Maps / Hyperdia)","Tong ngan sach: cong lai tat ca hang muc va so sanh voi ngan sach "+budget+"/nguoi"];
+  document.getElementById("questions-list").innerHTML=questions.map(function(q,i){return "<li><span class='q-num'>"+(i+1)+"</span><span>"+q+"</span></li>";}).join("");
+  document.getElementById("prompt-box").textContent=prompt;
+  document.getElementById("checklist-list").innerHTML=checklist.map(function(c){return "<li>"+c+"</li>";}).join("");
+  document.getElementById("itin-container").innerHTML=renderItinTable(buildRows(n,pace,interests,constraints));
+  document.getElementById("to-prompt-box").textContent=buildTOPrompt(_tripCtx);
+  document.getElementById("analysis-output").innerHTML="";document.getElementById("vg-output").innerHTML="";document.getElementById("verify-block").style.display="none";
+  document.getElementById("final-block").style.display="none";_vgResult=null;
+  document.getElementById("output-section").classList.add("visible");document.getElementById("form-card").style.display="none";
+  document.getElementById("output-section").scrollIntoView({behavior:"smooth",block:"start"});
+}
+function analyzeResult(){
+  var raw=document.getElementById("json-input").value.trim();
+  if(!raw){document.getElementById("analysis-output").innerHTML="<div class='error-note'>Chua co du lieu. Paste JSON tu Travel Optimizer vao o tren.</div>";return;}
+  var data;try{data=JSON.parse(raw);}catch(e){document.getElementById("analysis-output").innerHTML="<div class='error-note'>JSON khong hop le: "+e.message+"</div>";return;}
+  if(!data.options||!Array.isArray(data.options)||data.options.length===0){document.getElementById("analysis-output").innerHTML="<div class='error-note'>JSON thieu field options[]. Yeu cau AI tra ve dung format.</div>";return;}
+  _flightResult=data;
+  var allEst=data.options.every(function(o){return o.data_confidence==="estimated";});
+  var html="";if(allEst)html+="<div class='est-banner'>Tat ca gia ve la uoc tinh (AI-Knowledge mode). Kiem chung tren Google Flights truoc khi quyet dinh.</div>";
+  var ba=data.budget_alert||{};if(ba.over_budget){html+="<div class='budget-warning'>Canh bao: Vuot ngan sach!";if(ba.cost_reduction_suggestions&&ba.cost_reduction_suggestions.length){html+="<ul>";ba.cost_reduction_suggestions.forEach(function(s){html+="<li>"+s+"</li>";});html+="</ul>";}html+="</div>";}
+  html+="<h3 style='font-size:14px;font-weight:700;color:var(--navy);margin-bottom:10px;'>Bang so sanh phuong an ve</h3>";
+  html+="<table class='comp-table'><thead><tr><th>#</th><th>Hang bay</th><th>Hanh trinh</th><th>Ngay bay</th><th>Gia niem yet/nguoi</th><th>Gia thuc/nguoi*</th><th>Tong "+(_tripCtx.adults||3)+" nguoi</th><th>Linh hoat</th><th>Do tin cay</th></tr></thead><tbody>";
+  data.options.forEach(function(o){var isRec=o.option_id===data.recommended_option_id;var tags=(o.tags||[]).map(function(t){return "<span class='tag'>"+t+"</span>";}).join("");var confClass=o.data_confidence==="live"?"conf-live":o.data_confidence==="cached_24h"?"conf-cached":"conf-est";var confLabel=o.data_confidence==="live"?"Du lieu live":o.data_confidence==="cached_24h"?"Cache 24h":"Uoc tinh";var p=o.price||{};var flex=o.flexibility_score?o.flexibility_score.score+"/100":"--";var route=o.route?o.route.outbound+" / "+o.route.return:"--";html+="<tr"+(isRec?" class='recommended'":"")+"><td>"+o.rank+(isRec?"<span class='rec-badge'>Khuyen nghi</span>":"")+("</td><td>"+(o.airline||"--")+"<br>"+tags+"</td><td>"+route+"</td><td>"+(o.departure_date||"--")+"<br>"+(o.return_date||"")+"</td><td>"+fmt(p.advertised_per_person_vnd)+"</td><td><strong>"+fmt(p.true_total_per_person_vnd)+"</strong></td><td>"+fmt(p.total_all_passengers_vnd)+"</td><td>"+flex+"</td><td><span class='"+confClass+"'>"+confLabel+"</span></td></tr>");});
+  html+="</tbody></table><p style='font-size:11px;color:var(--muted);margin-top:6px;'>*Gia thuc = base fare + thue + hanh ly + chon ghe + phi thanh toan</p>";
+  document.getElementById("analysis-output").innerHTML=html;
+  document.getElementById("vg-prompt-box").textContent=buildVGPrompt(_tripCtx,_flightResult);
+  document.getElementById("verify-block").style.display="block";
+  document.getElementById("verify-block").scrollIntoView({behavior:"smooth",block:"start"});
+}
+function skipTO(){_flightResult=null;document.getElementById("analysis-output").innerHTML="<div class='itin-note'>Bo qua buoc Travel Optimizer. Chua co du lieu ve thuc.</div>";document.getElementById("vg-prompt-box").textContent=buildVGPrompt(_tripCtx,null);document.getElementById("verify-block").style.display="block";}
+function renderChecklist(){
+  var raw=document.getElementById("vg-json-input").value.trim();
+  if(!raw){document.getElementById("vg-output").innerHTML="<div class='error-note'>Chua co du lieu. Paste JSON tu AI vao o tren.</div>";return;}
+  var data;try{data=JSON.parse(raw);}catch(e){document.getElementById("vg-output").innerHTML="<div class='error-note'>JSON khong hop le: "+e.message+"</div>";return;}
+  _vgResult=data;
+  var html="";
+  if(data.generated_at){var genTime=new Date(data.generated_at);var now=new Date();var diffH=(now-genTime)/3600000;if(diffH>24)html+="<div class='stale-banner'>Du lieu nay da hon 24 gio. Mot so thong tin co the da thay doi. Chay lai verification de cap nhat.</div>";}
+  var deals=data.deals||[];
+  if(deals.length>0){html+="<h3 style='font-size:14px;font-weight:700;color:var(--navy);margin-bottom:10px;'>Deals / Promo</h3><table class='deals-table'><thead><tr><th>Ten deal</th><th>Giam gia</th><th>Het han</th><th>Do tin cay</th></tr></thead><tbody>";deals.forEach(function(d){var now=new Date();var expDate=d.valid_until?new Date(d.valid_until):null;var isExp=expDate&&expDate<now;var confBadge=d.confidence_level==="confirmed"?"<span class='badge-confirmed'>Da xac nhan</span>":d.confidence_level==="likely"?"<span class='badge-likely'>Co the con</span>":"<span class='badge-unverified'>Chua xac minh</span>";html+="<tr"+(isExp?" class='deal-expired'":"")+"><td>"+(d.description||"--")+(isExp?"<span class='badge-expired'>Het han</span>":"")+("</td><td>"+(d.discount_vnd?d.discount_vnd.toLocaleString("vi-VN")+" VND":"--")+"</td><td>"+(d.valid_until||"--")+"</td><td>"+confBadge+"</td></tr>");});html+="</tbody></table>";}
+  var days=data.checklist_per_day||[];
+  if(days.length>0){html+="<h3 style='font-size:14px;font-weight:700;color:var(--navy);margin:20px 0 10px;'>Checklist kiem chung tung ngay</h3>";days.forEach(function(day){html+="<details class='day-accordion'><summary><span class='day-badge'>Ngay "+day.day+"</span> "+(day.date||"")+"</summary><div style='padding:0;'><table class='check-table'><thead><tr><th>Hang muc</th><th>Trang thai</th><th>Chi tiet</th></tr></thead><tbody>";var checks=day.checks||[];checks.forEach(function(c){var catLabel={weather_season:"Thoi tiet / Mua",opening_hours:"Gio mo cua",transport_cost:"Chi phi di chuyen",distance_between_spots:"Khoang cach diem",senior_accessibility:"Phu hop nguoi lon tuoi",schedule_density_risk:"Rui ro lich day"}[c.category]||c.category;var statusClass=c.status==="confirmed"?"status-confirmed":c.status==="assumption"?"status-assumption":"status-needs";var statusLabel=c.status==="confirmed"?"Chac chan":c.status==="assumption"?"Gia dinh": "Can kiem chung";var actionHtml=c.action_required&&c.status==="needs_verification"?"<div class='action-required'>Viec can lam: "+c.action_required+"</div>":"";html+="<tr><td>"+catLabel+"</td><td><span class='"+statusClass+"'>"+statusLabel+"</span></td><td>"+(c.detail||"--")+actionHtml+"</td></tr>";});html+="</tbody></table></div></details>";});}
+  var ba=data.budget_alert||{};if(ba.total_estimated_per_person_vnd){html+="<h3 style='font-size:14px;font-weight:700;color:var(--navy);margin:20px 0 10px;'>Tong ket ngan sach</h3>";var overClass=ba.over_budget?"budget-warning":"itin-note";html+="<div class='"+overClass+"'>Tong uoc tinh: <strong>"+fmt(ba.total_estimated_per_person_vnd)+"/nguoi</strong><br>Ngan sach toi da: <strong>"+fmt(ba.budget_max_per_person_vnd)+"/nguoi</strong><br>"+(ba.over_budget?"<strong>Vuot ngan sach: "+fmt(ba.overage_vnd)+"</strong>":"Trong ngan sach.")+"</div>";}
+  document.getElementById("vg-output").innerHTML=html;
+  
+  // Phase 5: Render and show Section 8
+  renderFinalPlan();
+  document.getElementById("final-block").style.display="block";
+}
+function copyPrompt(){var text=document.getElementById("prompt-box").textContent;navigator.clipboard.writeText(text).then(function(){showFb("copy-feedback");}).catch(function(){fbFallback("prompt-box","copy-feedback");});}
+function copyToPrompt(){var text=document.getElementById("to-prompt-box").textContent;navigator.clipboard.writeText(text).then(function(){showFb("copy-to-feedback");}).catch(function(){fbFallback("to-prompt-box","copy-to-feedback");});}
+function copyVGPrompt(){var text=document.getElementById("vg-prompt-box").textContent;navigator.clipboard.writeText(text).then(function(){showFb("copy-vg-feedback");}).catch(function(){fbFallback("vg-prompt-box","copy-vg-feedback");});}
+function fbFallback(boxId,fbId){var ta=document.createElement("textarea");ta.value=document.getElementById(boxId).textContent;document.body.appendChild(ta);ta.select();document.execCommand("copy");document.body.removeChild(ta);showFb(fbId);}
+function showFb(id){var fb=document.getElementById(id);fb.classList.add("show");setTimeout(function(){fb.classList.remove("show");},2000);}
+function resetForm(){
+  document.getElementById("output-section").classList.remove("visible");
+  document.getElementById("form-card").style.display="block";
+  document.getElementById("analysis-output").innerHTML="";
+  document.getElementById("vg-output").innerHTML="";
+  document.getElementById("verify-block").style.display="none";
+  document.getElementById("final-block").style.display="none";
+  _vgResult=null;
+  window.scrollTo({top:0,behavior:"smooth"});
+}
+
+// Phase 5 Tab Switching Logic
+function switchTab(tabId) {
+  var panels = document.querySelectorAll(".tab-content-panel");
+  panels.forEach(function(p) {
+    p.style.display = "none";
+  });
+  document.getElementById(tabId).style.display = "block";
+  
+  var buttons = document.querySelectorAll(".btn-tab");
+  buttons.forEach(function(b) {
+    b.classList.remove("btn-tab-active");
+  });
+  
+  var targetBtn = Array.from(buttons).find(function(btn) {
+    return btn.getAttribute("onclick").indexOf(tabId) >= 0;
+  });
+  if (targetBtn) targetBtn.classList.add("btn-tab-active");
+}
+
+// Phase 5 UI Content Rendering
+function renderFinalPlan() {
+  var dest=val("destination")||"diem den";
+  var travelers=val("travelers")||"nhom";
+  var month=val("month")||"thang 7";
+  var daysStr=val("days")||"5 ngay";
+  var budget=val("budget")||"ngan sach";
+  var pace=val("pace")||"can bang";
+  var interests=val("interests")||"so thich";
+  var constraints=val("constraints")||"rang buoc";
+  
+  var n=parseDays(daysStr);
+  var rows=buildRows(n, pace, interests, constraints);
+
+  // 1. Tab 1 Header
+  document.getElementById("tab-itin-header").textContent = "📅 Lịch trình cuối — " + dest + ", " + daysStr + ", " + travelers;
+  
+  // 2. Flight Summary Card
+  var flightHtml = "";
+  if (_flightResult && _flightResult.options && _flightResult.options.length > 0) {
+    var opt = _flightResult.options.find(function(o) { return o.option_id === _flightResult.recommended_option_id; }) || _flightResult.options[0];
+    var p = opt.price || {};
+    var route = opt.route ? opt.route.outbound + " / " + opt.route.return : "--";
+    flightHtml = "<div class='flight-summary-card'>✈️ <strong>Vé máy bay khuyến nghị:</strong> Hãng bay <strong>" + (opt.airline || "--") + "</strong> (" + route + "), bay ngày " + (opt.departure_date || "--") + " - về ngày " + (opt.return_date || "") + ". Giá thực tế: <strong>" + fmt(p.true_total_per_person_vnd) + "/người</strong> (Tổng: " + fmt(p.total_all_passengers_vnd) + " cho " + (_tripCtx.adults || 3) + " người lớn).</div>";
+  } else {
+    flightHtml = "<div class='flight-summary-card' style='background:var(--yellow-light);border-color:#fde68a;color:#92400e;'>✈️ <strong>Vé máy bay:</strong> Chưa chốt vé chính thức qua Travel Optimizer. Sử dụng phương án ước tính mặc định.</div>";
+  }
+  document.getElementById("itin-flight-summary").innerHTML = flightHtml;
+
+  // 3. Tab 1 Overview Table (3 columns: Ngày, Khu vực, Trạng thái kiểm chứng)
+  var tableHtml = "<table class='itin-table'><thead><tr><th>Ngay</th><th>Khu vuc</th><th>Trang thai kiem chung</th></tr></thead><tbody>";
+  rows.forEach(function(r) {
+    var dayStatus = "<span class='status-confirmed'>Chac chan ✅</span>";
+    if (_vgResult && _vgResult.checklist_per_day) {
+      var dayData = _vgResult.checklist_per_day.find(function(d) { return d.day === r.day; });
+      if (dayData && dayData.checks && dayData.checks.length > 0) {
+        var hasNeeds = dayData.checks.some(function(c) { return c.status === "needs_verification"; });
+        var hasAssump = dayData.checks.some(function(c) { return c.status === "assumption"; });
+        if (hasNeeds) {
+          dayStatus = "<span class='status-needs'>Can kiem chung ❌</span>";
+        } else if (hasAssump) {
+          dayStatus = "<span class='status-assumption'>Gia dinh 🔶</span>";
+        }
+      }
+    }
+    tableHtml += "<tr><td><span class='day-badge'>Ngay " + r.day + "</span></td><td>" + r.region + "</td><td>" + dayStatus + "</td></tr>";
+  });
+  tableHtml += "</tbody></table>";
+  document.getElementById("itin-final-table-container").innerHTML = tableHtml;
+
+  // 4. Tab 1 Day details accordion
+  var detailsHtml = "";
+  rows.forEach(function(r) {
+    var mealName = r.evening.indexOf("An toi: ") === 0 ? r.evening.substring(8) : r.evening;
+    detailsHtml += "<details class='day-accordion'><summary><span class='day-badge'>Ngay " + r.day + "</span> " + r.region + "</summary>";
+    detailsHtml += "<div style='padding: 16px; background: #fff; border-top: 1px solid var(--line); font-size: 13.5px;'>";
+    detailsHtml += "<p style='margin-bottom: 8px;'><strong>Sang:</strong> " + r.morning + "</p>";
+    detailsHtml += "<p style='margin-bottom: 8px;'><strong>Chieu:</strong> " + r.afternoon + "</p>";
+    detailsHtml += "<p style='margin-bottom: 8px;'><strong>Toi:</strong> " + r.evening + "</p>";
+    detailsHtml += "<p style='margin-bottom: 8px;'><strong>An uong:</strong> Mon an dia phuong hop so thich (" + interests + "): " + mealName + "</p>";
+    detailsHtml += "<p style='margin-bottom: 8px;'><strong>Di chuyen:</strong> Di chuyen bang phuong tien cong cong (tau dien ngam, xe buyt, di bo) uoc tinh qua the IC (Suica/PASMO)</p>";
+    detailsHtml += "<p style='margin-bottom: 0;'><strong>Ngan sach uoc tinh:</strong> <span class='est-note'>~" + r.budget + "/nguoi <span class='est-mark'>*uoc tinh</span></span></p>";
+    detailsHtml += "</div></details>";
+  });
+  document.getElementById("itin-final-details-container").innerHTML = detailsHtml;
+
+  // 5. Tab 2: Zalo / Email message template
+  var msg = "Xin chao moi nguoi!\n\n";
+  msg += "Minh da len ke hoach so bo cho chuyen di " + dest + " cua ca nha.\n";
+  msg += "Thoi gian: " + month + ", " + n + " ngay\n";
+  msg += "Nhom di: " + travelers + "\n";
+  msg += "Ngan sach du kien: " + budget + "/nguoi\n\n";
+  msg += "LICH TRINH TOM TAT:\n";
+  rows.forEach(function(r) {
+    var act = r.morning + " -> " + r.afternoon;
+    msg += "• Ngay " + r.day + ": " + r.region + " — " + act + "\n";
+  });
+  msg += "\nVE MAY BAY: ";
+  if (_flightResult && _flightResult.options && _flightResult.options.length > 0) {
+    var opt = _flightResult.options.find(function(o) { return o.option_id === _flightResult.recommended_option_id; }) || _flightResult.options[0];
+    var p = opt.price || {};
+    msg += "Phuong an tot nhat: " + (opt.airline || "Hang bay") + " (" + fmt(p.true_total_per_person_vnd) + "/nguoi)\n";
+  } else {
+    msg += "Can kiem tra — xem bang so sanh dinh kem\n";
+  }
+
+  if (_vgResult && _vgResult.deals && _vgResult.deals.length > 0) {
+    var activeDeals = _vgResult.deals.filter(function(d) {
+      var now = new Date();
+      var expDate = d.valid_until ? new Date(d.valid_until) : null;
+      return !expDate || expDate >= now;
+    });
+    if (activeDeals.length > 0) {
+      msg += "\nDEALS DANG CO:\n";
+      activeDeals.forEach(function(d) {
+        var disc = d.discount_vnd ? " — giam " + d.discount_vnd.toLocaleString("vi-VN") + " VND" : "";
+        var exp = d.valid_until ? ", het han " + d.valid_until : "";
+        msg += "• " + d.description + disc + exp + "\n";
+      });
+    }
+  }
+
+  msg += "\nVIEC CAN LAM TRUOC KHI DAT:\n";
+  msg += "1. Kiem tra gia ve tren Google Flights / Skyscanner\n";
+  msg += "2. Dat khach san som (" + month + " la mua cao diem)\n";
+  msg += "3. Kiem tra visa Nhat Ban cho cong dan Viet Nam\n";
+  msg += "4. Xac nhan gio mo cua cac diem tham quan\n\n";
+  msg += "*Lich trinh va gia uoc tinh, chua kiem chung thuc te. Moi nguoi doc qua va gop y nhe!\n";
+  document.getElementById("message-box").textContent = msg;
+
+  // 6. Tab 3: Todo List checkbox grouping
+  var todoHtml = "";
+  // Nhom A
+  todoHtml += "<div class='todo-group'><h4>Nhóm A — Việc cần làm ngay (trước khi đặt)</h4><ul class='todo-items'>";
+  var groupA = [
+    "Kiểm tra giá vé máy bay thực tế trên Google Flights / Skyscanner",
+    "Kiểm tra phòng khách sạn còn trống trên Booking.com / Agoda (" + month + ")",
+    "Xác nhận yêu cầu visa Nhật Bản hiện tại cho công dân Việt Nam",
+    "Hỏi ý kiến các thành viên trong nhóm về lịch trình nháp"
+  ];
+  groupA.forEach(function(item, idx) {
+    todoHtml += "<li class='todo-item'><input type='checkbox' id='todo-a-" + idx + "' onchange='toggleTodo(this)'><label for='todo-a-" + idx + "' class='todo-item-text'>" + item + "</label></li>";
+  });
+  todoHtml += "</ul></div>";
+
+  // Nhom B
+  todoHtml += "<div class='todo-group'><h4>Nhóm B — Việc cần làm sau khi chốt vé và phòng</h4><ul class='todo-items'>";
+  var groupB = [
+    "Mua bảo hiểm du lịch (travel insurance)",
+    "Đổi tiền Yên Nhật hoặc chuẩn bị thẻ thanh toán quốc tế",
+    "Tải ứng dụng JR Pass / Suica / bản đồ offline",
+    "Xác nhận lại giờ mở cửa từng điểm tham quan (1-2 tuần trước khi đi)",
+    "Kiểm tra dự báo thời tiết Nhật Bản (1 tuần trước khi đi)"
+  ];
+  groupB.forEach(function(item, idx) {
+    todoHtml += "<li class='todo-item'><input type='checkbox' id='todo-b-" + idx + "' onchange='toggleTodo(this)'><label for='todo-b-" + idx + "' class='todo-item-text'>" + item + "</label></li>";
+  });
+  todoHtml += "</ul></div>";
+
+  // Nhom C (Tự động từ needs_verification của _vgResult)
+  var groupC = [];
+  if (_vgResult && _vgResult.checklist_per_day) {
+    _vgResult.checklist_per_day.forEach(function(day) {
+      if (day.checks) {
+        day.checks.forEach(function(c) {
+          if (c.status === "needs_verification" && c.action_required) {
+            groupC.push("Ngày " + day.day + ": " + c.action_required);
+          }
+        });
+      }
+    });
+  }
+
+  if (groupC.length > 0) {
+    todoHtml += "<div class='todo-group'><h4>Nhóm C — Việc cần kiểm chứng thêm (từ Verification Gate)</h4><ul class='todo-items'>";
+    groupC.forEach(function(item, idx) {
+      todoHtml += "<li class='todo-item'><input type='checkbox' id='todo-c-" + idx + "' onchange='toggleTodo(this)'><label for='todo-c-" + idx + "' class='todo-item-text'>" + item + "</label></li>";
+    });
+    todoHtml += "</ul></div>";
+  }
+  document.getElementById("todo-list-container").innerHTML = todoHtml;
+}
+
+function toggleTodo(checkbox) {
+  var li = checkbox.closest(".todo-item");
+  if (checkbox.checked) {
+    li.classList.add("done");
+  } else {
+    li.classList.remove("done");
+  }
+}
+
+// Phase 5 Copying Logic
+function copyItinerary() {
+  var dest=val("destination")||"diem den";
+  var travelers=val("travelers")||"nhom";
+  var month=val("month")||"thang 7";
+  var daysStr=val("days")||"5 ngay";
+  
+  var n=parseDays(daysStr);
+  var pace=val("pace")||"can bang";
+  var interests=val("interests")||"so thich";
+  var constraints=val("constraints")||"rang buoc";
+  var rows=buildRows(n, pace, interests, constraints);
+  
+  var text = "LỊCH TRÌNH CUỐI: " + dest.toUpperCase() + "\n";
+  text += "Thời gian: " + month + ", " + daysStr + " (" + travelers + ")\n\n";
+  
+  if (_flightResult && _flightResult.options && _flightResult.options.length > 0) {
+    var opt = _flightResult.options.find(function(o) { return o.option_id === _flightResult.recommended_option_id; }) || _flightResult.options[0];
+    var p = opt.price || {};
+    var route = opt.route ? opt.route.outbound + " / " + opt.route.return : "--";
+    text += "VÉ MÁY BAY KHUYẾN NGHỊ:\n";
+    text += "- Hãng: " + (opt.airline || "--") + " (" + route + ")\n";
+    text += "- Ngày bay: " + (opt.departure_date || "--") + " - Về: " + (opt.return_date || "") + "\n";
+    text += "- Giá thực tế/người: " + fmt(p.true_total_per_person_vnd) + "\n\n";
+  } else {
+    text += "VÉ MÁY BAY: Chưa chốt qua Travel Optimizer.\n\n";
+  }
+  
+  text += "CHI TIẾT LỊCH TRÌNH:\n";
+  rows.forEach(function(r) {
+    var mealName = r.evening.indexOf("An toi: ") === 0 ? r.evening.substring(8) : r.evening;
+    text += "Ngày " + r.day + " — " + r.region + "\n";
+    text += "- Sáng: " + r.morning + "\n";
+    text += "- Chiều: " + r.afternoon + "\n";
+    text += "- Tối: " + r.evening + "\n";
+    text += "- Ăn uống: " + mealName + "\n";
+    text += "- Ngân sách: ~" + r.budget + "/người\n\n";
+  });
+  text += "*Lưu ý: Đây là lịch trình và chi phí ước tính, chưa kiểm chứng thực tế.";
+  
+  navigator.clipboard.writeText(text).then(function() {
+    showFb("copy-itin-feedback");
+  }).catch(function() {
+    var ta = document.createElement("textarea");
+    ta.value = text;
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand("copy");
+    document.body.removeChild(ta);
+    showFb("copy-itin-feedback");
+  });
+}
+
+function copyMessage() {
+  var text = document.getElementById("message-box").textContent;
+  navigator.clipboard.writeText(text).then(function() {
+    showFb("copy-msg-feedback");
+  }).catch(function() {
+    var ta = document.createElement("textarea");
+    ta.value = text;
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand("copy");
+    document.body.removeChild(ta);
+    showFb("copy-msg-feedback");
+  });
+}
+
+function copyTodoList() {
+  var text = "DANH SÁCH VIỆC CẦN LÀM (TODO LIST):\n\n";
+  var groups = document.querySelectorAll(".todo-group");
+  if (groups.length === 0) return;
+  groups.forEach(function(g) {
+    var title = g.querySelector("h4").textContent;
+    text += title + "\n";
+    var items = g.querySelectorAll(".todo-item");
+    items.forEach(function(item) {
+      var cb = item.querySelector("input[type='checkbox']");
+      var label = item.querySelector(".todo-item-text").textContent;
+      var checkMark = cb.checked ? "[x]" : "[ ]";
+      text += checkMark + " " + label + "\n";
+    });
+    text += "\n";
+  });
+  
+  navigator.clipboard.writeText(text).then(function() {
+    showFb("copy-todo-feedback");
+  }).catch(function() {
+    var ta = document.createElement("textarea");
+    ta.value = text;
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand("copy");
+    document.body.removeChild(ta);
+    showFb("copy-todo-feedback");
+  });
+}
+</script>
+</body>
+</html>
