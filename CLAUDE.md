@@ -6,7 +6,7 @@ Luôn ưu tiên trả lời bằng tiếng Việt. Giải thích thuật ngữ t
 
 ## Workspace Context
 
-Đây là workspace tích hợp **Japan Travel Planner** + **Travel Optimization Engine**.
+Đây là workspace tích hợp **Tourist Agent** + **Travel Optimization Engine**.
 
 - Working directory: `c:\Users\vu.hoang\.gemini\antigravity\scratch\tourist_agent\`
 - Planner artifacts: `planner/`
@@ -15,7 +15,7 @@ Luôn ưu tiên trả lời bằng tiếng Việt. Giải thích thuật ngữ t
 ## Quy Tắc Làm Việc
 
 - Tất cả file mới tạo đặt trong `tourist_agent/`, không lưu vào `training_AI/` hay `travel_optimization_agent/`
-- Phase 5 HTML file đặt tại: `planner/japan-planner-phase5.html`
+- Phase 5 HTML file đặt tại: `planner/tourist-agent-phase5.html`
 - Không commit/push/deploy trừ khi được approve riêng
 - Không claim đã xong nếu chưa kiểm chứng bằng tool output hoặc file path
 

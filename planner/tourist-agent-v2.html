@@ -1,0 +1,1584 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Lên kế hoạch du lịch Nhật Bản</title>
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #f1f5f9;
+      --paper: #ffffff;
+      --navy: #0f172a;
+      --navy-light: #1e293b;
+      --orange: #f97316;
+      --orange-light: #fff7ed;
+      --green: #10b981;
+      --green-light: #ecfdf5;
+      --blue: #3b82f6;
+      --blue-light: #eff6ff;
+      --red: #ef4444;
+      --red-light: #fef2f2;
+      --yellow: #f59e0b;
+      --yellow-light: #fefce8;
+      --muted: #64748b;
+      --line: #cbd5e1;
+      --radius: 14px;
+      --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+      --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+      --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+    }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: var(--bg);
+      color: #1e293b;
+      line-height: 1.6;
+      padding: 32px 16px 64px;
+    }
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+    }
+    .header {
+      background: var(--navy);
+      color: #fff;
+      border-radius: var(--radius);
+      padding: 32px;
+      margin-bottom: 24px;
+      box-shadow: var(--shadow-lg);
+      position: relative;
+      overflow: hidden;
+    }
+    .header::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      right: -20%;
+      width: 300px;
+      height: 300px;
+      background: radial-gradient(circle, rgba(249,115,22,0.15) 0%, rgba(0,0,0,0) 70%);
+      border-radius: 50%;
+    }
+    .phase-badge {
+      display: inline-block;
+      background: var(--orange);
+      color: #fff;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: .06em;
+      text-transform: uppercase;
+      padding: 4px 12px;
+      border-radius: 20px;
+      margin-bottom: 12px;
+      box-shadow: var(--shadow-sm);
+    }
+    .header h1 {
+      font-size: 26px;
+      font-weight: 800;
+      margin-bottom: 8px;
+      letter-spacing: -0.02em;
+    }
+    .header p {
+      font-size: 15px;
+      opacity: .85;
+      font-weight: 400;
+    }
+    .progress-bar {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 8px 0 32px;
+      padding: 0 20px;
+    }
+    .prog-dot {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: #e2e8f0;
+      color: var(--muted);
+      font-size: 14px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      border: 3px solid #e2e8f0;
+      box-shadow: var(--shadow-sm);
+    }
+    .prog-dot.active {
+      background: var(--orange);
+      color: #fff;
+      border-color: var(--orange-light);
+      transform: scale(1.1);
+    }
+    .prog-dot.done {
+      background: var(--green);
+      color: #fff;
+      border-color: var(--green-light);
+    }
+    .prog-line {
+      flex: 1;
+      height: 4px;
+      background: #e2e8f0;
+      max-width: 120px;
+      margin: 0 -2px;
+      transition: all 0.3s ease;
+    }
+    .prog-line.done {
+      background: var(--green);
+    }
+    .card {
+      background: var(--paper);
+      border: 1px solid #e2e8f0;
+      border-radius: var(--radius);
+      padding: 32px;
+      margin-bottom: 24px;
+      box-shadow: var(--shadow-md);
+      transition: box-shadow 0.3s ease;
+    }
+    .card:hover {
+      box-shadow: var(--shadow-lg);
+    }
+    .card h2 {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--navy);
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      border-bottom: 2px solid var(--bg);
+      padding-bottom: 12px;
+    }
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+    @media (max-width: 580px) {
+      .form-grid { grid-template-columns: 1fr; }
+    }
+    .field {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .field.full {
+      grid-column: 1 / -1;
+    }
+    label {
+      font-size: 13.5px;
+      font-weight: 600;
+      color: var(--navy-light);
+    }
+    input, select, textarea {
+      border: 1px solid #cbd5e1;
+      border-radius: 8px;
+      padding: 10px 14px;
+      font-size: 14.5px;
+      font-family: inherit;
+      color: #1e293b;
+      background: #fff;
+      width: 100%;
+      transition: all 0.15s ease-in-out;
+    }
+    input:focus, select:focus, textarea:focus {
+      outline: none;
+      border-color: var(--orange);
+      box-shadow: 0 0 0 3px rgba(249,115,22,0.15);
+    }
+    textarea {
+      resize: vertical;
+      min-height: 80px;
+    }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      background: var(--orange);
+      color: #fff;
+      border: none;
+      border-radius: 9px;
+      padding: 12px 24px;
+      font-size: 14.5px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      box-shadow: var(--shadow-sm);
+    }
+    .btn:hover {
+      background: #ea6c0a;
+      transform: translateY(-1px);
+      box-shadow: var(--shadow-md);
+    }
+    .btn:active {
+      transform: translateY(0);
+    }
+    .btn-secondary {
+      background: #f1f5f9;
+      color: var(--navy-light);
+      border: 1.5px solid #cbd5e1;
+    }
+    .btn-secondary:hover {
+      background: #e2e8f0;
+      color: var(--navy);
+    }
+    .btn-blue {
+      background: var(--blue);
+    }
+    .btn-blue:hover {
+      background: #2563eb;
+    }
+    .btn-green {
+      background: var(--green);
+    }
+    .btn-green:hover {
+      background: #059669;
+    }
+    .btn-purple {
+      background: #7c3aed;
+    }
+    .btn-purple:hover {
+      background: #6d28d9;
+    }
+    .btn-sm {
+      padding: 8px 16px;
+      font-size: 13px;
+    }
+    .actions {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-top: 24px;
+    }
+    .step-panel {
+      display: none;
+    }
+    .step-panel.active {
+      display: block;
+      animation: fadeIn 0.4s ease-out;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .warning-note {
+      background: var(--orange-light);
+      border: 1px solid #ffedd5;
+      border-left: 4px solid var(--orange);
+      border-radius: 8px;
+      padding: 12px 16px;
+      font-size: 13px;
+      color: #b45309;
+      margin-top: 16px;
+    }
+    .info-note {
+      background: var(--blue-light);
+      border: 1px solid #dbeafe;
+      border-left: 4px solid var(--blue);
+      border-radius: 8px;
+      padding: 12px 16px;
+      font-size: 13px;
+      color: #1d4ed8;
+      margin-bottom: 16px;
+    }
+    .stale-banner {
+      background: #fff7ed;
+      border: 1px solid #fed7aa;
+      border-left: 4px solid var(--yellow);
+      border-radius: 8px;
+      padding: 12px 16px;
+      font-size: 13.5px;
+      color: #92400e;
+      margin-bottom: 16px;
+    }
+    .error-note {
+      background: var(--red-light);
+      border: 1px solid #fee2e2;
+      border-radius: 8px;
+      padding: 12px 16px;
+      font-size: 13.5px;
+      color: #b91c1c;
+      margin-top: 12px;
+    }
+    .reset-link {
+      display: block;
+      text-align: center;
+      margin-top: 24px;
+      font-size: 13.5px;
+      color: var(--muted);
+      cursor: pointer;
+      text-decoration: underline;
+      font-weight: 500;
+    }
+    .reset-link:hover {
+      color: var(--navy);
+    }
+    
+    /* Day checklist accordion */
+    .day-accordion {
+      margin-bottom: 12px;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: var(--shadow-sm);
+      transition: all 0.2s ease;
+    }
+    .day-accordion:hover {
+      border-color: #cbd5e1;
+    }
+    .day-accordion summary {
+      background: #f8fafc;
+      padding: 14px 20px;
+      font-size: 14.5px;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      list-style: none;
+      user-select: none;
+      transition: background 0.2s ease;
+    }
+    .day-accordion summary::-webkit-details-marker { display: none; }
+    .day-accordion[open] summary {
+      background: var(--blue-light);
+      color: #1e40af;
+      border-bottom: 1px solid #dbeafe;
+    }
+    .day-badge {
+      display: inline-block;
+      background: var(--navy);
+      color: #fff;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 3px 10px;
+      border-radius: 12px;
+      white-space: nowrap;
+    }
+    .day-accordion[open] .day-badge {
+      background: #1e40af;
+    }
+    
+    /* Itinerary display tables */
+    .itin-table, .comp-table, .budget-table, .check-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13.5px;
+      margin-bottom: 16px;
+    }
+    .itin-table th, .comp-table th, .budget-table th, .check-table th {
+      background: var(--navy);
+      color: #fff;
+      padding: 12px 14px;
+      text-align: left;
+      font-size: 12.5px;
+      font-weight: 700;
+    }
+    .itin-table td, .comp-table td, .budget-table td, .check-table td {
+      padding: 12px 14px;
+      border-bottom: 1px solid #e2e8f0;
+      vertical-align: top;
+    }
+    .itin-table tr:last-child td, .comp-table tr:last-child td, .budget-table tr:last-child td, .check-table tr:last-child td {
+      border-bottom: none;
+    }
+    .comp-table tr.recommended td {
+      background: var(--green-light);
+    }
+    
+    /* Badges & Tags */
+    .rec-badge {
+      display: inline-block;
+      background: var(--green);
+      color: #fff;
+      font-size: 10px;
+      font-weight: 700;
+      padding: 2px 8px;
+      border-radius: 10px;
+      margin-top: 4px;
+    }
+    .tag {
+      display: inline-block;
+      background: #e0e7ff;
+      color: #3730a3;
+      font-size: 10.5px;
+      font-weight: 700;
+      padding: 2px 6px;
+      border-radius: 6px;
+      margin-right: 4px;
+      margin-top: 2px;
+    }
+    .conf-live { color: var(--green); font-weight: 700; }
+    .conf-cached { color: var(--muted); font-weight: 600; }
+    .conf-est { color: var(--yellow); font-weight: 700; }
+    
+    /* Budget allocation styles */
+    .budget-warning {
+      background: var(--red-light);
+      border: 1px solid #fee2e2;
+      border-left: 4px solid var(--red);
+      border-radius: 8px;
+      padding: 14px 18px;
+      font-size: 13.5px;
+      color: #991b1b;
+      margin-bottom: 16px;
+    }
+    .budget-warning ul {
+      margin-top: 8px;
+      padding-left: 20px;
+    }
+    .budget-warning li {
+      margin-bottom: 4px;
+    }
+    .est-banner {
+      background: var(--yellow-light);
+      border: 1px solid #fde68a;
+      border-left: 4px solid var(--yellow);
+      border-radius: 8px;
+      padding: 12px 16px;
+      font-size: 13.5px;
+      color: #92400e;
+      margin-bottom: 16px;
+    }
+    
+    /* Layout details in step 3 */
+    .columns-layout {
+      display: flex;
+      gap: 24px;
+      margin-bottom: 20px;
+    }
+    .column-left {
+      flex: 1.2;
+    }
+    .column-right {
+      flex: 1;
+      background: #f8fafc;
+      border: 1px solid #cbd5e1;
+      border-radius: var(--radius);
+      padding: 20px;
+      display: none;
+      animation: fadeIn 0.3s ease-out;
+    }
+    @media (max-width: 680px) {
+      .columns-layout { flex-direction: column; }
+    }
+    .guide-steps {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      margin-bottom: 20px;
+    }
+    .guide-step {
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
+    }
+    .guide-num {
+      background: var(--navy);
+      color: #fff;
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      font-size: 12px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .guide-text {
+      font-size: 14px;
+      color: var(--navy-light);
+      padding-top: 2px;
+    }
+    
+    /* Tab system in Step 4 */
+    .tab-buttons {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 20px;
+      border-bottom: 2px solid #e2e8f0;
+      padding-bottom: 8px;
+      flex-wrap: wrap;
+    }
+    .btn-tab {
+      background: transparent;
+      color: var(--muted);
+      border: none;
+      padding: 8px 16px;
+      font-size: 14px;
+      font-weight: 600;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+    .btn-tab:hover {
+      color: var(--navy);
+      background: #f1f5f9;
+    }
+    .btn-tab-active {
+      background: var(--navy);
+      color: #fff !important;
+    }
+    .tab-content-panel {
+      display: none;
+      animation: fadeIn 0.3s ease-out;
+    }
+    
+    /* Flight summary card in step 4 */
+    .flight-summary-card {
+      background: var(--green-light);
+      border: 1px solid #bbf7d0;
+      border-radius: 8px;
+      padding: 14px 16px;
+      margin-bottom: 16px;
+      font-size: 13.5px;
+      color: #15803d;
+    }
+    .flight-summary-card strong {
+      color: #166534;
+    }
+    
+    /* Todo List layout */
+    .todo-group {
+      margin-bottom: 20px;
+    }
+    .todo-group h4 {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--navy-light);
+      margin-bottom: 10px;
+      border-left: 3px solid var(--orange);
+      padding-left: 8px;
+    }
+    .todo-items {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .todo-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      font-size: 13.5px;
+      padding: 10px 14px;
+      border-radius: 8px;
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      transition: all 0.2s ease;
+    }
+    .todo-item:hover {
+      background: #f1f5f9;
+    }
+    .todo-item input[type="checkbox"] {
+      margin-top: 4px;
+      cursor: pointer;
+      width: 16px;
+      height: 16px;
+      accent-color: var(--green);
+    }
+    .todo-item-text {
+      cursor: pointer;
+      user-select: none;
+      width: 100%;
+    }
+    .todo-item.done {
+      text-decoration: line-through;
+      color: var(--muted);
+      background: #f1f5f9;
+      opacity: 0.7;
+    }
+    
+    /* Plain text messaging box style */
+    .copy-box {
+      background: #f8fafc;
+      border: 1px solid #cbd5e1;
+      border-radius: 8px;
+      padding: 16px;
+      font-size: 13.5px;
+      line-height: 1.7;
+      white-space: pre-wrap;
+      word-break: break-word;
+      font-family: inherit;
+      color: #334155;
+    }
+    
+    .copy-feedback {
+      font-size: 12px;
+      color: var(--green);
+      font-weight: 700;
+      opacity: 0;
+      transition: opacity .3s;
+      margin-right: 8px;
+    }
+    .copy-feedback.show {
+      opacity: 1;
+    }
+    
+    .status-confirmed { color: var(--green); font-weight: 700; }
+    .status-assumption { color: var(--yellow); font-weight: 700; }
+    .status-needs { color: var(--red); font-weight: 700; }
+    
+    .action-required {
+      font-size: 12px;
+      color: #1e40af;
+      background: var(--blue-light);
+      border-radius: 6px;
+      padding: 6px 10px;
+      margin-top: 6px;
+      border: 1px solid #bfdbfe;
+    }
+
+    @media (max-width: 640px) {
+      .comp-table, .budget-table, .itin-table {
+        display: block;
+        overflow-x: auto;
+      }
+      .card {
+        padding: 20px;
+      }
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+  
+  <div class="header">
+    <div class="phase-badge">v2 · End-User Edition</div>
+    <h1>Lên kế hoạch du lịch Nhật Bản</h1>
+    <p>Tự thiết kế lịch trình du lịch Nhật Bản tự túc dễ dàng trong 4 bước</p>
+  </div>
+
+  <div class="progress-bar">
+    <div class="prog-dot active" id="dot-1">1</div>
+    <div class="prog-line" id="line-1"></div>
+    <div class="prog-dot" id="dot-2">2</div>
+    <div class="prog-line" id="line-2"></div>
+    <div class="prog-dot" id="dot-3">3</div>
+    <div class="prog-line" id="line-3"></div>
+    <div class="prog-dot" id="dot-4">4</div>
+  </div>
+
+  <!-- Bước 1: Nhập thông tin -->
+  <div class="card step-panel active" id="step-1">
+    <h2><span>✏️</span> Nhập thông tin chuyến đi</h2>
+    <div class="form-grid">
+      <div class="field"><label for="destination">Điểm đến</label><input type="text" id="destination" value="Nhật Bản" /></div>
+      <div class="field"><label for="travelers">Số người</label><input type="text" id="travelers" value="3 người lớn" /></div>
+      <div class="field"><label for="month">Tháng đi</label><input type="text" id="month" value="Tháng 7" /></div>
+      <div class="field"><label for="days">Số ngày</label><input type="text" id="days" value="5 ngày" /></div>
+      <div class="field"><label for="budget">Ngân sách dự kiến mỗi người</label><input type="text" id="budget" value="35–40 triệu VND" /></div>
+      <div class="field">
+        <label for="pace">Nhịp độ hành trình</label>
+        <select id="pace">
+          <option value="thư thả">Thư thả, không quá vội</option>
+          <option value="cân bằng" selected>Cân bằng</option>
+          <option value="tối ưu nhiều điểm">Nhiều điểm tham quan</option>
+        </select>
+      </div>
+      
+      <details style="grid-column: 1 / -1; margin-top: 8px;">
+        <summary style="font-size: 13.5px; font-weight: 600; color: var(--navy); cursor: pointer; user-select: none;">⚙️ Tùy chọn nâng cao (Sở thích, ràng buộc)</summary>
+        <div style="display: flex; flex-direction: column; gap: 14px; padding-top: 14px;">
+          <div class="field"><label for="interests">Sở thích chính</label><input type="text" id="interests" value="Cảnh đẹp tự nhiên, quán ăn local ngon" /></div>
+          <div class="field"><label for="constraints">Ràng buộc đặc biệt</label><textarea id="constraints">Hạn chế đổi khách sạn quá nhiều</textarea></div>
+        </div>
+      </details>
+    </div>
+    
+    <div class="actions">
+      <button class="btn" onclick="generateDraftItinerary()">Xem lịch trình →</button>
+    </div>
+  </div>
+
+  <!-- Bước 2: Lịch trình nháp -->
+  <div class="card step-panel" id="step-2">
+    <h2 id="step-2-header"><span>📅</span> Lịch trình nháp</h2>
+    
+    <div class="info-note" style="display: flex; justify-content: space-around; font-size: 13.5px; font-weight: 600; padding: 12px 16px; margin-bottom: 20px;">
+      <div>👥 Nhóm: <span id="summary-travelers"></span></div>
+      <div>📅 Thời gian: <span id="summary-month"></span></div>
+      <div>💰 Dự chi: <span id="summary-budget"></span></div>
+    </div>
+
+    <div id="draft-itin-container" style="margin-bottom: 20px;"></div>
+    
+    <p style="font-size: 12px; color: var(--muted); margin-bottom: 24px;">* Lịch trình này mang tính tham khảo. Giá và giờ mở cửa cụ thể chưa được kiểm chứng.</p>
+
+    <div class="actions">
+      <button class="btn btn-secondary" onclick="goToStep(1)">← Chỉnh thông tin</button>
+      <button class="btn" onclick="goToStep(3)">Tìm vé máy bay →</button>
+    </div>
+  </div>
+
+  <!-- Bước 3: Tìm vé máy bay -->
+  <div class="card step-panel" id="step-3">
+    <h2><span>✈️</span> Tìm phương án vé máy bay tốt nhất</h2>
+    
+    <div class="columns-layout">
+      <!-- Cột trái: Hướng dẫn -->
+      <div class="column-left" id="column-left">
+        <div class="guide-steps">
+          <div class="guide-step">
+            <div class="guide-num">1</div>
+            <div class="guide-text">Nhấn nút bên dưới để sao chép yêu cầu tìm vé máy bay gửi cho AI.</div>
+          </div>
+          <div class="guide-step">
+            <div class="guide-num">2</div>
+            <div class="guide-text">Dán yêu cầu đã sao chép vào cửa sổ chat với AI (Gemini, ChatGPT hoặc Claude).</div>
+          </div>
+          <div class="guide-step">
+            <div class="guide-num">3</div>
+            <div class="guide-text">Sau khi AI trả lời, bấm "Dán kết quả" bên dưới để nhập kết quả phân tích.</div>
+          </div>
+        </div>
+
+        <div style="display: flex; flex-direction: column; align-items: flex-start; gap: 8px;">
+          <button class="btn btn-blue" onclick="copyCombinedPrompt()">
+            <span>🤖</span> Hỏi AI về vé
+          </button>
+          <span class="copy-feedback" id="copy-to-feedback" style="margin-top: 4px;">✓ Đã copy yêu cầu!</span>
+          <a href="#" onclick="showRightColumn(event)" style="font-size: 13px; color: var(--blue); margin-top: 8px; text-decoration: underline;">Nhập kết quả thủ công</a>
+        </div>
+      </div>
+
+      <!-- Cột phải: Dán JSON -->
+      <div class="column-right" id="column-right">
+        <div class="field" style="height: 100%; display: flex; flex-direction: column;">
+          <label for="json-input" style="margin-bottom: 8px;">Dán kết quả từ AI vào đây:</label>
+          <textarea id="json-input" style="flex: 1; font-family: monospace; font-size: 12px; min-height: 100px;" placeholder='Dán nội dung AI trả về...'></textarea>
+          <button class="btn btn-green btn-sm" style="margin-top: 12px; width: 100%;" onclick="analyzeFlightData()">Phân tích kết quả</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="analysis-output" style="margin-top: 20px;"></div>
+
+    <div class="actions">
+      <button class="btn btn-secondary" onclick="goToStep(2)">← Lịch trình</button>
+      <button class="btn" onclick="generateFinalPlan()">Tạo kế hoạch cuối →</button>
+      <button class="btn btn-secondary" onclick="skipTO()" style="margin-left: auto;">Bỏ qua — dùng giá ước tính</button>
+    </div>
+  </div>
+
+  <!-- Bước 4: Kế hoạch cuối -->
+  <div class="card step-panel" id="step-4">
+    <h2><span>🎯</span> Kế hoạch du lịch của bạn đã sẵn sàng!</h2>
+    
+    <div class="tab-buttons">
+      <button class="btn-tab btn-tab-active" onclick="switchTab('tab-itin')">📅 Lịch trình cuối</button>
+      <button class="btn-tab" onclick="switchTab('tab-message')">💬 Nhắn tin cho nhóm</button>
+      <button class="btn-tab" onclick="switchTab('tab-todo')">✅ Việc cần làm</button>
+    </div>
+
+    <!-- Tab 1: Lịch trình cuối -->
+    <div id="tab-itin" class="tab-content-panel" style="display: block;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; flex-wrap: wrap; gap: 8px;">
+        <h3 id="tab-itin-header" style="font-size: 15px; font-weight: 700; color: var(--navy);">📅 Chi tiết lịch trình</h3>
+        <div style="display: flex; align-items: center;">
+          <span class="copy-feedback" id="copy-itin-feedback">✓ Đã copy!</span>
+          <button class="btn btn-secondary btn-sm" onclick="copyItinerary()">Sao chép lịch trình</button>
+        </div>
+      </div>
+      <div id="itin-flight-summary"></div>
+      <div id="itin-final-table-container" style="margin-bottom: 20px;"></div>
+      <div id="itin-final-details-container"></div>
+    </div>
+
+    <!-- Tab 2: Nhắn tin cho nhóm -->
+    <div id="tab-message" class="tab-content-panel">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+        <h3 style="font-size: 15px; font-weight: 700; color: var(--navy);">💬 Mẫu gửi Zalo / Email gửi cả nhóm</h3>
+        <div style="display: flex; align-items: center;">
+          <span class="copy-feedback" id="copy-msg-feedback">✓ Đã copy!</span>
+          <button class="btn btn-secondary btn-sm" onclick="copyMessage()">Sao chép tin nhắn</button>
+        </div>
+      </div>
+      <div class="copy-box" id="message-box"></div>
+    </div>
+
+    <!-- Tab 3: Việc cần làm -->
+    <div id="tab-todo" class="tab-content-panel">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+        <h3 style="font-size: 15px; font-weight: 700; color: var(--navy);">✅ Việc cần kiểm tra trước chuyến đi</h3>
+        <div style="display: flex; align-items: center;">
+          <span class="copy-feedback" id="copy-todo-feedback">✓ Đã copy!</span>
+          <button class="btn btn-secondary btn-sm" onclick="copyTodoList()">Sao chép danh sách</button>
+        </div>
+      </div>
+      <div id="todo-list-container"></div>
+    </div>
+
+    <div style="border-top: 2px solid var(--bg); margin-top: 32px; padding-top: 16px;">
+      <a class="reset-link" onclick="resetForm()">← Quay lại từ đầu</a>
+    </div>
+  </div>
+
+</div>
+
+<script>
+var REGIONS = [
+  {name:"Tokyo – Shinjuku", spots:["Vườn Shinjuku Gyoen","Đền Meiji","Phố Harajuku","Ngã tư Shibuya","Akihabara"]},
+  {name:"Tokyo – Asakusa", spots:["Chùa Senso-ji","Phố Nakamise","Sông Sumida","Tháp Tokyo Skytree","Công viên Ueno"]},
+  {name:"Nikko", spots:["Đền Tosho-gu","Thác Kegon","Hồ Chuzenji","Chùa Rinnoji","Kanmangafuchi"]},
+  {name:"Hakone", spots:["Ngắm núi Phú Sĩ","Bảo tàng Ngoài trời Hakone","Du thuyền hồ Ashi","Owakudani","Cáp treo Hakone"]},
+  {name:"Kyoto – Higashiyama", spots:["Đền Fushimi Inari","Chùa Vàng Kinkaku-ji","Rừng Tre Arashiyama","Phố cổ Gion","Chợ Nishiki"]},
+  {name:"Osaka", spots:["Phố ăn uống Dotonbori","Lâu đài Osaka","Chợ Kuromon","Khu Shinsekai","Namba"]},
+  {name:"Nara", spots:["Công viên hươu Nara","Chùa Todai-ji","Đền Kasuga","Phố cổ Naramachi","Vườn Isuien"]}
+];
+var MEALS = ["Ramen địa phương","Sushi băng chuyền","Udon tươi","Tonkatsu","Okonomiyaki","Izakaya địa phương","Tempura tại chợ","Yakitori phố đêm"];
+
+var _tripCtx = {};
+var _flightResult = null;
+var _vgResult = null;
+var _rows = [];
+var _currentStep = 1;
+
+function val(id){ return document.getElementById(id).value.trim(); }
+function fmt(n){ if(!n && n!==0) return "—"; return n.toLocaleString("vi-VN") + " VND"; }
+
+function parseDays(s){
+  var m = s.match(/(\d+)/);
+  return m ? parseInt(m[1]) : 5;
+}
+function parseAdults(s){
+  var m = s.match(/(\d+)/);
+  return m ? parseInt(m[1]) : 1;
+}
+function parseBudgetMax(s){
+  var m = s.match(/(\d+)/g);
+  if(!m) return 40000000;
+  var nums = m.map(Number);
+  return Math.max.apply(null, nums) * 1000000;
+}
+function mapDest(s){
+  var l = s.toLowerCase();
+  if(l.indexOf("nhat") >= 0 || l.indexOf("japan") >= 0) return "TYO";
+  return "TYO";
+}
+function mapFlexibility(pace){
+  if(pace.indexOf("thư") >= 0) return "high";
+  if(pace.indexOf("tối") >= 0) return "low";
+  return "medium";
+}
+function getBudget(pace, i){
+  var b = {
+    a: ["~150k-250k", "~200k-350k", "~100k-200k"],
+    b: ["~200k-350k", "~250k-400k", "~150k-250k"],
+    c: ["~250k-400k", "~300k-500k", "~200k-350k"]
+  };
+  var key = pace.indexOf("thư") >= 0 ? "a" : pace.indexOf("tối") >= 0 ? "c" : "b";
+  return b[key][i%3];
+}
+
+function buildRows(n, pace, interests, constraints){
+  var spd = pace.indexOf("thư") >= 0 ? 2 : pace.indexOf("tối") >= 0 ? 4 : 3;
+  var rows = [];
+  for(var d = 0; d < n; d++){
+    var reg = REGIONS[d%REGIONS.length];
+    var spots = reg.spots.slice(0, spd);
+    var meal = MEALS[d%MEALS.length];
+    var morning, afternoon, evening;
+    
+    if(d === 0){
+      morning = "Đến sân bay, check-in khách sạn, nghỉ ngơi";
+      afternoon = spots[0] + (spots[1] ? " → " + spots[1] : "");
+      evening = "Ăn tối: " + meal;
+    } else if(d === n-1){
+      morning = spots[0] + (spots[1] ? " → " + spots[1] : "");
+      afternoon = "Mua quà lưu niệm, chuẩn bị hành lý";
+      evening = "Ra sân bay, bay về Việt Nam";
+    } else {
+      morning = spots[0] + (spots[1] ? " → " + spots[1] : "");
+      afternoon = spots[2] ? (spots[2] + (spots[3] ? " → " + spots[3] : "")) : "Tự do tham quan mua sắm";
+      evening = "Ăn tối: " + meal;
+    }
+    
+    var rname = reg.name;
+    if(constraints.toLowerCase().indexOf("khách sạn") >= 0 && d > 0 && d < n-1) {
+      rname += " (giữ khách sạn)";
+    }
+    
+    rows.push({
+      day: d + 1,
+      region: rname,
+      morning: morning,
+      afternoon: afternoon,
+      evening: evening,
+      budget: getBudget(pace, d),
+      dense: spd >= 4
+    });
+  }
+  return rows;
+}
+
+function goToStep(n) {
+  for (var i = 1; i <= 4; i++) {
+    document.getElementById("step-" + i).style.display = "none";
+    var dot = document.getElementById("dot-" + i);
+    dot.className = "prog-dot";
+    if (i < n) {
+      dot.classList.add("done");
+      dot.innerHTML = "✓";
+    } else if (i === n) {
+      dot.classList.add("active");
+      dot.innerHTML = i;
+    } else {
+      dot.innerHTML = i;
+    }
+    
+    if (i < 4) {
+      var line = document.getElementById("line-" + i);
+      line.className = "prog-line";
+      if (i < n) {
+        line.classList.add("done");
+      }
+    }
+  }
+  
+  document.getElementById("step-" + n).style.display = "block";
+  _currentStep = n;
+  window.scrollTo({top: 0, behavior: "smooth"});
+}
+
+function generateDraftItinerary(){
+  var dest = val("destination") || "Nhật Bản";
+  var travelers = val("travelers") || "3 người lớn";
+  var month = val("month") || "Tháng 7";
+  var days = val("days") || "5 ngày";
+  var budget = val("budget") || "35–40 triệu VND";
+  var pace = val("pace") || "cân bằng";
+  var interests = val("interests") || "Cảnh đẹp tự nhiên, quán ăn local ngon";
+  var constraints = val("constraints") || "Hạn chế đổi khách sạn quá nhiều";
+  
+  var n = parseDays(days);
+  _rows = buildRows(n, pace, interests, constraints);
+  
+  document.getElementById("summary-travelers").textContent = travelers;
+  document.getElementById("summary-month").textContent = month;
+  document.getElementById("summary-budget").textContent = budget;
+  
+  var html = "";
+  _rows.forEach(function(r){
+    var mealName = r.evening.indexOf("Ăn tối: ") === 0 ? r.evening.substring(8) : r.evening;
+    html += "<details class='day-accordion'>";
+    html += "<summary><span class='day-badge'>Ngày " + r.day + "</span> " + r.region + "</summary>";
+    html += "<div style='padding: 16px; background: #fff; border-top: 1px solid var(--line); font-size: 13.5px;'>";
+    html += "<p style='margin-bottom: 8px;'><strong>Sáng:</strong> " + r.morning + "</p>";
+    html += "<p style='margin-bottom: 8px;'><strong>Chiều:</strong> " + r.afternoon + "</p>";
+    html += "<p style='margin-bottom: 8px;'><strong>Tối:</strong> " + r.evening + "</p>";
+    html += "<p style='margin-bottom: 0;'><strong>Ngân sách ăn uống ước tính:</strong> " + r.budget + "/người *</p>";
+    html += "</div>";
+    html += "</details>";
+  });
+  
+  document.getElementById("draft-itin-container").innerHTML = html;
+  document.getElementById("step-2-header").innerHTML = "<span>📅</span> Lịch trình nháp — " + dest + ", " + days;
+  
+  var adults = parseAdults(travelers);
+  var budgetMax = parseBudgetMax(budget);
+  var budgetMin = Math.round(budgetMax * 0.875);
+  var iataCode = mapDest(dest);
+  var depDate = "2026-07-10";
+  var retDate = "2026-07-" + (10 + n - 1 < 10 ? "0" : "") + (10 + n - 1);
+  
+  _tripCtx = {
+    origin: "HAN",
+    destination: iataCode,
+    departure_date: depDate,
+    return_date: retDate,
+    adults: adults,
+    budget_min: budgetMin,
+    budget_max: budgetMax,
+    flexibility: mapFlexibility(pace),
+    month: month,
+    interests: interests,
+    constraints: constraints,
+    pace: pace
+  };
+  
+  goToStep(2);
+}
+
+function buildCombinedPrompt(ctx){
+  var n = parseDays(val("days"));
+  return "Ban la tro ly thuc hien 2 nhiem vu cho hanh trinh du lich:\n\n" +
+         "NHIEM VU 1 - Tim phuong an ve may bay:\n" +
+         "Tim toi da 3 phuong an ve cho hanh trinh " + ctx.origin + " -> " + ctx.destination + " -> " + ctx.origin + ", khoi hanh " + ctx.departure_date + ", ve " + ctx.return_date + ", " + ctx.adults + " nguoi lon, economy, checked_bag.\n" +
+         "Tinh true_total_per_person_vnd cho moi phuong an. Tra ve truong 'options' va 'recommended_option_id'.\n\n" +
+         "NHIEM VU 2 - Kiem tra lich trinh truoc khi dat (Verification):\n" +
+         "Chay kiem tra truoc khi dat cho phuong an ve khuyen nghi:\n" +
+         "1. deals: Tim deal/promo con hieu luc cho hanh trinh nay.\n" +
+         "2. checklist_per_day: Voi moi ngay trong " + n + " ngay, tao checklist 5 hang muc: weather_season, opening_hours, transport_cost, distance_between_spots, schedule_density_risk. Phan loai trang thai: confirmed/assumption/needs_verification. Khi needs_verification, ghi ro action_required cu the.\n" +
+         "3. budget_alert: Tinh tong uoc tinh vs budget_max=" + ctx.budget_max + " VND/nguoi.\n\n" +
+         "Yeu cau tra ve DUY NHAT mot doi tuong JSON co dang:\n" +
+         "{\n" +
+         "  \"options\": [\n" +
+         "    {\n" +
+         "      \"rank\": 1,\n" +
+         "      \"option_id\": \"OPT-001\",\n" +
+         "      \"airline\": \"...\",\n" +
+         "      \"tags\": [\"[DIRECT]\"],\n" +
+         "      \"route\": {\"outbound\":\"...\",\"return\":\"...\"},\n" +
+         "      \"departure_date\": \"...\",\n" +
+         "      \"return_date\": \"...\",\n" +
+         "      \"price\": {\n" +
+         "        \"advertised_per_person_vnd\": 0,\n" +
+         "        \"true_total_per_person_vnd\": 0,\n" +
+         "        \"total_all_passengers_vnd\": 0\n" +
+         "      },\n" +
+         "      \"flexibility_score\": {\"score\": 80},\n" +
+         "      \"data_confidence\": \"live\"\n" +
+         "    }\n" +
+         "  ],\n" +
+         "  \"recommended_option_id\": \"OPT-001\",\n" +
+         "  \"budget_alert\": {\n" +
+         "    \"over_budget\": false,\n" +
+         "    \"total_estimated_per_person_vnd\": 0,\n" +
+         "    \"budget_max_per_person_vnd\": " + ctx.budget_max + ",\n" +
+         "    \"overage_vnd\": 0,\n" +
+         "    \"cost_reduction_suggestions\": []\n" +
+         "  },\n" +
+         "  \"deals\": [\n" +
+         "    {\n" +
+         "      \"description\": \"...\",\n" +
+         "      \"discount_vnd\": 0,\n" +
+         "      \"valid_until\": \"...\",\n" +
+         "      \"confidence_level\": \"confirmed\"\n" +
+         "    }\n" +
+         "  ],\n" +
+         "  \"checklist_per_day\": [\n" +
+         "    {\n" +
+         "      \"day\": 1,\n" +
+         "      \"date\": \"...\",\n" +
+         "      \"checks\": [\n" +
+         "        {\n" +
+         "          \"category\": \"weather_season\",\n" +
+         "          \"status\": \"confirmed\",\n" +
+         "          \"detail\": \"...\",\n" +
+         "          \"action_required\": \"...\"\n" +
+         "        }\n" +
+         "      ]\n" +
+         "    }\n" +
+         "  ],\n" +
+         "  \"generated_at\": \"ISO8601\"\n" +
+         "}\n\n" +
+         "Quy tac (Anti-hallucination): Neu thong tin nao khong chac, danh dau data_confidence = \"estimated\" hoac trang thai checklist = \"needs_verification\". Khong bia gia ve, khong bia gio mo cua.";
+}
+
+function copyCombinedPrompt(){
+  var text = buildCombinedPrompt(_tripCtx);
+  navigator.clipboard.writeText(text).then(function(){
+    showFb("copy-to-feedback");
+    document.getElementById("column-right").style.display = "block";
+  }).catch(function(){
+    var ta = document.createElement("textarea");
+    ta.value = text;
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand("copy");
+    document.body.removeChild(ta);
+    showFb("copy-to-feedback");
+    document.getElementById("column-right").style.display = "block";
+  });
+}
+
+function showRightColumn(e) {
+  if(e) e.preventDefault();
+  document.getElementById("column-right").style.display = "block";
+}
+
+function showFb(id) {
+  var fb = document.getElementById(id);
+  fb.classList.add("show");
+  setTimeout(function(){ fb.classList.remove("show"); }, 2000);
+}
+
+function analyzeFlightData(){
+  var raw = document.getElementById("json-input").value.trim();
+  if(!raw){
+    document.getElementById("analysis-output").innerHTML = "<div class='error-note'>Chưa có dữ liệu. Hãy dán kết quả từ AI vào ô bên cạnh.</div>";
+    return;
+  }
+  
+  var data;
+  try {
+    data = JSON.parse(raw);
+  } catch(e) {
+    document.getElementById("analysis-output").innerHTML = "<div class='error-note'>Kết quả dán vào không hợp lệ. Hãy chắc chắn bạn đã sao chép toàn bộ văn bản phản hồi dạng JSON từ AI và dán vào ô bên cạnh.</div>";
+    return;
+  }
+  
+  if(!data.options || !Array.isArray(data.options) || data.options.length === 0){
+    document.getElementById("analysis-output").innerHTML = "<div class='error-note'>Kết quả thiếu thông tin vé máy bay. Vui lòng kiểm tra lại phản hồi của AI.</div>";
+    return;
+  }
+  
+  _flightResult = data;
+  _vgResult = data;
+  
+  var allEst = data.options.every(function(o){ return o.data_confidence === "estimated"; });
+  var html = "";
+  if(allEst) {
+    html += "<div class='est-banner'>⚠️ Tất cả giá vé là <strong>ước tính</strong> (chưa có giá trực tuyến thời gian thực). Hãy kiểm chứng lại giá thực tế trước khi đặt vé.</div>";
+  }
+  
+  var ba = data.budget_alert || {};
+  if(ba.over_budget) {
+    html += "<div class='budget-warning'>🚨 <strong>Cảnh báo: Chi phí vượt ngân sách dự kiến!</strong><br>Các gợi ý để tối ưu chi phí:";
+    if(ba.cost_reduction_suggestions && ba.cost_reduction_suggestions.length) {
+      html += "<ul>";
+      ba.cost_reduction_suggestions.forEach(function(s){
+        html += "<li>" + s + "</li>";
+      });
+      html += "</ul>";
+    } else {
+      html += "<ul><li>Cân nhắc bay các hãng hàng không giá rẻ</li><li>Lựa chọn ngày khởi hành giữa tuần</li><li>Rút ngắn chuyến đi hoặc chọn phòng lưu trú tiết kiệm hơn</li></ul>";
+    }
+    html += "</div>";
+  }
+  
+  html += "<h3 style='font-size:14px;font-weight:700;color:var(--navy);margin-bottom:10px;'>Bảng so sánh phương án vé</h3>";
+  html += "<table class='comp-table'><thead><tr><th>Hạng</th><th>Hãng bay</th><th>Hành trình</th><th>Ngày bay</th><th>Giá niêm yết</th><th>Giá thực tế*</th><th>Tổng tiền nhóm</th><th>Mức linh hoạt</th><th>Độ tin cậy</th></tr></thead><tbody>";
+  
+  data.options.forEach(function(o){
+    var isRec = o.option_id === data.recommended_option_id;
+    var tags = (o.tags || []).map(function(t){
+      var displayTag = t;
+      if (t === "[LCC]") displayTag = "Hãng giá rẻ";
+      if (t === "[FSC]") displayTag = "Hãng truyền thống";
+      if (t === "[DIRECT]") displayTag = "Bay thẳng";
+      return "<span class='tag'>" + displayTag + "</span>";
+    }).join("");
+    
+    var confClass = o.data_confidence === "live" ? "conf-live" : o.data_confidence === "cached_24h" ? "conf-cached" : "conf-est";
+    var confLabel = o.data_confidence === "live" ? "Đã xác minh" : o.data_confidence === "cached_24h" ? "Dữ liệu cũ" : "Ước tính";
+    
+    var p = o.price || {};
+    var flex = o.flexibility_score ? o.flexibility_score.score + "/100" : "—";
+    var route = o.route ? o.route.outbound + " / " + o.route.return : "—";
+    
+    html += "<tr" + (isRec ? " class='recommended'" : "") + ">";
+    html += "<td>" + o.rank + (isRec ? "<br><span class='rec-badge'>Khuyên dùng</span>" : "") + "</td>";
+    html += "<td><strong>" + (o.airline || "—") + "</strong><br>" + tags + "</td>";
+    html += "<td>" + route + "</td>";
+    html += "<td>" + (o.departure_date || "—") + "<br>" + (o.return_date || "") + "</td>";
+    html += "<td>" + fmt(p.advertised_per_person_vnd) + "</td>";
+    html += "<td><strong>" + fmt(p.true_total_per_person_vnd) + "</strong></td>";
+    html += "<td>" + fmt(p.total_all_passengers_vnd) + "</td>";
+    html += "<td>" + flex + "</td>";
+    html += "<td><span class='" + confClass + "'>" + confLabel + "</span></td>";
+    html += "</tr>";
+  });
+  
+  html += "</tbody></table><p style='font-size:11px;color:var(--muted);margin-top:6px;margin-bottom:20px;'>*Giá thực tế = Giá vé + Thuế phí + Hành lý ký gửi + Phí thanh toán</p>";
+  
+  var recOpt = data.options.find(function(o){ return o.option_id === data.recommended_option_id; }) || data.options[0];
+  var flightCost = (recOpt && recOpt.price) ? recOpt.price.true_total_per_person_vnd : 0;
+  var adults = _tripCtx.adults || 3;
+  var budgetMax = _tripCtx.budget_max || 40000000;
+  var daysCount = parseDays(val("days"));
+  
+  html += "<h3 style='font-size:14px;font-weight:700;color:var(--navy);margin-bottom:10px;'>Phân bổ ngân sách chi tiết</h3>";
+  html += "<table class='budget-table'><thead><tr><th>Hạng mục</th><th>Mức chi/người (VND)</th><th>Tổng nhóm (VND)</th><th>Tỷ lệ</th></tr></thead><tbody>";
+  
+  var items = [
+    {name: "Vé máy bay (khứ hồi)", val: flightCost, editable: false},
+    {name: "Khách sạn (" + (daysCount - 1) + " đêm)", val: 8000000, editable: true, id: "b_hotel"},
+    {name: "Di chuyển nội địa", val: 3000000, editable: true, id: "b_transport"},
+    {name: "Ăn uống (" + daysCount + " ngày)", val: 5000000, editable: true, id: "b_food"},
+    {name: "Vé tham quan vui chơi", val: 3000000, editable: true, id: "b_attraction"},
+    {name: "Dự phòng (10%)", val: 0, editable: false, id: "b_reserve"}
+  ];
+  
+  var subtotal = items.slice(0, 5).reduce(function(s, i){ return s + i.val; }, 0);
+  items[5].val = Math.round(subtotal * 0.1);
+  var total = subtotal + items[5].val;
+  
+  items.forEach(function(item){
+    var pct = budgetMax > 0 ? Math.round(item.val / budgetMax * 100) : 0;
+    var valCell = item.editable ?
+      "<input type='number' id='" + item.id + "' value='" + item.val + "' min='0' step='500000' onchange='recalcBudget()' style='width:130px;padding:4px 8px;font-size:13px;border:1px solid var(--line);border-radius:6px;' />" :
+      "<strong>" + item.val.toLocaleString("vi-VN") + "</strong>";
+    
+    html += "<tr><td>" + item.name + "</td><td>" + valCell + "</td><td id='tot_" + item.id + "'>" + fmt(item.val * adults) + "</td><td>" + pct + "%</td></tr>";
+  });
+  
+  html += "<tr><td><strong>Tổng cộng</strong></td><td><strong id='grand_per'>" + total.toLocaleString("vi-VN") + "</strong></td><td><strong id='grand_total'>" + fmt(total * adults) + "</strong></td><td id='grand_pct'><strong>" + Math.round(total / budgetMax * 100) + "%</strong></td></tr>";
+  html += "</tbody></table>";
+  html += "<p style='font-size:11px;color:var(--muted);margin-top:6px;'>Ngân sách mục tiêu: " + fmt(budgetMax) + "/người. Bạn có thể thay đổi các ô nhập liệu để cập nhật tổng ngân sách.</p>";
+  
+  document.getElementById("analysis-output").innerHTML = html;
+}
+
+function recalcBudget(){
+  var ids = ["b_hotel", "b_transport", "b_food", "b_attraction"];
+  var vals = ids.map(function(id){
+    var el = document.getElementById(id);
+    return el ? parseInt(el.value) || 0 : 0;
+  });
+  
+  var flight = 0;
+  if(_flightResult && _flightResult.options) {
+    var recOpt = _flightResult.options.find(function(o){ return o.option_id === _flightResult.recommended_option_id; }) || _flightResult.options[0];
+    if(recOpt && recOpt.price) {
+      flight = recOpt.price.true_total_per_person_vnd;
+    }
+  } else {
+    flight = 10000000;
+  }
+  
+  var subtotal = flight + vals.reduce(function(s, v){ return s + v; }, 0);
+  var reserve = Math.round(subtotal * 0.1);
+  var total = subtotal + reserve;
+  var adults = _tripCtx.adults || 3;
+  var budgetMax = _tripCtx.budget_max || 40000000;
+  
+  document.getElementById("grand_per").textContent = total.toLocaleString("vi-VN");
+  document.getElementById("grand_total").textContent = fmt(total * adults);
+  document.getElementById("grand_pct").innerHTML = "<strong>" + Math.round(total / budgetMax * 100) + "%</strong>";
+  
+  ids.forEach(function(id, idx){
+    var cell = document.getElementById("tot_" + id);
+    if(cell) cell.textContent = fmt(vals[idx] * adults);
+  });
+  var reserveCell = document.getElementById("tot_b_reserve");
+  if(reserveCell) reserveCell.textContent = fmt(reserve * adults);
+}
+
+function skipTO(){
+  _flightResult = null;
+  _vgResult = null;
+  renderFinalPlan();
+  goToStep(4);
+}
+
+function generateFinalPlan(){
+  renderFinalPlan();
+  goToStep(4);
+}
+
+function switchTab(tabId) {
+  var panels = document.querySelectorAll(".tab-content-panel");
+  panels.forEach(function(p) {
+    p.style.display = "none";
+  });
+  document.getElementById(tabId).style.display = "block";
+  
+  var buttons = document.querySelectorAll(".btn-tab");
+  buttons.forEach(function(b) {
+    b.classList.remove("btn-tab-active");
+  });
+  
+  var targetBtn = Array.from(buttons).find(function(btn) {
+    return btn.getAttribute("onclick").indexOf(tabId) >= 0;
+  });
+  if (targetBtn) targetBtn.classList.add("btn-tab-active");
+}
+
+function renderFinalPlan() {
+  var dest = val("destination") || "Nhật Bản";
+  var travelers = val("travelers") || "3 người lớn";
+  var month = val("month") || "Tháng 7";
+  var daysStr = val("days") || "5 ngày";
+  var budget = val("budget") || "35–40 triệu VND";
+  var pace = val("pace") || "cân bằng";
+  var interests = val("interests") || "Cảnh đẹp tự nhiên, quán ăn local ngon";
+  var constraints = val("constraints") || "Hạn chế đổi khách sạn quá nhiều";
+  
+  var n = parseDays(daysStr);
+  
+  // 1. Tab 1 Header
+  document.getElementById("tab-itin-header").textContent = "📅 Chi tiết lịch trình cuối — " + dest + ", " + daysStr + " (" + travelers + ")";
+  
+  // 2. Flight Summary Card
+  var flightHtml = "";
+  if (_flightResult && _flightResult.options && _flightResult.options.length > 0) {
+    var opt = _flightResult.options.find(function(o) { return o.option_id === _flightResult.recommended_option_id; }) || _flightResult.options[0];
+    var p = opt.price || {};
+    var route = opt.route ? opt.route.outbound + " / " + opt.route.return : "—";
+    flightHtml = "<div class='flight-summary-card'>✈️ <strong>Vé máy bay khuyến nghị:</strong> Hãng <strong>" + (opt.airline || "--") + "</strong> (" + route + "), đi ngày " + (opt.departure_date || "--") + " - về ngày " + (opt.return_date || "") + ". Mức chi: <strong>" + fmt(p.true_total_per_person_vnd) + "/người</strong> (Tổng nhóm: " + fmt(p.total_all_passengers_vnd) + ").</div>";
+  } else {
+    flightHtml = "<div class='flight-summary-card' style='background:var(--yellow-light);border-color:#fde68a;color:#92400e;'>✈️ <strong>Vé máy bay:</strong> Chưa cập nhật dữ liệu vé chính thức. Đang hiển thị mức chi phí ước tính mặc định (10.000.000 VND/người).</div>";
+  }
+  document.getElementById("itin-flight-summary").innerHTML = flightHtml;
+
+  // 3. Tab 1 Overview Table
+  var tableHtml = "<table class='itin-table'><thead><tr><th>Ngày</th><th>Khu vực du lịch</th><th>Trạng thái kiểm tra</th></tr></thead><tbody>";
+  _rows.forEach(function(r) {
+    var dayStatus = "<span class='status-confirmed'>Chắc chắn ✅</span>";
+    if (_vgResult && _vgResult.checklist_per_day) {
+      var dayData = _vgResult.checklist_per_day.find(function(d) { return d.day === r.day; });
+      if (dayData && dayData.checks && dayData.checks.length > 0) {
+        var hasNeeds = dayData.checks.some(function(c) { return c.status === "needs_verification"; });
+        var hasAssump = dayData.checks.some(function(c) { return c.status === "assumption"; });
+        if (hasNeeds) {
+          dayStatus = "<span class='status-needs'>Cần kiểm tra thêm ❌</span>";
+        } else if (hasAssump) {
+          dayStatus = "<span class='status-assumption'>Dự kiến 🔶</span>";
+        }
+      }
+    }
+    tableHtml += "<tr><td><span class='day-badge'>Ngày " + r.day + "</span></td><td>" + r.region + "</td><td>" + dayStatus + "</td></tr>";
+  });
+  tableHtml += "</tbody></table>";
+  document.getElementById("itin-final-table-container").innerHTML = tableHtml;
+
+  // 4. Tab 1 Day details accordion
+  var detailsHtml = "";
+  _rows.forEach(function(r) {
+    var mealName = r.evening.indexOf("Ăn tối: ") === 0 ? r.evening.substring(8) : r.evening;
+    detailsHtml += "<details class='day-accordion'><summary><span class='day-badge'>Ngày " + r.day + "</span> " + r.region + "</summary>";
+    detailsHtml += "<div style='padding: 16px; background: #fff; border-top: 1px solid var(--line); font-size: 13.5px;'>";
+    detailsHtml += "<p style='margin-bottom: 8px;'><strong>Sáng:</strong> " + r.morning + "</p>";
+    detailsHtml += "<p style='margin-bottom: 8px;'><strong>Chiều:</strong> " + r.afternoon + "</p>";
+    detailsHtml += "<p style='margin-bottom: 8px;'><strong>Tối:</strong> " + r.evening + "</p>";
+    detailsHtml += "<p style='margin-bottom: 8px;'><strong>Ăn uống:</strong> Món ngon địa phương hợp sở thích (" + interests + "): " + mealName + "</p>";
+    detailsHtml += "<p style='margin-bottom: 8px;'><strong>Phương tiện di chuyển:</strong> Tàu điện ngầm, xe buýt công cộng hoặc đi bộ (Sử dụng thẻ thông minh Suica / PASMO)</p>";
+    detailsHtml += "<p style='margin-bottom: 0;'><strong>Ngân sách ăn uống ước tính:</strong> ~" + r.budget + "/người</p>";
+    
+    // Add dynamic checks from verification if present
+    if (_vgResult && _vgResult.checklist_per_day) {
+      var dayData = _vgResult.checklist_per_day.find(function(d) { return d.day === r.day; });
+      if (dayData && dayData.checks && dayData.checks.length > 0) {
+        detailsHtml += "<div style='margin-top: 12px; border-top: 1.5px dashed var(--line); padding-top: 12px;'>";
+        detailsHtml += "<h4 style='font-size: 12px; font-weight: 700; color: var(--navy); margin-bottom: 6px;'>Kết quả kiểm tra trước khi đặt:</h4>";
+        detailsHtml += "<ul style='list-style: none; display: flex; flex-direction: column; gap: 4px;'>";
+        dayData.checks.forEach(function(c) {
+          var labelClass = c.status === "confirmed" ? "status-confirmed" : c.status === "assumption" ? "status-assumption" : "status-needs";
+          var labelText = c.status === "confirmed" ? "Chắc chắn" : c.status === "assumption" ? "Dự kiến" : "Cần kiểm tra";
+          detailsHtml += "<li style='font-size: 12px;'>• " + c.detail + " (<span class='" + labelClass + "'>" + labelText + "</span>)</li>";
+          if (c.status === "needs_verification" && c.action_required) {
+            detailsHtml += "<div class='action-required' style='margin-left: 10px; margin-bottom: 4px;'>" + c.action_required + "</div>";
+          }
+        });
+        detailsHtml += "</ul></div>";
+      }
+    }
+    
+    detailsHtml += "</div></details>";
+  });
+  document.getElementById("itin-final-details-container").innerHTML = detailsHtml;
+
+  // 5. Tab 2: Zalo / Email message template
+  var msg = "Xin chào cả nhóm!\n\n";
+  msg += "Mình đã thiết lập lịch trình du lịch Nhật Bản tự túc cho mọi người tham khảo:\n";
+  msg += "- Hành trình: " + dest + " (" + daysStr + ")\n";
+  msg += "- Thời gian đi dự kiến: " + month + "\n";
+  msg += "- Nhóm tham gia: " + travelers + "\n";
+  msg += "- Dự chi: " + budget + "/người\n\n";
+  msg += "TÓM TẮT LỊCH TRÌNH:\n";
+  _rows.forEach(function(r) {
+    var act = r.morning + " → " + r.afternoon;
+    msg += "• Ngày " + r.day + " (" + r.region + "): " + act + "\n";
+  });
+  
+  msg += "\nTHÔNG TIN VÉ MÁY BAY: ";
+  if (_flightResult && _flightResult.options && _flightResult.options.length > 0) {
+    var opt = _flightResult.options.find(function(o) { return o.option_id === _flightResult.recommended_option_id; }) || _flightResult.options[0];
+    var p = opt.price || {};
+    msg += "Đề xuất hãng " + (opt.airline || "Hãng bay") + " (" + fmt(p.true_total_per_person_vnd) + "/người)\n";
+  } else {
+    msg += "Chưa cố định vé chính thức. Đang dùng giá ước tính.\n";
+  }
+
+  if (_vgResult && _vgResult.deals && _vgResult.deals.length > 0) {
+    var activeDeals = _vgResult.deals.filter(function(d) {
+      var now = new Date();
+      var expDate = d.valid_until ? new Date(d.valid_until) : null;
+      return !expDate || expDate >= now;
+    });
+    if (activeDeals.length > 0) {
+      msg += "\nƯU ĐÃI & KHUYẾN MÃI HIỆN CÓ:\n";
+      activeDeals.forEach(function(d) {
+        var disc = d.discount_vnd ? " — Giảm giá " + d.discount_vnd.toLocaleString("vi-VN") + " VND" : "";
+        var exp = d.valid_until ? " (Hạn dùng: " + d.valid_until + ")" : "";
+        msg += "• " + d.description + disc + exp + "\n";
+      });
+    }
+  }
+
+  msg += "\nCÁC BƯỚC CẦN CHUẨN BỊ TIẾP THEO:\n";
+  msg += "1. Kiểm tra chính xác giá vé thời điểm hiện tại trên Skyscanner/Google Flights\n";
+  msg += "2. Đặt trước phòng khách sạn sớm để có giá tốt\n";
+  msg += "3. Làm thủ tục visa đi Nhật Bản\n";
+  msg += "4. Xác minh giờ mở cửa và cách đi lại giữa các điểm du lịch\n\n";
+  msg += "*Lịch trình và chi phí ước tính, mọi người cùng xem và cho ý kiến nhé!";
+  document.getElementById("message-box").textContent = msg;
+
+  // 6. Tab 3: Todo List
+  var todoHtml = "";
+  
+  // Nhóm A (AC-06: 7 checklist items from Phase 2)
+  todoHtml += "<div class='todo-group'><h4>Nhóm A — Cần làm ngay (Trước khi đặt dịch vụ)</h4><ul class='todo-items'>";
+  var groupA = [
+    "Kiểm tra giá vé máy bay thực tế trên Google Flights / Skyscanner (" + month + ")",
+    "Kiểm tra phòng khách sạn còn trống trên Booking.com / Agoda (" + month + " là mùa cao điểm)",
+    "Xác nhận yêu cầu visa đi " + dest + " hiện tại cho công dân Việt Nam",
+    "Xác minh giờ mở cửa thực tế của từng điểm tham quan trong lịch trình",
+    "Kiểm tra thời tiết " + month + " tại " + dest + " để chuẩn bị trang phục phù hợp",
+    "Kiểm tra thời gian và khoảng cách di chuyển thực tế giữa các điểm (Google Maps)",
+    "Cộng lại tất cả hạng mục chi phí và đối chiếu với ngân sách mục tiêu " + budget + "/người"
+  ];
+  groupA.forEach(function(item, idx) {
+    todoHtml += "<li class='todo-item'><input type='checkbox' id='todo-a-" + idx + "' onchange='toggleTodo(this)'><label for='todo-a-" + idx + "' class='todo-item-text'>" + item + "</label></li>";
+  });
+  todoHtml += "</ul></div>";
+
+  // Nhóm B (General post-booking items)
+  todoHtml += "<div class='todo-group'><h4>Nhóm B — Cần làm sau khi chốt xong vé máy bay và phòng</h4><ul class='todo-items'>";
+  var groupB = [
+    "Mua bảo hiểm du lịch quốc tế",
+    "Chuẩn bị đổi tiền Yên Nhật (hoặc thẻ thanh toán quốc tế VISA/Mastercard)",
+    "Tải ứng dụng bản đồ offline, ứng dụng chỉ đường tàu điện tại Nhật",
+    "Đăng ký chuyển vùng quốc tế hoặc mua SIM/eSIM du lịch",
+    "Chuẩn bị ổ cắm chuyển đổi đa năng (chân dẹt chuẩn Nhật Bản)"
+  ];
+  groupB.forEach(function(item, idx) {
+    todoHtml += "<li class='todo-item'><input type='checkbox' id='todo-b-" + idx + "' onchange='toggleTodo(this)'><label for='todo-b-" + idx + "' class='todo-item-text'>" + item + "</label></li>";
+  });
+  todoHtml += "</ul></div>";
+
+  // Nhóm C (Dynamic items from verification needs_verification)
+  var groupC = [];
+  if (_vgResult && _vgResult.checklist_per_day) {
+    _vgResult.checklist_per_day.forEach(function(day) {
+      if (day.checks) {
+        day.checks.forEach(function(c) {
+          if (c.status === "needs_verification" && c.action_required) {
+            groupC.push("Ngày " + day.day + ": " + c.action_required);
+          }
+        });
+      }
+    });
+  }
+
+  if (groupC.length > 0) {
+    todoHtml += "<div class='todo-group'><h4>Nhóm C — Cần làm thêm (Từ kết quả kiểm tra tự động)</h4><ul class='todo-items'>";
+    groupC.forEach(function(item, idx) {
+      todoHtml += "<li class='todo-item'><input type='checkbox' id='todo-c-" + idx + "' onchange='toggleTodo(this)'><label for='todo-c-" + idx + "' class='todo-item-text'>" + item + "</label></li>";
+    });
+    todoHtml += "</ul></div>";
+  }
+  
+  document.getElementById("todo-list-container").innerHTML = todoHtml;
+}
+
+function toggleTodo(checkbox) {
+  var li = checkbox.closest(".todo-item");
+  if (checkbox.checked) {
+    li.classList.add("done");
+  } else {
+    li.classList.remove("done");
+  }
+}
+
+function copyItinerary() {
+  var dest = val("destination") || "Nhật Bản";
+  var travelers = val("travelers") || "3 người lớn";
+  var month = val("month") || "Tháng 7";
+  var daysStr = val("days") || "5 ngày";
+  
+  var text = "CHI TIẾT LỊCH TRÌNH DU LỊCH: " + dest.toUpperCase() + "\n";
+  text += "Thời gian: " + month + ", " + daysStr + " (" + travelers + ")\n\n";
+  
+  if (_flightResult && _flightResult.options && _flightResult.options.length > 0) {
+    var opt = _flightResult.options.find(function(o) { return o.option_id === _flightResult.recommended_option_id; }) || _flightResult.options[0];
+    var p = opt.price || {};
+    var route = opt.route ? opt.route.outbound + " / " + opt.route.return : "—";
+    text += "VÉ MÁY BAY ĐỀ XUẤT:\n";
+    text += "- Hãng: " + (opt.airline || "--") + " (" + route + ")\n";
+    text += "- Ngày bay: " + (opt.departure_date || "--") + " - Về: " + (opt.return_date || "") + "\n";
+    text += "- Giá/người: " + fmt(p.true_total_per_person_vnd) + "\n\n";
+  }
+  
+  text += "CHI TIẾT TỪNG NGÀY:\n";
+  _rows.forEach(function(r) {
+    var mealName = r.evening.indexOf("Ăn tối: ") === 0 ? r.evening.substring(8) : r.evening;
+    text += "Ngày " + r.day + " — " + r.region + "\n";
+    text += "- Sáng: " + r.morning + "\n";
+    text += "- Chiều: " + r.afternoon + "\n";
+    text += "- Tối: " + r.evening + "\n";
+    text += "- Ăn uống: " + mealName + "\n";
+    text += "- Dự chi ăn uống: " + r.budget + "/người\n\n";
+  });
+  text += "*Lưu ý: Lịch trình ước tính dựa trên công cụ lập kế hoạch.";
+  
+  navigator.clipboard.writeText(text).then(function() {
+    showFb("copy-itin-feedback");
+  }).catch(function() {
+    var ta = document.createElement("textarea");
+    ta.value = text;
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand("copy");
+    document.body.removeChild(ta);
+    showFb("copy-itin-feedback");
+  });
+}
+
+function copyMessage() {
+  var text = document.getElementById("message-box").textContent;
+  navigator.clipboard.writeText(text).then(function() {
+    showFb("copy-msg-feedback");
+  }).catch(function() {
+    var ta = document.createElement("textarea");
+    ta.value = text;
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand("copy");
+    document.body.removeChild(ta);
+    showFb("copy-msg-feedback");
+  });
+}
+
+function copyTodoList() {
+  var text = "DANH SÁCH VIỆC CẦN LÀM (TODO LIST):\n\n";
+  var groups = document.querySelectorAll(".todo-group");
+  if (groups.length === 0) return;
+  groups.forEach(function(g) {
+    var title = g.querySelector("h4").textContent;
+    text += title + "\n";
+    var items = g.querySelectorAll(".todo-item");
+    items.forEach(function(item) {
+      var cb = item.querySelector("input[type='checkbox']");
+      var label = item.querySelector(".todo-item-text").textContent;
+      var checkMark = cb.checked ? "[x]" : "[ ]";
+      text += checkMark + " " + label + "\n";
+    });
+    text += "\n";
+  });
+  
+  navigator.clipboard.writeText(text).then(function() {
+    showFb("copy-todo-feedback");
+  }).catch(function() {
+    var ta = document.createElement("textarea");
+    ta.value = text;
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand("copy");
+    document.body.removeChild(ta);
+    showFb("copy-todo-feedback");
+  });
+}
+
+function resetForm(){
+  // Reset outputs
+  document.getElementById("json-input").value = "";
+  document.getElementById("analysis-output").innerHTML = "";
+  document.getElementById("column-right").style.display = "none";
+  
+  _flightResult = null;
+  _vgResult = null;
+  _rows = [];
+  
+  // Go back to step 1
+  goToStep(1);
+}
+</script>
+</body>
+</html>

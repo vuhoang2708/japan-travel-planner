@@ -1,5 +1,5 @@
 {
   "rewrites": [
-    { "source": "/", "destination": "/planner/user_guide_japan_travel_planner.html" }
+    { "source": "/", "destination": "/planner/user_guide_tourist_agent.html" }
   ]
 }

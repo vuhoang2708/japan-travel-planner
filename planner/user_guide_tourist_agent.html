@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Cẩm Nang Sử Dụng - Japan Travel Planner</title>
+  <title>Tourist Agent – Cẩm Nang Sử Dụng</title>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     :root {
@@ -83,14 +83,14 @@
   <!-- Phần 3.1 Header -->
   <div class="header">
     <div class="phase-badge">User Guide · v1.0</div>
-    <h1>Japan Travel Planner — Cẩm Nang Sử Dụng</h1>
-    <p>Hướng dẫn sử dụng bộ công cụ lập kế hoạch du lịch Nhật Bản từ A đến Z</p>
+    <h1>Tourist Agent — Cẩm Nang Sử Dụng</h1>
+    <p>Hướng dẫn sử dụng bộ công cụ lập kế hoạch du lịch từ A đến Z</p>
   </div>
 
   <!-- Phần 3.2 Tổng quan -->
   <div class="card">
     <h2><span>📌</span> Tổng quan</h2>
-    <p><strong>Japan Travel Planner</strong> là bộ công cụ tối ưu hóa tự động quá trình lên lịch trình và ngân sách du lịch Nhật Bản, kết hợp sức mạnh của <strong>Travel Optimizer AI</strong>.</p>
+    <p><strong>Tourist Agent</strong> là bộ công cụ tối ưu hóa tự động quá trình lên lịch trình và ngân sách du lịch, kết hợp sức mạnh của <strong>Travel Optimizer AI</strong>.</p>
     <p><strong>Dành cho ai:</strong> Gia đình, nhóm bạn, hoặc bất kỳ ai muốn tự lập lịch trình đi Nhật chuyên nghiệp với chi phí được tính toán minh bạch.</p>
     <p><strong>Tiện ích vượt trội:</strong> Không cần cài đặt bất cứ ứng dụng nào, không cần API Key, không đòi hỏi cấu hình máy chủ. Chỉ cần click đúp vào các tệp HTML (chạy offline trên trình duyệt web) là dùng được ngay!</p>
   </div>
@@ -134,48 +134,48 @@
     <details>
       <summary>Phase 1 — Prompt Assistant</summary>
       <div class="details-content">
-        <span class="file-badge">📄 File: japan_travel_prompt_assistant_phase1_20260529.html</span>
+        <span class="file-badge">📄 File: tourist_agent_prompt_assistant_phase1_20260529.html</span>
         <p><strong>Làm gì:</strong> Điền thông tin cơ bản về chuyến đi (số người, ngân sách, số ngày, nhịp độ). Hệ thống sẽ phân tích để đưa ra 5 câu hỏi làm rõ nhu cầu và một đoạn Prompt "sạch".</p>
         <p><strong>Output:</strong> Câu lệnh Prompt chuẩn SEO dùng để copy-paste thẳng vào các công cụ AI như ChatGPT, Gemini, hay Claude nhằm lấy được một lịch trình hoàn chỉnh.</p>
-        <a href="japan_travel_prompt_assistant_phase1_20260529.html" target="_blank" class="open-link">→ Mở Phase 1 (mở tab mới)</a>
+        <a href="tourist_agent_prompt_assistant_phase1_20260529.html" target="_blank" class="open-link">→ Mở Phase 1 (mở tab mới)</a>
       </div>
     </details>
 
     <details>
       <summary>Phase 2 — Lịch trình nháp</summary>
       <div class="details-content">
-        <span class="file-badge">📄 File: japan-planner-phase2.html</span>
+        <span class="file-badge">📄 File: tourist-agent-phase2.html</span>
         <p><strong>Làm gì:</strong> AI sinh ra lịch trình gợi ý dựa trên đoạn prompt bạn đã copy từ Phase 1. Hệ thống sẽ kết xuất tự động một lịch trình nháp dạng bảng, thể hiện rõ các điểm đến phân chia theo buổi sáng, chiều, tối.</p>
         <p><strong>Output:</strong> Bảng lịch trình nháp theo ngày và theo nhịp độ (Thư thả, Cân bằng, Tối ưu nhiều điểm).</p>
-        <a href="japan-planner-phase2.html" target="_blank" class="open-link">→ Mở Phase 2 (mở tab mới)</a>
+        <a href="tourist-agent-phase2.html" target="_blank" class="open-link">→ Mở Phase 2 (mở tab mới)</a>
       </div>
     </details>
 
     <details>
       <summary>Phase 3 — So sánh vé máy bay</summary>
       <div class="details-content">
-        <span class="file-badge">📄 File: japan-planner-phase3.html</span>
+        <span class="file-badge">📄 File: tourist-agent-phase3.html</span>
         <p><strong>Làm gì:</strong> Tự động tạo prompt để yêu cầu <em>Travel Optimizer</em> tìm các chuyến bay. Bạn copy JSON do AI tạo ra và dán ngược lại công cụ.</p>
         <p><strong>Lưu ý:</strong> Dùng chế độ <strong>AI-Knowledge Mode</strong> không đòi hỏi API Key thật nên có thể dễ dàng chạy mô phỏng kết quả cho bài lab giảng dạy.</p>
         <p><strong>Output:</strong> Bảng 3 phương án vé chi tiết bao gồm giá trị thực và phân bổ ngân sách du lịch tổng thể.</p>
-        <a href="japan-planner-phase3.html" target="_blank" class="open-link">→ Mở Phase 3 (mở tab mới)</a>
+        <a href="tourist-agent-phase3.html" target="_blank" class="open-link">→ Mở Phase 3 (mở tab mới)</a>
       </div>
     </details>
 
     <details>
       <summary>Phase 4 — Verification Gate (Cổng kiểm chứng)</summary>
       <div class="details-content">
-        <span class="file-badge">📄 File: japan-planner-phase4.html</span>
+        <span class="file-badge">📄 File: tourist-agent-phase4.html</span>
         <p><strong>Làm gì:</strong> Hệ thống tự sinh Prompt để kiểm tra rủi ro (verification). Bạn copy JSON trả về từ AI và dán vào, sau đó nhấn "Render Checklist".</p>
         <p><strong>Output:</strong> Checklist 5 hạng mục của từng ngày hiển thị trạng thái (confirmed, assumption, needs_verification) cùng danh sách deals khuyến mãi khả dụng.</p>
-        <a href="japan-planner-phase4.html" target="_blank" class="open-link">→ Mở Phase 4 (mở tab mới)</a>
+        <a href="tourist-agent-phase4.html" target="_blank" class="open-link">→ Mở Phase 4 (mở tab mới)</a>
       </div>
     </details>
 
     <details>
       <summary>Phase 5 — Kế hoạch cuối</summary>
       <div class="details-content">
-        <span class="file-badge">📄 File: japan-planner-phase5.html</span>
+        <span class="file-badge">📄 File: tourist-agent-phase5.html</span>
         <p><strong>Làm gì:</strong> Tất cả quá trình từ Phase 1 - 4 hội tụ về đây. Tự động xuất 3 Artifacts cực kỳ hữu ích chỉ qua một click chuột.</p>
         <p><strong>Output gồm 3 Tab:</strong></p>
         <ul>
@@ -183,7 +183,7 @@
           <li><strong>Tab 2: Email / Zalo message:</strong> Soạn sẵn văn bản thuần, sẵn sàng gửi. Tự động đi kèm deal/mã giảm giá hợp lệ.</li>
           <li><strong>Tab 3: Todo List:</strong> Danh sách việc cần làm có thể tick, phân rõ Nhóm A (Cần làm ngay), Nhóm B (Sau khi chốt vé) và Nhóm C (Việc cần kiểm chứng thêm từ Verification Gate).</li>
         </ul>
-        <a href="japan-planner-phase5.html" target="_blank" class="open-link">→ Mở Phase 5 (mở tab mới)</a>
+        <a href="tourist-agent-phase5.html" target="_blank" class="open-link">→ Mở Phase 5 (mở tab mới)</a>
       </div>
     </details>
   </div>
