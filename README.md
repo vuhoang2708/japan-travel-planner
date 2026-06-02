@@ -7,8 +7,8 @@
 
 ## Live Demo
 
-🌐 **User Guide:** https://japan-travel-planner.vercel.app/planner/user_guide_japan_travel_planner.html  
-✈️ **Phase 5 (Final Plan):** https://japan-travel-planner.vercel.app/planner/japan-planner-phase5.html
+🌐 **User Guide:** https://touristagent.vercel.app/planner/user_guide_japan_travel_planner.html  
+✈️ **Phase 5 (Final Plan):** https://touristagent.vercel.app/planner/japan-planner-phase5.html
 
 ---
 
