@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Japan Travel Prompt Assistant – Phase 1</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #f8f9fa;
+      --paper: #ffffff;
+      --navy: #1e3a5f;
+      --orange: #f97316;
+      --orange-light: #fff7ed;
+      --green: #16a34a;
+      --green-light: #f0fdf4;
+      --muted: #6b7280;
+      --line: #e5e7eb;
+      --radius: 10px;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: var(--bg);
+      color: #1f2937;
+      line-height: 1.6;
+      padding: 24px 16px 48px;
+    }
+
+    .container { max-width: 780px; margin: 0 auto; }
+
+    /* Header */
+    .header {
+      background: var(--navy);
+      color: #fff;
+      border-radius: var(--radius);
+      padding: 24px 28px;
+      margin-bottom: 24px;
+    }
+    .header .phase-badge {
+      display: inline-block;
+      background: var(--orange);
+      color: #fff;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: .06em;
+      text-transform: uppercase;
+      padding: 3px 10px;
+      border-radius: 20px;
+      margin-bottom: 10px;
+    }
+    .header h1 { font-size: 22px; font-weight: 700; margin-bottom: 6px; }
+    .header p { font-size: 14px; opacity: .85; }
+
+    /* Card */
+    .card {
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 24px;
+      margin-bottom: 20px;
+    }
+    .card h2 {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--navy);
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .card h2 .icon { font-size: 18px; }
+
+    /* Form grid */
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+    }
+    @media (max-width: 540px) { .form-grid { grid-template-columns: 1fr; } }
+
+    .field { display: flex; flex-direction: column; gap: 5px; }
+    .field.full { grid-column: 1 / -1; }
+    label { font-size: 13px; font-weight: 600; color: #374151; }
+    input, select, textarea {
+      border: 1px solid var(--line);
+      border-radius: 7px;
+      padding: 9px 12px;
+      font-size: 14px;
+      font-family: inherit;
+      color: #1f2937;
+      background: #fff;
+      width: 100%;
+      transition: border-color .15s;
+    }
+    input:focus, select:focus, textarea:focus {
+      outline: none;
+      border-color: var(--navy);
+    }
+    textarea { resize: vertical; min-height: 72px; }
+
+    /* Button */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--orange);
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      padding: 11px 22px;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background .15s;
+    }
+    .btn:hover { background: #ea6c0a; }
+    .btn-secondary {
+      background: transparent;
+      color: var(--navy);
+      border: 1.5px solid var(--navy);
+    }
+    .btn-secondary:hover { background: #f0f4f8; }
+    .btn-sm { padding: 7px 14px; font-size: 13px; }
+
+    .actions { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 20px; }
+
+    /* Output sections */
+    .output { display: none; }
+    .output.visible { display: block; }
+
+    .output-block {
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      margin-bottom: 20px;
+      overflow: hidden;
+    }
+    .output-block-header {
+      background: var(--navy);
+      color: #fff;
+      padding: 12px 20px;
+      font-size: 14px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+    .output-block-body { padding: 20px; }
+
+    /* Questions list */
+    .question-list { list-style: none; display: flex; flex-direction: column; gap: 10px; }
+    .question-list li {
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
+      background: #f9fafb;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 12px 14px;
+      font-size: 14px;
+    }
+    .q-num {
+      background: var(--orange);
+      color: #fff;
+      font-size: 12px;
+      font-weight: 700;
+      min-width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+
+    /* Prompt box */
+    .prompt-box {
+      background: #f8fafc;
+      border: 1px solid #cbd5e1;
+      border-radius: 8px;
+      padding: 16px;
+      font-size: 13px;
+      line-height: 1.7;
+      white-space: pre-wrap;
+      word-break: break-word;
+      font-family: 'Courier New', monospace;
+      color: #1e293b;
+    }
+
+    /* Checklist */
+    .checklist { list-style: none; display: flex; flex-direction: column; gap: 8px; }
+    .checklist li {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 14px;
+      padding: 9px 12px;
+      border-radius: 7px;
+      background: var(--green-light);
+      border: 1px solid #bbf7d0;
+    }
+    .checklist li::before {
+      content: '☐';
+      font-size: 16px;
+      color: var(--green);
+      flex-shrink: 0;
+    }
+
+    /* Copy feedback */
+    .copy-feedback {
+      font-size: 12px;
+      color: var(--green);
+      font-weight: 600;
+      opacity: 0;
+      transition: opacity .3s;
+    }
+    .copy-feedback.show { opacity: 1; }
+
+    /* Warning note */
+    .warning-note {
+      background: var(--orange-light);
+      border: 1px solid #fed7aa;
+      border-left: 4px solid var(--orange);
+      border-radius: 8px;
+      padding: 12px 16px;
+      font-size: 13px;
+      color: #92400e;
+      margin-top: 16px;
+    }
+
+    /* Reset link */
+    .reset-link {
+      display: block;
+      text-align: center;
+      margin-top: 24px;
+      font-size: 13px;
+      color: var(--muted);
+      cursor: pointer;
+      text-decoration: underline;
+    }
+    .reset-link:hover { color: var(--navy); }
+  </style>
+</head>
+<body>
+<div class="container">
+
+  <div class="header">
+    <div class="phase-badge">Phase 1 · Prompt Assistant</div>
+    <h1>Japan Travel Prompt Assistant</h1>
+    <p>Mục tiêu của Phase 1: giúp bạn hỏi đúng trước khi yêu cầu AI lập lịch trình. AI chưa lập lịch ngay — mà giúp bạn làm rõ nhu cầu, tạo prompt sạch và checklist kiểm chứng.</p>
+  </div>
+
+  <!-- Input form -->
+  <div class="card" id="form-card">
+    <h2><span class="icon">✏️</span> Nhập thông tin chuyến đi</h2>
+    <div class="form-grid">
+      <div class="field">
+        <label for="destination">Điểm đến</label>
+        <input type="text" id="destination" value="Nhật Bản" placeholder="Ví dụ: Nhật Bản" />
+      </div>
+      <div class="field">
+        <label for="travelers">Số người</label>
+        <input type="text" id="travelers" value="3 người lớn" placeholder="Ví dụ: 3 người lớn" />
+      </div>
+      <div class="field">
+        <label for="month">Tháng đi</label>
+        <input type="text" id="month" value="Tháng 7" placeholder="Ví dụ: Tháng 7" />
+      </div>
+      <div class="field">
+        <label for="days">Số ngày</label>
+        <input type="text" id="days" value="5 ngày" placeholder="Ví dụ: 5 ngày" />
+      </div>
+      <div class="field">
+        <label for="budget">Ngân sách mỗi người</label>
+        <input type="text" id="budget" value="35–40 triệu VND" placeholder="Ví dụ: 35–40 triệu VND" />
+      </div>
+      <div class="field">
+        <label for="pace">Nhịp độ mong muốn</label>
+        <select id="pace">
+          <option value="thư thả, không quá vội" selected>Thư thả, không quá vội</option>
+          <option value="cân bằng">Cân bằng</option>
+          <option value="tối ưu nhiều điểm tham quan">Tối ưu nhiều điểm tham quan</option>
+        </select>
+      </div>
+      <div class="field full">
+        <label for="interests">Sở thích chính</label>
+        <input type="text" id="interests" value="Cảnh đẹp tự nhiên, quán ăn local ngon" placeholder="Ví dụ: cảnh đẹp tự nhiên, ẩm thực địa phương" />
+      </div>
+      <div class="field full">
+        <label for="constraints">Điều cần tránh hoặc ràng buộc đặc biệt</label>
+        <textarea id="constraints" placeholder="Ví dụ: hạn chế đổi khách sạn nhiều, không đi bộ quá nhiều, tránh khu du lịch đông đúc...">Hạn chế đổi khách sạn quá nhiều</textarea>
+      </div>
+    </div>
+    <div class="actions">
+      <button class="btn" onclick="generate()">🚀 Tạo câu hỏi và prompt</button>
+    </div>
+  </div>
+
+  <!-- Output -->
+  <div class="output" id="output-section">
+
+    <!-- Output 1: 5 clarification questions -->
+    <div class="output-block">
+      <div class="output-block-header">
+        <span>❓ 5 Câu hỏi làm rõ trước khi lập lịch</span>
+      </div>
+      <div class="output-block-body">
+        <ul class="question-list" id="questions-list"></ul>
+        <div class="warning-note">
+          💡 Trả lời 5 câu hỏi này trước khi copy prompt xuống. Câu trả lời càng cụ thể, kết quả AI trả về càng sát thực tế.
+        </div>
+      </div>
+    </div>
+
+    <!-- Output 2: Clean prompt -->
+    <div class="output-block">
+      <div class="output-block-header">
+        <span>📋 Prompt sạch — copy sang Gemini / ChatGPT / Claude</span>
+        <div style="display:flex;align-items:center;gap:10px;">
+          <span class="copy-feedback" id="copy-feedback">✓ Đã copy!</span>
+          <button class="btn btn-secondary btn-sm" onclick="copyPrompt()">Copy prompt</button>
+        </div>
+      </div>
+      <div class="output-block-body">
+        <div class="prompt-box" id="prompt-box"></div>
+        <div class="warning-note">
+          ⚠️ Prompt này yêu cầu AI ghi rõ giả định và không bịa giá/giờ mở cửa/visa như sự thật chắc chắn. Nếu AI bỏ qua yêu cầu này, hãy nhắc lại hoặc dùng công cụ khác.
+        </div>
+      </div>
+    </div>
+
+    <!-- Output 3: Verification checklist -->
+    <div class="output-block">
+      <div class="output-block-header">
+        <span>✅ Checklist kiểm chứng trước khi tin kết quả</span>
+      </div>
+      <div class="output-block-body">
+        <ul class="checklist" id="checklist-list"></ul>
+        <div class="warning-note">
+          🔍 Đây là danh sách những điểm AI dễ sai hoặc bịa. Hãy kiểm chứng từng mục trước khi đặt dịch vụ hoặc chia sẻ kế hoạch với người khác.
+        </div>
+      </div>
+    </div>
+
+    <a class="reset-link" onclick="reset()">← Nhập lại thông tin chuyến đi</a>
+  </div>
+
+</div>
+
+<script>
+  function val(id) {
+    return document.getElementById(id).value.trim();
+  }
+
+  function generate() {
+    const dest = val('destination') || 'điểm đến';
+    const travelers = val('travelers') || 'nhóm du lịch';
+    const month = val('month') || 'tháng chưa xác định';
+    const days = val('days') || 'số ngày chưa xác định';
+    const budget = val('budget') || 'ngân sách chưa xác định';
+    const pace = val('pace') || 'nhịp độ chưa xác định';
+    const interests = val('interests') || 'sở thích chưa xác định';
+    const constraints = val('constraints') || 'không có ràng buộc đặc biệt';
+
+    // 5 clarification questions
+    const questions = [
+      `Bạn muốn tập trung ở một vùng hay đi nhiều thành phố/tỉnh khác nhau tại ${dest}?`,
+      `Ngân sách ${budget}/người đã bao gồm vé máy bay khứ hồi và khách sạn chưa, hay chỉ tính chi phí tại chỗ?`,
+      `Trong nhóm ${travelers}, có ai cần hạn chế đi bộ nhiều, leo núi, hoặc có yêu cầu ăn uống đặc biệt (chay, dị ứng thực phẩm) không?`,
+      `Ưu tiên của bạn theo thứ tự nào: ${interests} — hay còn ưu tiên nào khác như mua sắm, văn hóa, lịch sử?`,
+      `Bạn muốn lịch trình ${pace} — và có muốn giữ nguyên một khách sạn làm base camp để đi về không?`
+    ];
+
+    // Clean prompt
+    const prompt = `Tôi muốn bạn giúp lập kế hoạch du lịch ${dest} tự túc.
+
+Đừng lập lịch trình ngay. Trước tiên hãy hỏi tôi tối đa 5 câu hỏi để làm rõ các điểm còn thiếu.
+
+Bối cảnh hiện có:
+- Nhóm đi: ${travelers}.
+- Thời gian: ${month}, đi ${days}.
+- Ngân sách: ${budget}/người, gồm vé máy bay, khách sạn, di chuyển, ăn uống và vé tham quan cơ bản.
+- Ưu tiên: ${interests}.
+- Phong cách: ${pace}.
+- Ràng buộc: ${constraints}.
+
+Sau khi tôi trả lời câu hỏi của bạn, hãy lập kế hoạch theo 4 phần:
+1. Các giả định bạn đang dùng (ghi rõ từng giả định).
+2. Lịch trình từng ngày dạng bảng (khu vực, hoạt động sáng/chiều/tối, ghi chú di chuyển).
+3. Ước tính ngân sách theo hạng mục (vé máy bay, khách sạn, di chuyển nội địa, ăn uống, tham quan, dự phòng).
+4. Danh sách điểm cần kiểm chứng lại trước khi đặt dịch vụ: vé máy bay, khách sạn, giờ mở cửa, thời tiết ${month}, chi phí di chuyển, yêu cầu visa.
+
+Quy tắc bắt buộc:
+- Nếu thông tin nào bạn không chắc, hãy ghi rõ "cần kiểm chứng" — không được trình bày như sự thật chắc chắn.
+- Không bịa giá vé máy bay, giá khách sạn, giờ mở cửa cụ thể nếu không có nguồn live.
+- Phân biệt rõ: thông tin chắc chắn / giả định đang dùng / điểm cần kiểm chứng.`;
+
+    // Checklist
+    const checklist = [
+      `Vé máy bay: kiểm tra giá thực tế trên Skyscanner, Google Flights hoặc đại lý — đặc biệt ${month} là mùa cao điểm`,
+      `Khách sạn: kiểm tra giá và tình trạng phòng trên Booking.com / Agoda — ${month} cần đặt sớm`,
+      `Giờ mở cửa: xác minh giờ mở cửa thực tế của từng điểm tham quan (có thể thay đổi theo mùa hoặc ngày lễ)`,
+      `Thời tiết ${month}: ${dest} ${month} có thể nóng ẩm hoặc mưa nhiều — kiểm tra dự báo và chuẩn bị trang phục phù hợp`,
+      `Visa / giấy tờ: xác minh yêu cầu visa hiện tại cho công dân Việt Nam — chính sách có thể thay đổi`,
+      `Khoảng cách di chuyển: kiểm tra thời gian di chuyển thực tế giữa các điểm (Google Maps / Hyperdia cho tàu Nhật)`,
+      `Tổng ngân sách: cộng lại tất cả hạng mục và so sánh với ngân sách ${budget}/người trước khi đặt dịch vụ`
+    ];
+
+    // Render questions
+    const qList = document.getElementById('questions-list');
+    qList.innerHTML = questions.map((q, i) =>
+      `<li><span class="q-num">${i + 1}</span><span>${q}</span></li>`
+    ).join('');
+
+    // Render prompt
+    document.getElementById('prompt-box').textContent = prompt;
+
+    // Render checklist
+    const cList = document.getElementById('checklist-list');
+    cList.innerHTML = checklist.map(c => `<li>${c}</li>`).join('');
+
+    // Show output
+    document.getElementById('output-section').classList.add('visible');
+    document.getElementById('form-card').style.display = 'none';
+    document.getElementById('output-section').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  function copyPrompt() {
+    const text = document.getElementById('prompt-box').textContent;
+    navigator.clipboard.writeText(text).then(() => {
+      const fb = document.getElementById('copy-feedback');
+      fb.classList.add('show');
+      setTimeout(() => fb.classList.remove('show'), 2000);
+    }).catch(() => {
+      // fallback for older browsers
+      const ta = document.createElement('textarea');
+      ta.value = text;
+      document.body.appendChild(ta);
+      ta.select();
+      document.execCommand('copy');
+      document.body.removeChild(ta);
+      const fb = document.getElementById('copy-feedback');
+      fb.classList.add('show');
+      setTimeout(() => fb.classList.remove('show'), 2000);
+    });
+  }
+
+  function reset() {
+    document.getElementById('output-section').classList.remove('visible');
+    document.getElementById('form-card').style.display = 'block';
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+</script>
+</body>
+</html>

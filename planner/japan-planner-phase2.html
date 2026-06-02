@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Japan Travel Planner – Phase 2</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #f8f9fa; --paper: #ffffff; --navy: #1e3a5f; --orange: #f97316;
+      --orange-light: #fff7ed; --green: #16a34a; --green-light: #f0fdf4;
+      --blue: #2563eb; --muted: #6b7280; --line: #e5e7eb; --radius: 10px;
+    }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: var(--bg); color: #1f2937; line-height: 1.6; padding: 24px 16px 48px; }
+    .container { max-width: 900px; margin: 0 auto; }
+    .header { background: var(--navy); color: #fff; border-radius: var(--radius); padding: 24px 28px; margin-bottom: 24px; }
+    .phase-badge { display: inline-block; background: var(--blue); color: #fff; font-size: 11px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; padding: 3px 10px; border-radius: 20px; margin-bottom: 10px; }
+    .header h1 { font-size: 22px; font-weight: 700; margin-bottom: 6px; }
+    .header p { font-size: 14px; opacity: .85; }
+    .card { background: var(--paper); border: 1px solid var(--line); border-radius: var(--radius); padding: 24px; margin-bottom: 20px; }
+    .card h2 { font-size: 15px; font-weight: 700; color: var(--navy); margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
+    .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    @media (max-width: 540px) { .form-grid { grid-template-columns: 1fr; } }
+    .field { display: flex; flex-direction: column; gap: 5px; }
+    .field.full { grid-column: 1 / -1; }
+    label { font-size: 13px; font-weight: 600; color: #374151; }
+    input, select, textarea { border: 1px solid var(--line); border-radius: 7px; padding: 9px 12px; font-size: 14px; font-family: inherit; color: #1f2937; background: #fff; width: 100%; transition: border-color .15s; }
+    input:focus, select:focus, textarea:focus { outline: none; border-color: var(--navy); }
+    textarea { resize: vertical; min-height: 72px; }
+    .btn { display: inline-flex; align-items: center; gap: 8px; background: var(--orange); color: #fff; border: none; border-radius: 8px; padding: 11px 22px; font-size: 14px; font-weight: 700; cursor: pointer; transition: background .15s; }
+    .btn:hover { background: #ea6c0a; }
+    .btn-secondary { background: transparent; color: var(--navy); border: 1.5px solid var(--navy); }
+    .btn-secondary:hover { background: #f0f4f8; }
+    .btn-sm { padding: 7px 14px; font-size: 13px; }
+    .actions { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 20px; }
+    .output { display: none; }
+    .output.visible { display: block; }
+    .output-block { background: var(--paper); border: 1px solid var(--line); border-radius: var(--radius); margin-bottom: 20px; overflow: hidden; }
+    .output-block-header { background: var(--navy); color: #fff; padding: 12px 20px; font-size: 14px; font-weight: 700; display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+    .output-block-body { padding: 20px; }
+    .question-list { list-style: none; display: flex; flex-direction: column; gap: 10px; }
+    .question-list li { display: flex; gap: 12px; align-items: flex-start; background: #f9fafb; border: 1px solid var(--line); border-radius: 8px; padding: 12px 14px; font-size: 14px; }
+    .q-num { background: var(--orange); color: #fff; font-size: 12px; font-weight: 700; min-width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 1px; }
+    .prompt-box { background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 8px; padding: 16px; font-size: 13px; line-height: 1.7; white-space: pre-wrap; word-break: break-word; font-family: 'Courier New', monospace; color: #1e293b; }
+    .checklist { list-style: none; display: flex; flex-direction: column; gap: 8px; }
+    .checklist li { display: flex; align-items: flex-start; gap: 10px; font-size: 14px; padding: 9px 12px; border-radius: 7px; background: var(--green-light); border: 1px solid #bbf7d0; }
+    .checklist li::before { content: '☐'; font-size: 16px; color: var(--green); flex-shrink: 0; }
+    .copy-feedback { font-size: 12px; color: var(--green); font-weight: 600; opacity: 0; transition: opacity .3s; }
+    .copy-feedback.show { opacity: 1; }
+    .warning-note { background: var(--orange-light); border: 1px solid #fed7aa; border-left: 4px solid var(--orange); border-radius: 8px; padding: 12px 16px; font-size: 13px; color: #92400e; margin-top: 16px; }
+    .reset-link { display: block; text-align: center; margin-top: 24px; font-size: 13px; color: var(--muted); cursor: pointer; text-decoration: underline; }
+    .reset-link:hover { color: var(--navy); }
+    .itin-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    .itin-table th { background: var(--navy); color: #fff; padding: 10px 12px; text-align: left; font-size: 12px; font-weight: 700; }
+    .itin-table td { padding: 10px 12px; border-bottom: 1px solid var(--line); vertical-align: top; }
+    .itin-table tr:last-child td { border-bottom: none; }
+    .itin-table tr:nth-child(even) td { background: #f9fafb; }
+    .day-badge { display: inline-block; background: var(--navy); color: #fff; font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 12px; white-space: nowrap; }
+    .est-note { font-size: 11px; color: var(--muted); }
+    .est-mark { color: var(--orange); font-weight: 700; }
+    .dense-warn { display: inline-block; background: #fef3c7; border: 1px solid #fcd34d; color: #92400e; font-size: 11px; padding: 2px 8px; border-radius: 12px; margin-top: 4px; }
+    .itin-note { background: #f9fafb; border: 1px solid var(--line); border-radius: 8px; padding: 14px 16px; font-size: 13px; color: var(--muted); margin-top: 16px; line-height: 1.7; }
+    @media (max-width: 640px) { .itin-table { display: block; overflow-x: auto; } }
+  </style>
+</head>
+<body>
+<div class="container">
+  <div class="header">
+    <div class="phase-badge">Phase 2 · Itinerary Generator</div>
+    <h1>Japan Travel Planner</h1>
+    <p>Phase 2 thêm lịch trình nháp từng ngày dựa trên thông tin bạn nhập. Lịch trình là điểm khởi đầu — chưa kiểm chứng giờ mở cửa, giá vé, thời tiết.</p>
+  </div>
+  <div class="card" id="form-card">
+    <h2><span>✏️</span> Nhập thông tin chuyến đi</h2>
+    <div class="form-grid">
+      <div class="field"><label for="destination">Điểm đến</label><input type="text" id="destination" value="Nhật Bản" /></div>
+      <div class="field"><label for="travelers">Số người</label><input type="text" id="travelers" value="3 người lớn" /></div>
+      <div class="field"><label for="month">Tháng đi</label><input type="text" id="month" value="Tháng 7" /></div>
+      <div class="field"><label for="days">Số ngày</label><input type="text" id="days" value="5 ngày" /></div>
+      <div class="field"><label for="budget">Ngân sách mỗi người</label><input type="text" id="budget" value="35–40 triệu VND" /></div>
+      <div class="field"><label for="pace">Nhịp độ</label>
+        <select id="pace">
+          <option value="thư thả">Thư thả, không quá vội</option>
+          <option value="cân bằng" selected>Cân bằng</option>
+          <option value="tối ưu nhiều điểm">Tối ưu nhiều điểm tham quan</option>
+        </select>
+      </div>
+      <div class="field full"><label for="interests">Sở thích chính</label><input type="text" id="interests" value="Cảnh đẹp tự nhiên, quán ăn local ngon" /></div>
+      <div class="field full"><label for="constraints">Ràng buộc đặc biệt</label><textarea id="constraints">Hạn chế đổi khách sạn quá nhiều</textarea></div>
+    </div>
+    <div class="actions">
+      <button class="btn" onclick="generate()">🚀 Tạo câu hỏi, prompt và lịch trình nháp</button>
+    </div>
+  </div>
+  <div class="output" id="output-section">
+    <div class="output-block">
+      <div class="output-block-header"><span>❓ 5 Câu hỏi làm rõ trước khi lập lịch</span></div>
+      <div class="output-block-body">
+        <ul class="question-list" id="questions-list"></ul>
+        <div class="warning-note">💡 Trả lời 5 câu hỏi này trước khi copy prompt xuống.</div>
+      </div>
+    </div>
+    <div class="output-block">
+      <div class="output-block-header">
+        <span>📋 Prompt sạch — copy sang Gemini / ChatGPT / Claude</span>
+        <div style="display:flex;align-items:center;gap:10px;">
+          <span class="copy-feedback" id="copy-feedback">✓ Đã copy!</span>
+          <button class="btn btn-secondary btn-sm" onclick="copyPrompt()">Copy prompt</button>
+        </div>
+      </div>
+      <div class="output-block-body">
+        <div class="prompt-box" id="prompt-box"></div>
+        <div class="warning-note">⚠️ Prompt yêu cầu AI ghi rõ giả định và không bịa giá/giờ mở cửa/visa.</div>
+      </div>
+    </div>
+    <div class="output-block">
+      <div class="output-block-header"><span>✅ Checklist kiểm chứng trước khi tin kết quả</span></div>
+      <div class="output-block-body">
+        <ul class="checklist" id="checklist-list"></ul>
+        <div class="warning-note">🔍 Kiểm chứng từng mục trước khi đặt dịch vụ.</div>
+      </div>
+    </div>
+    <div class="output-block">
+      <div class="output-block-header"><span>🗓️ Lịch trình nháp từng ngày</span></div>
+      <div class="output-block-body">
+        <div id="itin-container"></div>
+        <div class="itin-note">
+          ⚠️ <strong>Lưu ý:</strong> Lịch trình này do công cụ tạo tự động. Giờ mở cửa, giá vé tham quan, thời tiết <strong>chưa được kiểm chứng</strong>. Tất cả giá có dấu * là ước tính minh họa.
+        </div>
+      </div>
+    </div>
+    <a class="reset-link" onclick="resetForm()">← Nhập lại thông tin chuyến đi</a>
+  </div>
+</div>
+<script>
+var REGIONS = [
+  {name:"Tokyo – Shinjuku", spots:["Shinjuku Gyoen","Meiji Shrine","Harajuku","Shibuya Crossing","Akihabara"]},
+  {name:"Tokyo – Asakusa", spots:["Senso-ji Temple","Nakamise Street","Sumida River","Tokyo Skytree","Ueno Park"]},
+  {name:"Nikko", spots:["Tosho-gu Shrine","Kegon Falls","Lake Chuzenji","Rinnoji Temple","Kanmangafuchi"]},
+  {name:"Hakone", spots:["Mt. Fuji viewpoint","Hakone Open Air Museum","Lake Ashi cruise","Owakudani","Hakone Ropeway"]},
+  {name:"Kyoto – Higashiyama", spots:["Fushimi Inari","Kinkaku-ji","Arashiyama Bamboo","Gion district","Nishiki Market"]},
+  {name:"Osaka", spots:["Dotonbori","Osaka Castle","Kuromon Market","Shinsekai","Namba"]},
+  {name:"Nara", spots:["Nara Park (deer)","Todai-ji Temple","Kasuga Taisha","Naramachi","Isuien Garden"]}
+];
+var MEALS = ["Ramen địa phương","Sushi conveyor belt","Udon tươi","Tonkatsu","Okonomiyaki","Izakaya địa phương","Tempura tại chợ","Yakitori phố đêm"];
+
+function parseDays(s){var m=s.match(/(\d+)/);return m?parseInt(m[1]):5;}
+
+function getBudget(pace,i){
+  var b={a:["~150k–250k","~200k–350k","~100k–200k"],b:["~200k–350k","~250k–400k","~150k–250k"],c:["~250k–400k","~300k–500k","~200k–350k"]};
+  var key=pace.indexOf("thư")>=0?"a":pace.indexOf("tối")>=0?"c":"b";
+  return b[key][i%3];
+}
+
+function buildRows(n,pace,interests,constraints){
+  var spd=pace.indexOf("thư")>=0?2:pace.indexOf("tối")>=0?4:3;
+  var rows=[];
+  for(var d=0;d<n;d++){
+    var reg=REGIONS[d%REGIONS.length];
+    var spots=reg.spots.slice(0,spd);
+    var meal=MEALS[d%MEALS.length];
+    var morning,afternoon,evening;
+    if(d===0){morning="Đến sân bay, check-in khách sạn, nghỉ ngơi";afternoon=spots[0]+(spots[1]?" → "+spots[1]:"");evening="Ăn tối: "+meal;}
+    else if(d===n-1){morning=spots[0]+(spots[1]?" → "+spots[1]:"");afternoon="Mua quà lưu niệm, chuẩn bị hành lý";evening="Ra sân bay, bay về";}
+    else{morning=spots[0]+(spots[1]?" → "+spots[1]:"");afternoon=spots[2]?(spots[2]+(spots[3]?" → "+spots[3]:"")):"Tự do khám phá";evening="Ăn tối: "+meal;}
+    var rname=reg.name;
+    if(constraints.toLowerCase().indexOf("khách sạn")>=0&&d>0&&d<n-1)rname+=" (giữ khách sạn)";
+    rows.push({day:d+1,region:rname,morning:morning,afternoon:afternoon,evening:evening,budget:getBudget(pace,d),dense:spd>=4});
+  }
+  return rows;
+}
+
+function renderTable(rows){
+  var h="<table class='itin-table'><thead><tr><th>Ngày</th><th>Khu vực</th><th>Sáng</th><th>Chiều</th><th>Tối</th><th>Ngân sách ước tính</th></tr></thead><tbody>";
+  rows.forEach(function(r){
+    h+="<tr><td><span class='day-badge'>Ngày "+r.day+"</span></td><td>"+r.region+"</td><td>"+r.morning+"</td>";
+    h+="<td>"+r.afternoon+(r.dense?"<br><span class='dense-warn'>⚠ Lịch dày — kiểm tra khoảng cách</span>":"")+"</td>";
+    h+="<td>"+r.evening+"</td><td><span class='est-note'>"+r.budget+"/người<br><span class='est-mark'>*ước tính, chưa kiểm chứng</span></span></td></tr>";
+  });
+  return h+"</tbody></table>";
+}
+
+function val(id){return document.getElementById(id).value.trim();}
+
+function generate(){
+  var dest=val("destination")||"điểm đến";
+  var travelers=val("travelers")||"nhóm du lịch";
+  var month=val("month")||"tháng chưa xác định";
+  var days=val("days")||"5 ngày";
+  var budget=val("budget")||"ngân sách chưa xác định";
+  var pace=val("pace")||"cân bằng";
+  var interests=val("interests")||"sở thích chưa xác định";
+  var constraints=val("constraints")||"không có ràng buộc";
+  var n=parseDays(days);
+
+  var questions=[
+    "Bạn muốn tập trung ở một vùng hay đi nhiều thành phố/tỉnh khác nhau tại "+dest+"?",
+    "Ngân sách "+budget+"/người đã bao gồm vé máy bay khứ hồi và khách sạn chưa?",
+    "Trong nhóm "+travelers+", có ai cần hạn chế đi bộ nhiều hoặc có yêu cầu ăn uống đặc biệt không?",
+    "Ưu tiên của bạn theo thứ tự nào: "+interests+"?",
+    "Bạn muốn lịch trình "+pace+" — và có muốn giữ nguyên một khách sạn làm base camp không?"
+  ];
+
+  var prompt="Tôi muốn bạn giúp lập kế hoạch du lịch "+dest+" tự túc.\n\nĐừng lập lịch trình ngay. Trước tiên hãy hỏi tôi tối đa 5 câu hỏi để làm rõ các điểm còn thiếu.\n\nBối cảnh hiện có:\n- Nhóm đi: "+travelers+".\n- Thời gian: "+month+", đi "+days+".\n- Ngân sách: "+budget+"/người.\n- Ưu tiên: "+interests+".\n- Phong cách: "+pace+".\n- Ràng buộc: "+constraints+".\n\nSau khi tôi trả lời, hãy lập kế hoạch theo 4 phần:\n1. Các giả định bạn đang dùng.\n2. Lịch trình từng ngày dạng bảng.\n3. Ước tính ngân sách theo hạng mục.\n4. Danh sách điểm cần kiểm chứng lại trước khi đặt dịch vụ.\n\nQuy tắc: Nếu thông tin nào không chắc, ghi rõ 'cần kiểm chứng'. Không bịa giá vé, giờ mở cửa cụ thể.";
+
+  var checklist=[
+    "Vé máy bay: kiểm tra giá thực tế trên Skyscanner, Google Flights — "+month+" là mùa cao điểm",
+    "Khách sạn: kiểm tra giá và tình trạng phòng trên Booking.com / Agoda — đặt sớm",
+    "Giờ mở cửa: xác minh giờ mở cửa thực tế của từng điểm tham quan",
+    "Thời tiết "+month+": "+dest+" "+month+" có thể nóng ẩm hoặc mưa nhiều — chuẩn bị trang phục phù hợp",
+    "Visa / giấy tờ: xác minh yêu cầu visa hiện tại cho công dân Việt Nam",
+    "Khoảng cách di chuyển: kiểm tra thời gian thực tế giữa các điểm (Google Maps / Hyperdia)",
+    "Tổng ngân sách: cộng lại tất cả hạng mục và so sánh với ngân sách "+budget+"/người"
+  ];
+
+  document.getElementById("questions-list").innerHTML=questions.map(function(q,i){return "<li><span class='q-num'>"+(i+1)+"</span><span>"+q+"</span></li>";}).join("");
+  document.getElementById("prompt-box").textContent=prompt;
+  document.getElementById("checklist-list").innerHTML=checklist.map(function(c){return "<li>"+c+"</li>";}).join("");
+  document.getElementById("itin-container").innerHTML=renderTable(buildRows(n,pace,interests,constraints));
+  document.getElementById("output-section").classList.add("visible");
+  document.getElementById("form-card").style.display="none";
+  document.getElementById("output-section").scrollIntoView({behavior:"smooth",block:"start"});
+}
+
+function copyPrompt(){
+  var text=document.getElementById("prompt-box").textContent;
+  navigator.clipboard.writeText(text).then(showFb).catch(function(){
+    var ta=document.createElement("textarea");ta.value=text;document.body.appendChild(ta);ta.select();document.execCommand("copy");document.body.removeChild(ta);showFb();
+  });
+}
+function showFb(){var fb=document.getElementById("copy-feedback");fb.classList.add("show");setTimeout(function(){fb.classList.remove("show");},2000);}
+function resetForm(){document.getElementById("output-section").classList.remove("visible");document.getElementById("form-card").style.display="block";window.scrollTo({top:0,behavior:"smooth"});}
+</script>
+</body>
+</html>

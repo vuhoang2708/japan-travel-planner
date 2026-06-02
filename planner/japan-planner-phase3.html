@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Japan Travel Planner – Phase 3</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #f8f9fa; --paper: #ffffff; --navy: #1e3a5f; --orange: #f97316;
+      --orange-light: #fff7ed; --green: #16a34a; --green-light: #f0fdf4;
+      --blue: #2563eb; --blue-light: #eff6ff; --red: #dc2626; --red-light: #fef2f2;
+      --yellow-light: #fefce8; --muted: #6b7280; --line: #e5e7eb; --radius: 10px;
+    }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: var(--bg); color: #1f2937; line-height: 1.6; padding: 24px 16px 48px; }
+    .container { max-width: 960px; margin: 0 auto; }
+    .header { background: var(--navy); color: #fff; border-radius: var(--radius); padding: 24px 28px; margin-bottom: 24px; }
+    .phase-badge { display: inline-block; background: var(--green); color: #fff; font-size: 11px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; padding: 3px 10px; border-radius: 20px; margin-bottom: 10px; }
+    .header h1 { font-size: 22px; font-weight: 700; margin-bottom: 6px; }
+    .header p { font-size: 14px; opacity: .85; }
+    .card { background: var(--paper); border: 1px solid var(--line); border-radius: var(--radius); padding: 24px; margin-bottom: 20px; }
+    .card h2 { font-size: 15px; font-weight: 700; color: var(--navy); margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
+    .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    @media (max-width: 540px) { .form-grid { grid-template-columns: 1fr; } }
+    .field { display: flex; flex-direction: column; gap: 5px; }
+    .field.full { grid-column: 1 / -1; }
+    label { font-size: 13px; font-weight: 600; color: #374151; }
+    input, select, textarea { border: 1px solid var(--line); border-radius: 7px; padding: 9px 12px; font-size: 14px; font-family: inherit; color: #1f2937; background: #fff; width: 100%; transition: border-color .15s; }
+    input:focus, select:focus, textarea:focus { outline: none; border-color: var(--navy); }
+    textarea { resize: vertical; min-height: 72px; }
+    .btn { display: inline-flex; align-items: center; gap: 8px; background: var(--orange); color: #fff; border: none; border-radius: 8px; padding: 11px 22px; font-size: 14px; font-weight: 700; cursor: pointer; transition: background .15s; }
+    .btn:hover { background: #ea6c0a; }
+    .btn-secondary { background: transparent; color: var(--navy); border: 1.5px solid var(--navy); }
+    .btn-secondary:hover { background: #f0f4f8; }
+    .btn-blue { background: var(--blue); }
+    .btn-blue:hover { background: #1d4ed8; }
+    .btn-sm { padding: 7px 14px; font-size: 13px; }
+    .actions { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 20px; }
+    .output { display: none; }
+    .output.visible { display: block; }
+    .output-block { background: var(--paper); border: 1px solid var(--line); border-radius: var(--radius); margin-bottom: 20px; overflow: hidden; }
+    .output-block-header { background: var(--navy); color: #fff; padding: 12px 20px; font-size: 14px; font-weight: 700; display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+    .output-block-body { padding: 20px; }
+    .question-list { list-style: none; display: flex; flex-direction: column; gap: 10px; }
+    .question-list li { display: flex; gap: 12px; align-items: flex-start; background: #f9fafb; border: 1px solid var(--line); border-radius: 8px; padding: 12px 14px; font-size: 14px; }
+    .q-num { background: var(--orange); color: #fff; font-size: 12px; font-weight: 700; min-width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 1px; }
+    .prompt-box { background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 8px; padding: 16px; font-size: 13px; line-height: 1.7; white-space: pre-wrap; word-break: break-word; font-family: 'Courier New', monospace; color: #1e293b; }
+    .checklist { list-style: none; display: flex; flex-direction: column; gap: 8px; }
+    .checklist li { display: flex; align-items: flex-start; gap: 10px; font-size: 14px; padding: 9px 12px; border-radius: 7px; background: var(--green-light); border: 1px solid #bbf7d0; }
+    .checklist li::before { content: '☐'; font-size: 16px; color: var(--green); flex-shrink: 0; }
+    .copy-feedback { font-size: 12px; color: var(--green); font-weight: 600; opacity: 0; transition: opacity .3s; }
+    .copy-feedback.show { opacity: 1; }
+    .warning-note { background: var(--orange-light); border: 1px solid #fed7aa; border-left: 4px solid var(--orange); border-radius: 8px; padding: 12px 16px; font-size: 13px; color: #92400e; margin-top: 16px; }
+    .info-note { background: var(--blue-light); border: 1px solid #bfdbfe; border-left: 4px solid var(--blue); border-radius: 8px; padding: 12px 16px; font-size: 13px; color: #1e40af; margin-top: 0; margin-bottom: 16px; }
+    .reset-link { display: block; text-align: center; margin-top: 24px; font-size: 13px; color: var(--muted); cursor: pointer; text-decoration: underline; }
+    .reset-link:hover { color: var(--navy); }
+    /* Itinerary */
+    .itin-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    .itin-table th { background: var(--navy); color: #fff; padding: 10px 12px; text-align: left; font-size: 12px; font-weight: 700; }
+    .itin-table td { padding: 10px 12px; border-bottom: 1px solid var(--line); vertical-align: top; }
+    .itin-table tr:last-child td { border-bottom: none; }
+    .itin-table tr:nth-child(even) td { background: #f9fafb; }
+    .day-badge { display: inline-block; background: var(--navy); color: #fff; font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 12px; white-space: nowrap; }
+    .est-note { font-size: 11px; color: var(--muted); }
+    .est-mark { color: var(--orange); font-weight: 700; }
+    .dense-warn { display: inline-block; background: #fef3c7; border: 1px solid #fcd34d; color: #92400e; font-size: 11px; padding: 2px 8px; border-radius: 12px; margin-top: 4px; }
+    .itin-note { background: #f9fafb; border: 1px solid var(--line); border-radius: 8px; padding: 14px 16px; font-size: 13px; color: var(--muted); margin-top: 16px; line-height: 1.7; }
+    /* Steps guide */
+    .steps { display: flex; flex-direction: column; gap: 12px; margin-bottom: 16px; }
+    .step { display: flex; gap: 12px; align-items: flex-start; }
+    .step-num { background: var(--blue); color: #fff; font-size: 12px; font-weight: 700; min-width: 26px; height: 26px; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .step-text { font-size: 14px; padding-top: 3px; }
+    /* Comparison table */
+    .comp-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    .comp-table th { background: var(--navy); color: #fff; padding: 10px 12px; text-align: left; font-size: 12px; font-weight: 700; }
+    .comp-table td { padding: 10px 12px; border-bottom: 1px solid var(--line); vertical-align: top; }
+    .comp-table tr:last-child td { border-bottom: none; }
+    .comp-table tr.recommended td { background: #f0fdf4; }
+    .rec-badge { display: inline-block; background: var(--green); color: #fff; font-size: 10px; font-weight: 700; padding: 1px 7px; border-radius: 10px; margin-left: 6px; }
+    .tag { display: inline-block; background: #e0e7ff; color: #3730a3; font-size: 10px; font-weight: 700; padding: 1px 6px; border-radius: 8px; margin-right: 3px; }
+    .conf-live { color: var(--green); font-weight: 700; font-size: 12px; }
+    .conf-cached { color: var(--blue); font-weight: 700; font-size: 12px; }
+    .conf-est { color: var(--orange); font-weight: 700; font-size: 12px; }
+    /* Budget table */
+    .budget-table { width: 100%; border-collapse: collapse; font-size: 13px; margin-top: 16px; }
+    .budget-table th { background: #374151; color: #fff; padding: 9px 12px; text-align: left; font-size: 12px; font-weight: 700; }
+    .budget-table td { padding: 9px 12px; border-bottom: 1px solid var(--line); }
+    .budget-table tr:last-child td { border-bottom: none; font-weight: 700; background: #f9fafb; }
+    .budget-table input[type=number] { width: 120px; padding: 5px 8px; font-size: 13px; }
+    .budget-warning { background: var(--red-light); border: 1px solid #fecaca; border-left: 4px solid var(--red); border-radius: 8px; padding: 14px 16px; font-size: 13px; color: #991b1b; margin-bottom: 16px; }
+    .budget-warning ul { margin-top: 8px; padding-left: 18px; }
+    .budget-warning li { margin-bottom: 4px; }
+    .est-banner { background: var(--yellow-light); border: 1px solid #fde68a; border-left: 4px solid #f59e0b; border-radius: 8px; padding: 12px 16px; font-size: 13px; color: #92400e; margin-bottom: 16px; }
+    .skip-note { background: #f9fafb; border: 1px solid var(--line); border-radius: 8px; padding: 12px 16px; font-size: 13px; color: var(--muted); margin-top: 12px; }
+    .error-note { background: var(--red-light); border: 1px solid #fecaca; border-radius: 8px; padding: 12px 16px; font-size: 13px; color: #991b1b; margin-top: 12px; }
+    @media (max-width: 640px) { .itin-table, .comp-table, .budget-table { display: block; overflow-x: auto; } }
+  </style>
+</head>
+<body>
+<div class="container">
+  <div class="header">
+    <div class="phase-badge">Phase 3 · Comparison + Budget</div>
+    <h1>Japan Travel Planner</h1>
+    <p>Phase 3 tích hợp Travel Optimizer: sinh prompt → copy sang AI → paste JSON kết quả → bảng so sánh vé và phân bổ ngân sách tự động hiện ra.</p>
+  </div>
+  <div class="card" id="form-card">
+    <h2><span>✏️</span> Nhập thông tin chuyến đi</h2>
+    <div class="form-grid">
+      <div class="field"><label for="destination">Điểm đến</label><input type="text" id="destination" value="Nhật Bản" /></div>
+      <div class="field"><label for="travelers">Số người</label><input type="text" id="travelers" value="3 người lớn" /></div>
+      <div class="field"><label for="month">Tháng đi</label><input type="text" id="month" value="Tháng 7" /></div>
+      <div class="field"><label for="days">Số ngày</label><input type="text" id="days" value="5 ngày" /></div>
+      <div class="field"><label for="budget">Ngân sách mỗi người</label><input type="text" id="budget" value="35–40 triệu VND" /></div>
+      <div class="field"><label for="pace">Nhịp độ</label>
+        <select id="pace">
+          <option value="thư thả">Thư thả, không quá vội</option>
+          <option value="cân bằng" selected>Cân bằng</option>
+          <option value="tối ưu nhiều điểm">Tối ưu nhiều điểm tham quan</option>
+        </select>
+      </div>
+      <div class="field full"><label for="interests">Sở thích chính</label><input type="text" id="interests" value="Cảnh đẹp tự nhiên, quán ăn local ngon" /></div>
+      <div class="field full"><label for="constraints">Ràng buộc đặc biệt</label><textarea id="constraints">Hạn chế đổi khách sạn quá nhiều</textarea></div>
+    </div>
+    <div class="actions">
+      <button class="btn" onclick="generate()">🚀 Tạo câu hỏi, prompt và lịch trình nháp</button>
+    </div>
+  </div>
+  <div class="output" id="output-section">
+    <!-- Output 1 -->
+    <div class="output-block">
+      <div class="output-block-header"><span>❓ 5 Câu hỏi làm rõ trước khi lập lịch</span></div>
+      <div class="output-block-body">
+        <ul class="question-list" id="questions-list"></ul>
+        <div class="warning-note">💡 Trả lời 5 câu hỏi này trước khi copy prompt xuống.</div>
+      </div>
+    </div>
+    <!-- Output 2 -->
+    <div class="output-block">
+      <div class="output-block-header">
+        <span>📋 Prompt sạch — copy sang Gemini / ChatGPT / Claude</span>
+        <div style="display:flex;align-items:center;gap:10px;">
+          <span class="copy-feedback" id="copy-feedback">✓ Đã copy!</span>
+          <button class="btn btn-secondary btn-sm" onclick="copyPrompt()">Copy prompt</button>
+        </div>
+      </div>
+      <div class="output-block-body">
+        <div class="prompt-box" id="prompt-box"></div>
+        <div class="warning-note">⚠️ Prompt yêu cầu AI ghi rõ giả định và không bịa giá/giờ mở cửa/visa.</div>
+      </div>
+    </div>
+    <!-- Output 3 -->
+    <div class="output-block">
+      <div class="output-block-header"><span>✅ Checklist kiểm chứng trước khi tin kết quả</span></div>
+      <div class="output-block-body">
+        <ul class="checklist" id="checklist-list"></ul>
+        <div class="warning-note">🔍 Kiểm chứng từng mục trước khi đặt dịch vụ.</div>
+      </div>
+    </div>
+    <!-- Output 4 -->
+    <div class="output-block">
+      <div class="output-block-header"><span>🗓️ Lịch trình nháp từng ngày</span></div>
+      <div class="output-block-body">
+        <div id="itin-container"></div>
+        <div class="itin-note">⚠️ <strong>Lưu ý:</strong> Lịch trình này do công cụ tạo tự động. Giờ mở cửa, giá vé tham quan, thời tiết <strong>chưa được kiểm chứng</strong>. Tất cả giá có dấu * là ước tính minh họa.</div>
+      </div>
+    </div>
+    <!-- Output 5: Travel Optimizer prompt -->
+    <div class="output-block">
+      <div class="output-block-header">
+        <span>✈️ Bước 5 — Lấy dữ liệu vé từ Travel Optimizer</span>
+        <div style="display:flex;align-items:center;gap:10px;">
+          <span class="copy-feedback" id="copy-to-feedback">✓ Đã copy!</span>
+          <button class="btn btn-blue btn-sm" onclick="copyToPrompt()">Copy prompt TO</button>
+        </div>
+      </div>
+      <div class="output-block-body">
+        <div class="info-note">
+          📋 <strong>Hướng dẫn 3 bước:</strong><br>
+          <strong>1.</strong> Nhấn "Copy prompt TO" bên trên<br>
+          <strong>2.</strong> Paste vào Claude / Gemini / ChatGPT và chờ kết quả JSON<br>
+          <strong>3.</strong> Paste JSON kết quả vào ô bên dưới rồi nhấn "Phân tích kết quả"
+        </div>
+        <div class="prompt-box" id="to-prompt-box"></div>
+      </div>
+    </div>
+    <!-- Output 6: Comparison table -->
+    <div class="output-block">
+      <div class="output-block-header"><span>📊 Bước 6 — Bảng so sánh vé và phân bổ ngân sách</span></div>
+      <div class="output-block-body">
+        <div class="field" style="margin-bottom:12px;">
+          <label for="json-input">Dán kết quả JSON từ Travel Optimizer</label>
+          <textarea id="json-input" style="min-height:120px;font-family:'Courier New',monospace;font-size:12px;" placeholder='{"options":[{"rank":1,"option_id":"OPT-001","airline":"Vietnam Airlines","tags":["[DIRECT]"],"route":{"outbound":"HAN → NRT","return":"NRT → HAN"},"departure_date":"2026-07-10","return_date":"2026-07-14","price":{"advertised_per_person_vnd":8500000,"true_total_per_person_vnd":9800000,"total_all_passengers_vnd":29400000},"flexibility_score":{"score":72},"data_confidence":"estimated"}],"recommended_option_id":"OPT-001","budget_alert":{"over_budget":false}}'></textarea>
+        </div>
+        <div class="actions" style="margin-top:0;">
+          <button class="btn btn-blue" onclick="analyzeResult()">📊 Phân tích kết quả</button>
+          <button class="btn btn-secondary btn-sm" onclick="skipTO()">Bỏ qua — dùng ước tính mặc định</button>
+        </div>
+        <div id="analysis-output"></div>
+      </div>
+    </div>
+    <a class="reset-link" onclick="resetForm()">← Nhập lại thông tin chuyến đi</a>
+  </div>
+</div>
+<script>
+var REGIONS=[
+  {name:"Tokyo – Shinjuku",spots:["Shinjuku Gyoen","Meiji Shrine","Harajuku","Shibuya Crossing","Akihabara"]},
+  {name:"Tokyo – Asakusa",spots:["Senso-ji Temple","Nakamise Street","Sumida River","Tokyo Skytree","Ueno Park"]},
+  {name:"Nikko",spots:["Tosho-gu Shrine","Kegon Falls","Lake Chuzenji","Rinnoji Temple","Kanmangafuchi"]},
+  {name:"Hakone",spots:["Mt. Fuji viewpoint","Hakone Open Air Museum","Lake Ashi cruise","Owakudani","Hakone Ropeway"]},
+  {name:"Kyoto – Higashiyama",spots:["Fushimi Inari","Kinkaku-ji","Arashiyama Bamboo","Gion district","Nishiki Market"]},
+  {name:"Osaka",spots:["Dotonbori","Osaka Castle","Kuromon Market","Shinsekai","Namba"]},
+  {name:"Nara",spots:["Nara Park (deer)","Todai-ji Temple","Kasuga Taisha","Naramachi","Isuien Garden"]}
+];
+var MEALS=["Ramen địa phương","Sushi conveyor belt","Udon tươi","Tonkatsu","Okonomiyaki","Izakaya địa phương","Tempura tại chợ","Yakitori phố đêm"];
+var _tripCtx={};
+
+function parseDays(s){var m=s.match(/(\d+)/);return m?parseInt(m[1]):5;}
+function parseAdults(s){var m=s.match(/(\d+)/);return m?parseInt(m[1]):1;}
+function parseBudgetMax(s){var m=s.match(/(\d+)/g);if(!m)return 40000000;var nums=m.map(Number);return Math.max.apply(null,nums)*1000000;}
+function mapDest(s){var l=s.toLowerCase();if(l.indexOf("nhật")>=0||l.indexOf("japan")>=0)return"TYO";if(l.indexOf("thái")>=0)return"BKK";if(l.indexOf("hàn")>=0||l.indexOf("korea")>=0)return"ICN";return"TYO";}
+function mapFlexibility(pace){if(pace.indexOf("thư")>=0)return"high";if(pace.indexOf("tối")>=0)return"low";return"medium";}
+
+function getBudget(pace,i){
+  var b={a:["~150k–250k","~200k–350k","~100k–200k"],b:["~200k–350k","~250k–400k","~150k–250k"],c:["~250k–400k","~300k–500k","~200k–350k"]};
+  var key=pace.indexOf("thư")>=0?"a":pace.indexOf("tối")>=0?"c":"b";
+  return b[key][i%3];
+}
+
+function buildRows(n,pace,interests,constraints){
+  var spd=pace.indexOf("thư")>=0?2:pace.indexOf("tối")>=0?4:3;
+  var rows=[];
+  for(var d=0;d<n;d++){
+    var reg=REGIONS[d%REGIONS.length];
+    var spots=reg.spots.slice(0,spd);
+    var meal=MEALS[d%MEALS.length];
+    var morning,afternoon,evening;
+    if(d===0){morning="Đến sân bay, check-in khách sạn, nghỉ ngơi";afternoon=spots[0]+(spots[1]?" → "+spots[1]:"");evening="Ăn tối: "+meal;}
+    else if(d===n-1){morning=spots[0]+(spots[1]?" → "+spots[1]:"");afternoon="Mua quà lưu niệm, chuẩn bị hành lý";evening="Ra sân bay, bay về";}
+    else{morning=spots[0]+(spots[1]?" → "+spots[1]:"");afternoon=spots[2]?(spots[2]+(spots[3]?" → "+spots[3]:"")):"Tự do khám phá";evening="Ăn tối: "+meal;}
+    var rname=reg.name;
+    if(constraints.toLowerCase().indexOf("khách sạn")>=0&&d>0&&d<n-1)rname+=" (giữ khách sạn)";
+    rows.push({day:d+1,region:rname,morning:morning,afternoon:afternoon,evening:evening,budget:getBudget(pace,d),dense:spd>=4});
+  }
+  return rows;
+}
+
+function renderItinTable(rows){
+  var h="<table class='itin-table'><thead><tr><th>Ngày</th><th>Khu vực</th><th>Sáng</th><th>Chiều</th><th>Tối</th><th>Ngân sách ước tính</th></tr></thead><tbody>";
+  rows.forEach(function(r){
+    h+="<tr><td><span class='day-badge'>Ngày "+r.day+"</span></td><td>"+r.region+"</td><td>"+r.morning+"</td>";
+    h+="<td>"+r.afternoon+(r.dense?"<br><span class='dense-warn'>⚠ Lịch dày — kiểm tra khoảng cách</span>":"")+"</td>";
+    h+="<td>"+r.evening+"</td><td><span class='est-note'>"+r.budget+"/người<br><span class='est-mark'>*ước tính, chưa kiểm chứng</span></span></td></tr>";
+  });
+  return h+"</tbody></table>";
+}
+
+function buildTOPrompt(ctx){
+  return "Bạn là Travel Optimizer với 8 skills: date-optimization, flight-search, route-optimization, fee-analysis, flexibility-analysis, deals-verification, budget-allocation.\n\nChạy theo thứ tự sau:\n\nBƯỚC 1 — date-optimization:\nTìm cửa sổ ngày bay rẻ nhất trong "+ctx.month+" cho hành trình "+ctx.origin+" → "+ctx.destination+" → "+ctx.origin+".\nTrả về: cheapest_departure, cheapest_return, max_savings_vnd.\n\nBƯỚC 2 — flight-search:\nTìm tối đa 3 phương án vé cho hành trình "+ctx.origin+" → "+ctx.destination+" → "+ctx.origin+", khởi hành "+ctx.departure_date+", về "+ctx.return_date+", "+ctx.adults+" người lớn, economy, checked_bag.\n\nBƯỚC 3 — route-optimization → fee-analysis:\nVới mỗi phương án, tính true_total_per_person_vnd = base_fare + taxes + baggage_fee + seat_selection_fee + payment_surcharge.\nRe-rank theo true_total_per_person_vnd tăng dần.\n\nBƯỚC 4 — budget-allocation:\nTính total_all_passengers_vnd = true_total_per_person_vnd × "+ctx.adults+".\nNếu total_all_passengers_vnd + ước tính chi phí khác > "+ctx.budget_max+" × "+ctx.adults+" = "+(ctx.budget_max*ctx.adults)+" VND:\n  → set budget_alert.over_budget = true\n  → đề xuất tối thiểu 3 cost_reduction_suggestions cụ thể\n\nTrả về JSON với các field: options[] (tối đa 3, đã re-rank), recommended_option_id, date_optimization_window, budget_alert.\n\nTrip context:\n"+JSON.stringify({origin:ctx.origin,destination:ctx.destination,departure_date:ctx.departure_date,return_date:ctx.return_date,passengers:{adults:ctx.adults,children:0,seniors:0},budget_per_person_vnd:{min:ctx.budget_min,max:ctx.budget_max,currency:"VND"},flexibility:ctx.flexibility,cabin_class:"economy",baggage:"checked_bag",interests:ctx.interests,constraints:ctx.constraints,pace:ctx.pace},null,2)+"\n\nQuy tắc bắt buộc:\n- Không bịa giá. Nếu không có dữ liệu live, đánh dấu data_confidence = \"estimated\" và ghi rõ nguồn tham chiếu.\n- Phân biệt rõ data_confidence: \"live\" / \"cached_24h\" / \"estimated\" cho từng option.\n- Không đề xuất đặt vé hoặc thanh toán.\n- Trả về JSON thuần, không markdown, không giải thích dài.";
+}
+
+function val(id){return document.getElementById(id).value.trim();}
+
+function generate(){
+  var dest=val("destination")||"điểm đến";
+  var travelers=val("travelers")||"nhóm du lịch";
+  var month=val("month")||"tháng chưa xác định";
+  var days=val("days")||"5 ngày";
+  var budget=val("budget")||"ngân sách chưa xác định";
+  var pace=val("pace")||"cân bằng";
+  var interests=val("interests")||"sở thích chưa xác định";
+  var constraints=val("constraints")||"không có ràng buộc";
+  var n=parseDays(days);
+  var adults=parseAdults(travelers);
+  var budgetMax=parseBudgetMax(budget);
+  var budgetMin=Math.round(budgetMax*0.875);
+  var iataCode=mapDest(dest);
+  var depDate="2026-07-10";
+  var retDate="2026-07-"+(10+n-1<10?"0":"")+(10+n-1);
+
+  _tripCtx={origin:"HAN",destination:iataCode,departure_date:depDate,return_date:retDate,adults:adults,budget_min:budgetMin,budget_max:budgetMax,flexibility:mapFlexibility(pace),month:month,interests:interests,constraints:constraints,pace:pace};
+
+  var questions=[
+    "Bạn muốn tập trung ở một vùng hay đi nhiều thành phố/tỉnh khác nhau tại "+dest+"?",
+    "Ngân sách "+budget+"/người đã bao gồm vé máy bay khứ hồi và khách sạn chưa?",
+    "Trong nhóm "+travelers+", có ai cần hạn chế đi bộ nhiều hoặc có yêu cầu ăn uống đặc biệt không?",
+    "Ưu tiên của bạn theo thứ tự nào: "+interests+"?",
+    "Bạn muốn lịch trình "+pace+" — và có muốn giữ nguyên một khách sạn làm base camp không?"
+  ];
+
+  var prompt="Tôi muốn bạn giúp lập kế hoạch du lịch "+dest+" tự túc.\n\nĐừng lập lịch trình ngay. Trước tiên hãy hỏi tôi tối đa 5 câu hỏi để làm rõ các điểm còn thiếu.\n\nBối cảnh hiện có:\n- Nhóm đi: "+travelers+".\n- Thời gian: "+month+", đi "+days+".\n- Ngân sách: "+budget+"/người.\n- Ưu tiên: "+interests+".\n- Phong cách: "+pace+".\n- Ràng buộc: "+constraints+".\n\nSau khi tôi trả lời, hãy lập kế hoạch theo 4 phần:\n1. Các giả định bạn đang dùng.\n2. Lịch trình từng ngày dạng bảng.\n3. Ước tính ngân sách theo hạng mục.\n4. Danh sách điểm cần kiểm chứng lại trước khi đặt dịch vụ.\n\nQuy tắc: Nếu thông tin nào không chắc, ghi rõ 'cần kiểm chứng'. Không bịa giá vé, giờ mở cửa cụ thể.";
+
+  var checklist=[
+    "Vé máy bay: kiểm tra giá thực tế trên Skyscanner, Google Flights — "+month+" là mùa cao điểm",
+    "Khách sạn: kiểm tra giá và tình trạng phòng trên Booking.com / Agoda — đặt sớm",
+    "Giờ mở cửa: xác minh giờ mở cửa thực tế của từng điểm tham quan",
+    "Thời tiết "+month+": "+dest+" "+month+" có thể nóng ẩm hoặc mưa nhiều — chuẩn bị trang phục phù hợp",
+    "Visa / giấy tờ: xác minh yêu cầu visa hiện tại cho công dân Việt Nam",
+    "Khoảng cách di chuyển: kiểm tra thời gian thực tế giữa các điểm (Google Maps / Hyperdia)",
+    "Tổng ngân sách: cộng lại tất cả hạng mục và so sánh với ngân sách "+budget+"/người"
+  ];
+
+  document.getElementById("questions-list").innerHTML=questions.map(function(q,i){return "<li><span class='q-num'>"+(i+1)+"</span><span>"+q+"</span></li>";}).join("");
+  document.getElementById("prompt-box").textContent=prompt;
+  document.getElementById("checklist-list").innerHTML=checklist.map(function(c){return "<li>"+c+"</li>";}).join("");
+  document.getElementById("itin-container").innerHTML=renderItinTable(buildRows(n,pace,interests,constraints));
+  document.getElementById("to-prompt-box").textContent=buildTOPrompt(_tripCtx);
+  document.getElementById("analysis-output").innerHTML="";
+  document.getElementById("output-section").classList.add("visible");
+  document.getElementById("form-card").style.display="none";
+  document.getElementById("output-section").scrollIntoView({behavior:"smooth",block:"start"});
+}
+
+function fmt(n){if(!n&&n!==0)return"—";return n.toLocaleString("vi-VN")+" VND";}
+
+function analyzeResult(){
+  var raw=document.getElementById("json-input").value.trim();
+  if(!raw){document.getElementById("analysis-output").innerHTML="<div class='error-note'>Chưa có dữ liệu. Paste JSON từ Travel Optimizer vào ô trên.</div>";return;}
+  var data;
+  try{data=JSON.parse(raw);}catch(e){document.getElementById("analysis-output").innerHTML="<div class='error-note'>❌ JSON không hợp lệ: "+e.message+"<br>Hãy copy lại toàn bộ JSON từ AI và paste vào ô trên.</div>";return;}
+  if(!data.options||!Array.isArray(data.options)||data.options.length===0){document.getElementById("analysis-output").innerHTML="<div class='error-note'>❌ JSON thiếu field <code>options[]</code>. Yêu cầu AI trả về đúng format.</div>";return;}
+
+  var allEst=data.options.every(function(o){return o.data_confidence==="estimated";});
+  var html="";
+  if(allEst)html+="<div class='est-banner'>⚠️ Tất cả giá vé là <strong>ước tính</strong> (AI-Knowledge mode, không có API live). Kiểm chứng trên Google Flights / Skyscanner trước khi quyết định.</div>";
+
+  var ba=data.budget_alert||{};
+  if(ba.over_budget){
+    html+="<div class='budget-warning'>🚨 <strong>Cảnh báo: Vượt ngân sách!</strong><br>Tổng ước tính vượt ngân sách tối đa. Các gợi ý giảm chi phí:";
+    if(ba.cost_reduction_suggestions&&ba.cost_reduction_suggestions.length){html+="<ul>";ba.cost_reduction_suggestions.forEach(function(s){html+="<li>"+s+"</li>";});html+="</ul>";}
+    else{html+="<ul><li>Xem xét LCC thay vì legacy carrier</li><li>Dời ngày bay sang giữa tuần (thứ Ba/Tư)</li><li>Giảm 1 đêm khách sạn trung tâm, thay bằng khu ngoại ô</li></ul>";}
+    html+="</div>";
+  }
+
+  // Comparison table
+  html+="<h3 style='font-size:14px;font-weight:700;color:var(--navy);margin-bottom:10px;'>Bảng so sánh phương án vé</h3>";
+  html+="<table class='comp-table'><thead><tr><th>#</th><th>Hãng bay</th><th>Hành trình</th><th>Ngày bay</th><th>Giá niêm yết/người</th><th>Giá thực/người*</th><th>Tổng "+(_tripCtx.adults||3)+" người</th><th>Linh hoạt</th><th>Độ tin cậy</th></tr></thead><tbody>";
+  data.options.forEach(function(o){
+    var isRec=o.option_id===data.recommended_option_id;
+    var tags=(o.tags||[]).map(function(t){return "<span class='tag'>"+t+"</span>";}).join("");
+    var confClass=o.data_confidence==="live"?"conf-live":o.data_confidence==="cached_24h"?"conf-cached":"conf-est";
+    var confLabel=o.data_confidence==="live"?"Dữ liệu live":o.data_confidence==="cached_24h"?"Cache 24h":"Ước tính";
+    var p=o.price||{};
+    var flex=o.flexibility_score?o.flexibility_score.score+"/100":"—";
+    var route=o.route?o.route.outbound+" / "+o.route.return:"—";
+    html+="<tr"+(isRec?" class='recommended'":"")+">";
+    html+="<td>"+o.rank+(isRec?"<span class='rec-badge'>Khuyến nghị</span>":"")+"</td>";
+    html+="<td>"+(o.airline||"—")+"<br>"+tags+"</td>";
+    html+="<td>"+route+"</td>";
+    html+="<td>"+(o.departure_date||"—")+"<br>"+(o.return_date||"")+"</td>";
+    html+="<td>"+fmt(p.advertised_per_person_vnd)+"</td>";
+    html+="<td><strong>"+fmt(p.true_total_per_person_vnd)+"</strong></td>";
+    html+="<td>"+fmt(p.total_all_passengers_vnd)+"</td>";
+    html+="<td>"+flex+"</td>";
+    html+="<td><span class='"+confClass+"'>"+confLabel+"</span></td>";
+    html+="</tr>";
+  });
+  html+="</tbody></table><p style='font-size:11px;color:var(--muted);margin-top:6px;'>*Giá thực = base fare + thuế + hành lý + chọn ghế + phí thanh toán</p>";
+
+  // Budget table
+  var recOpt=data.options.find(function(o){return o.option_id===data.recommended_option_id;})||data.options[0];
+  var flightCost=(recOpt&&recOpt.price)?recOpt.price.true_total_per_person_vnd:0;
+  var adults=_tripCtx.adults||3;
+  var budgetMax=_tripCtx.budget_max||40000000;
+
+  html+="<h3 style='font-size:14px;font-weight:700;color:var(--navy);margin:20px 0 10px;'>Phân bổ ngân sách ước tính</h3>";
+  html+="<table class='budget-table'><thead><tr><th>Hạng mục</th><th>Ước tính/người (VND)</th><th>Tổng "+adults+" người (VND)</th><th>% ngân sách</th></tr></thead><tbody>";
+
+  var items=[
+    {name:"Vé máy bay (khứ hồi)",val:flightCost,editable:false},
+    {name:"Khách sạn ("+(_tripCtx.adults?parseDays(document.getElementById("days").value)-1:4)+" đêm)",val:8000000,editable:true,id:"b_hotel"},
+    {name:"Di chuyển nội địa",val:3000000,editable:true,id:"b_transport"},
+    {name:"Ăn uống ("+parseDays(document.getElementById("days").value)+" ngày)",val:5000000,editable:true,id:"b_food"},
+    {name:"Vé tham quan",val:3000000,editable:true,id:"b_attraction"},
+    {name:"Dự phòng (10%)",val:0,editable:false,id:"b_reserve"}
+  ];
+
+  var subtotal=items.slice(0,5).reduce(function(s,i){return s+i.val;},0);
+  items[5].val=Math.round(subtotal*0.1);
+  var total=subtotal+items[5].val;
+
+  items.forEach(function(item){
+    var pct=budgetMax>0?Math.round(item.val/budgetMax*100):0;
+    var valCell=item.editable?
+      "<input type='number' id='"+(item.id||"")+"' value='"+item.val+"' min='0' step='500000' onchange='recalcBudget()' style='width:130px;padding:4px 8px;font-size:13px;' />":
+      "<strong>"+item.val.toLocaleString("vi-VN")+"</strong>";
+    html+="<tr><td>"+item.name+"</td><td>"+valCell+"</td><td id='tot_"+(item.id||item.name.replace(/\s/g,"_"))+"'>"+fmt(item.val*adults)+"</td><td>"+pct+"%</td></tr>";
+  });
+  html+="<tr><td><strong>Tổng cộng</strong></td><td><strong id='grand_per'>"+total.toLocaleString("vi-VN")+"</strong></td><td><strong id='grand_total'>"+fmt(total*adults)+"</strong></td><td id='grand_pct'><strong>"+Math.round(total/budgetMax*100)+"%</strong></td></tr>";
+  html+="</tbody></table>";
+  html+="<p style='font-size:11px;color:var(--muted);margin-top:6px;'>Ngân sách tối đa: "+fmt(budgetMax)+"/người. Các ô có thể chỉnh sửa để tính lại.</p>";
+
+  document.getElementById("analysis-output").innerHTML=html;
+  window._flightResult=data;
+}
+
+function recalcBudget(){
+  var ids=["b_hotel","b_transport","b_food","b_attraction"];
+  var vals=ids.map(function(id){var el=document.getElementById(id);return el?parseInt(el.value)||0:0;});
+  var flightEl=document.querySelector(".comp-table tr.recommended td:nth-child(6) strong");
+  var flight=flightEl?parseInt(flightEl.textContent.replace(/[^\d]/g,""))||0:0;
+  var subtotal=flight+vals.reduce(function(s,v){return s+v;},0);
+  var reserve=Math.round(subtotal*0.1);
+  var total=subtotal+reserve;
+  var adults=_tripCtx.adults||3;
+  var budgetMax=_tripCtx.budget_max||40000000;
+  var grandEl=document.getElementById("grand_per");
+  var grandTotEl=document.getElementById("grand_total");
+  var grandPctEl=document.getElementById("grand_pct");
+  if(grandEl)grandEl.textContent=total.toLocaleString("vi-VN");
+  if(grandTotEl)grandTotEl.textContent=fmt(total*adults);
+  if(grandPctEl)grandPctEl.innerHTML="<strong>"+Math.round(total/budgetMax*100)+"%</strong>";
+}
+
+function skipTO(){
+  var adults=_tripCtx.adults||3;
+  var budgetMax=_tripCtx.budget_max||40000000;
+  var html="<div class='skip-note'>ℹ️ Bỏ qua bước Travel Optimizer. Bảng ngân sách dưới đây dùng giá ước tính mặc định — <strong>chưa có dữ liệu vé thực</strong>.</div>";
+  html+="<h3 style='font-size:14px;font-weight:700;color:var(--navy);margin:16px 0 10px;'>Phân bổ ngân sách ước tính (mặc định)</h3>";
+  html+="<table class='budget-table'><thead><tr><th>Hạng mục</th><th>Ước tính/người (VND)</th><th>Tổng "+adults+" người (VND)</th><th>% ngân sách</th></tr></thead><tbody>";
+  var items=[
+    {name:"Vé máy bay (chưa có dữ liệu)",val:10000000},
+    {name:"Khách sạn",val:8000000},
+    {name:"Di chuyển nội địa",val:3000000},
+    {name:"Ăn uống",val:5000000},
+    {name:"Vé tham quan",val:3000000},
+    {name:"Dự phòng (10%)",val:2900000}
+  ];
+  var total=items.reduce(function(s,i){return s+i.val;},0);
+  items.forEach(function(item){
+    var pct=budgetMax>0?Math.round(item.val/budgetMax*100):0;
+    html+="<tr><td>"+item.name+"</td><td>"+item.val.toLocaleString("vi-VN")+"</td><td>"+fmt(item.val*adults)+"</td><td>"+pct+"%</td></tr>";
+  });
+  html+="<tr><td><strong>Tổng cộng</strong></td><td><strong>"+total.toLocaleString("vi-VN")+"</strong></td><td><strong>"+fmt(total*adults)+"</strong></td><td><strong>"+Math.round(total/budgetMax*100)+"%</strong></td></tr>";
+  html+="</tbody></table>";
+  document.getElementById("analysis-output").innerHTML=html;
+}
+
+function copyPrompt(){
+  var text=document.getElementById("prompt-box").textContent;
+  navigator.clipboard.writeText(text).then(function(){showFb("copy-feedback");}).catch(function(){fbFallback("prompt-box","copy-feedback");});
+}
+function copyToPrompt(){
+  var text=document.getElementById("to-prompt-box").textContent;
+  navigator.clipboard.writeText(text).then(function(){showFb("copy-to-feedback");}).catch(function(){fbFallback("to-prompt-box","copy-to-feedback");});
+}
+function fbFallback(boxId,fbId){var ta=document.createElement("textarea");ta.value=document.getElementById(boxId).textContent;document.body.appendChild(ta);ta.select();document.execCommand("copy");document.body.removeChild(ta);showFb(fbId);}
+function showFb(id){var fb=document.getElementById(id);fb.classList.add("show");setTimeout(function(){fb.classList.remove("show");},2000);}
+function resetForm(){document.getElementById("output-section").classList.remove("visible");document.getElementById("form-card").style.display="block";document.getElementById("analysis-output").innerHTML="";window.scrollTo({top:0,behavior:"smooth"});}
+</script>
+</body>
+</html>
