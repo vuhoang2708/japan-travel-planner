@@ -650,7 +650,7 @@
   <div class="header">
     <div class="phase-badge">v2 · End-User Edition</div>
     <h1>Tourist Agent</h1>
-    <p>Tự thiết kế lịch trình du lịch Nhật Bản tự túc dễ dàng trong 4 bước</p>
+    <p>Tự thiết kế lịch trình du lịch tự túc dễ dàng trong 4 bước — cho mọi điểm đến</p>
   </div>
 
   <div class="progress-bar">
@@ -667,7 +667,8 @@
   <div class="card step-panel active" id="step-1">
     <h2><span>✏️</span> Nhập thông tin chuyến đi</h2>
     <div class="form-grid">
-      <div class="field"><label for="destination">Điểm đến</label><input type="text" id="destination" value="Nhật Bản" /></div>
+      <div class="field"><label for="destination">Điểm đến</label><input type="text" id="destination" placeholder="VD: Nhật Bản, Hàn Quốc, Thái Lan..." value="" /></div>
+      <div class="field"><label for="origin_city">Thành phố xuất phát</label><input type="text" id="origin_city" placeholder="VD: Hà Nội, TP. Hồ Chí Minh, Đà Nẵng..." value="" /></div>
       <div class="field"><label for="travelers">Số người</label><input type="text" id="travelers" value="3 người lớn" /></div>
       <div class="field"><label for="month">Tháng đi</label><input type="text" id="month" value="Tháng 7" /></div>
       <div class="field"><label for="days">Số ngày</label><input type="text" id="days" value="5 ngày" /></div>
@@ -821,16 +822,25 @@
 </div>
 
 <script>
-var REGIONS = [
-  {name:"Tokyo – Shinjuku", spots:["Vườn Shinjuku Gyoen","Đền Meiji","Phố Harajuku","Ngã tư Shibuya","Akihabara"]},
-  {name:"Tokyo – Asakusa", spots:["Chùa Senso-ji","Phố Nakamise","Sông Sumida","Tháp Tokyo Skytree","Công viên Ueno"]},
-  {name:"Nikko", spots:["Đền Tosho-gu","Thác Kegon","Hồ Chuzenji","Chùa Rinnoji","Kanmangafuchi"]},
-  {name:"Hakone", spots:["Ngắm núi Phú Sĩ","Bảo tàng Ngoài trời Hakone","Du thuyền hồ Ashi","Owakudani","Cáp treo Hakone"]},
-  {name:"Kyoto – Higashiyama", spots:["Đền Fushimi Inari","Chùa Vàng Kinkaku-ji","Rừng Tre Arashiyama","Phố cổ Gion","Chợ Nishiki"]},
-  {name:"Osaka", spots:["Phố ăn uống Dotonbori","Lâu đài Osaka","Chợ Kuromon","Khu Shinsekai","Namba"]},
-  {name:"Nara", spots:["Công viên hươu Nara","Chùa Todai-ji","Đền Kasuga","Phố cổ Naramachi","Vườn Isuien"]}
-];
-var MEALS = ["Ramen địa phương","Sushi băng chuyền","Udon tươi","Tonkatsu","Okonomiyaki","Izakaya địa phương","Tempura tại chợ","Yakitori phố đêm"];
+function buildGenericRegions(dest, n) {
+  var d = dest && dest.trim() ? dest.trim() : "điểm đến";
+  var regions = [];
+  var types = [
+    ["Khu phố cổ", ["Phố cổ trung tâm " + d, "Chợ truyền thống địa phương", "Đền/chùa nổi tiếng", "Bảo tàng lịch sử", "Phố đi bộ"]],
+    ["Khu thiên nhiên", ["Công viên quốc gia", "Điểm ngắm cảnh nổi tiếng", "Hồ / thác nước", "Núi / đồi nhìn toàn cảnh", "Vườn thực vật"]],
+    ["Khu ẩm thực & mua sắm", ["Chợ đêm địa phương", "Phố ẩm thực nổi tiếng", "Trung tâm mua sắm", "Làng nghề truyền thống", "Phố cà phê"]],
+    ["Khu di sản văn hoá", ["Di tích lịch sử nổi tiếng", "Làng cổ được bảo tồn", "Bảo tàng văn hoá dân tộc", "Không gian nghệ thuật", "Triển lãm thủ công mỹ nghệ"]],
+    ["Khu trải nghiệm địa phương", ["Tour thực địa cùng người bản địa", "Lớp học nấu ăn truyền thống", "Chợ sớm / chợ nông sản", "Làng chài / phố thuyền", "Khu phố sáng tạo"]],
+    ["Ngoại ô & điểm tham quan xa", ["Điểm tham quan ngoại ô " + d, "Rừng / vườn quốc gia gần đó", "Bãi biển / hồ nước lớn", "Thành cổ / pháo đài", "Làng nghề truyền thống vùng ngoại ô"]],
+    ["Khu hiện đại", ["Tòa nhà biểu tượng thành phố", "Khu phức hợp giải trí", "Không gian công cộng hiện đại", "Sky bar / điểm ngắm đêm", "Khu startup & sáng tạo"]]
+  ];
+  for (var i = 0; i < n; i++) {
+    var t = types[i % types.length];
+    regions.push({name: t[0] + " — " + d, spots: t[1]});
+  }
+  return regions;
+}
+var MEALS = ["Đặc sản địa phương","Ẩm thực đường phố","Quán ăn gia đình truyền thống","Buffet địa phương","Hải sản tươi sống","Nhà hàng địa phương nổi tiếng","Chợ đêm ẩm thực","Quán cà phê & bánh ngọt địa phương"];
 
 var _tripCtx = {};
 var _flightResult = null;
@@ -856,9 +866,15 @@ function parseBudgetMax(s){
   return Math.max.apply(null, nums) * 1000000;
 }
 function mapDest(s){
-  var l = s.toLowerCase();
+  var l = s.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g,"");
   if(l.indexOf("nhat") >= 0 || l.indexOf("japan") >= 0) return "TYO";
-  return "TYO";
+  if(l.indexOf("han") >= 0 || l.indexOf("korea") >= 0) return "ICN";
+  if(l.indexOf("thai") >= 0 || l.indexOf("bangkok") >= 0) return "BKK";
+  if(l.indexOf("singapore") >= 0) return "SIN";
+  if(l.indexOf("paris") >= 0 || l.indexOf("phap") >= 0) return "CDG";
+  if(l.indexOf("london") >= 0 || l.indexOf("anh") >= 0) return "LHR";
+  if(l.indexOf("my") >= 0 || l.indexOf("usa") >= 0 || l.indexOf("america") >= 0) return "LAX";
+  return s.toUpperCase().replace(/\s+/g,"").substring(0,3) || "INT";
 }
 function mapFlexibility(pace){
   if(pace.indexOf("thư") >= 0) return "high";
@@ -875,7 +891,8 @@ function getBudget(pace, i){
   return b[key][i%3];
 }
 
-function buildRows(n, pace, interests, constraints){
+function buildRows(n, pace, interests, constraints, dest){
+  var REGIONS = buildGenericRegions(dest, n);
   var spd = pace.indexOf("thư") >= 0 ? 2 : pace.indexOf("tối") >= 0 ? 4 : 3;
   var rows = [];
   for(var d = 0; d < n; d++){
@@ -946,7 +963,8 @@ function goToStep(n) {
 }
 
 function generateDraftItinerary(){
-  var dest = val("destination") || "Nhật Bản";
+  var dest = val("destination");
+  if(!dest){ alert("Vui lòng nhập điểm đến trước."); document.getElementById("destination").focus(); return; }
   var travelers = val("travelers") || "3 người lớn";
   var month = val("month") || "Tháng 7";
   var days = val("days") || "5 ngày";
@@ -954,9 +972,9 @@ function generateDraftItinerary(){
   var pace = val("pace") || "cân bằng";
   var interests = val("interests") || "Cảnh đẹp tự nhiên, quán ăn local ngon";
   var constraints = val("constraints") || "Hạn chế đổi khách sạn quá nhiều";
-  
+
   var n = parseDays(days);
-  _rows = buildRows(n, pace, interests, constraints);
+  _rows = buildRows(n, pace, interests, constraints, dest);
   
   document.getElementById("summary-travelers").textContent = travelers;
   document.getElementById("summary-month").textContent = month;
@@ -983,11 +1001,13 @@ function generateDraftItinerary(){
   var budgetMax = parseBudgetMax(budget);
   var budgetMin = Math.round(budgetMax * 0.875);
   var iataCode = mapDest(dest);
+  var originRaw = val("origin_city") || "";
+  var originCode = originRaw ? mapDest(originRaw) : "HAN";
   var depDate = "2026-07-10";
   var retDate = "2026-07-" + (10 + n - 1 < 10 ? "0" : "") + (10 + n - 1);
-  
+
   _tripCtx = {
-    origin: "HAN",
+    origin: originCode,
     destination: iataCode,
     departure_date: depDate,
     return_date: retDate,
@@ -1281,7 +1301,7 @@ function switchTab(tabId) {
 }
 
 function renderFinalPlan() {
-  var dest = val("destination") || "Nhật Bản";
+  var dest = val("destination") || _tripCtx.destination || "điểm đến";
   var travelers = val("travelers") || "3 người lớn";
   var month = val("month") || "Tháng 7";
   var daysStr = val("days") || "5 ngày";
@@ -1338,7 +1358,7 @@ function renderFinalPlan() {
     detailsHtml += "<p style='margin-bottom: 8px;'><strong>Chiều:</strong> " + r.afternoon + "</p>";
     detailsHtml += "<p style='margin-bottom: 8px;'><strong>Tối:</strong> " + r.evening + "</p>";
     detailsHtml += "<p style='margin-bottom: 8px;'><strong>Ăn uống:</strong> Món ngon địa phương hợp sở thích (" + interests + "): " + mealName + "</p>";
-    detailsHtml += "<p style='margin-bottom: 8px;'><strong>Phương tiện di chuyển:</strong> Tàu điện ngầm, xe buýt công cộng hoặc đi bộ (Sử dụng thẻ thông minh Suica / PASMO)</p>";
+    detailsHtml += "<p style='margin-bottom: 8px;'><strong>Phương tiện di chuyển:</strong> Phương tiện công cộng địa phương (tàu điện, xe buýt, taxi) hoặc đi bộ</p>";
     detailsHtml += "<p style='margin-bottom: 0;'><strong>Ngân sách ăn uống ước tính:</strong> ~" + r.budget + "/người</p>";
     
     // Add dynamic checks from verification if present
@@ -1366,7 +1386,7 @@ function renderFinalPlan() {
 
   // 5. Tab 2: Zalo / Email message template
   var msg = "Xin chào cả nhóm!\n\n";
-  msg += "Mình đã thiết lập lịch trình du lịch Nhật Bản tự túc cho mọi người tham khảo:\n";
+  msg += "Mình đã lên lịch trình du lịch " + dest + " tự túc cho mọi người tham khảo:\n";
   msg += "- Hành trình: " + dest + " (" + daysStr + ")\n";
   msg += "- Thời gian đi dự kiến: " + month + "\n";
   msg += "- Nhóm tham gia: " + travelers + "\n";
@@ -1405,7 +1425,7 @@ function renderFinalPlan() {
   msg += "\nCÁC BƯỚC CẦN CHUẨN BỊ TIẾP THEO:\n";
   msg += "1. Kiểm tra chính xác giá vé thời điểm hiện tại trên Skyscanner/Google Flights\n";
   msg += "2. Đặt trước phòng khách sạn sớm để có giá tốt\n";
-  msg += "3. Làm thủ tục visa đi Nhật Bản\n";
+  msg += "3. Kiểm tra yêu cầu visa đi " + dest + " cho hộ chiếu Việt Nam\n";
   msg += "4. Xác minh giờ mở cửa và cách đi lại giữa các điểm du lịch\n\n";
   msg += "*Lịch trình và chi phí ước tính, mọi người cùng xem và cho ý kiến nhé!";
   document.getElementById("message-box").textContent = msg;
@@ -1433,10 +1453,10 @@ function renderFinalPlan() {
   todoHtml += "<div class='todo-group'><h4>Nhóm B — Cần làm sau khi chốt xong vé máy bay và phòng</h4><ul class='todo-items'>";
   var groupB = [
     "Mua bảo hiểm du lịch quốc tế",
-    "Chuẩn bị đổi tiền Yên Nhật (hoặc thẻ thanh toán quốc tế VISA/Mastercard)",
-    "Tải ứng dụng bản đồ offline, ứng dụng chỉ đường tàu điện tại Nhật",
+    "Chuẩn bị đổi ngoại tệ hoặc thẻ thanh toán quốc tế VISA/Mastercard",
+    "Tải ứng dụng bản đồ offline và ứng dụng tra cứu phương tiện công cộng tại " + dest,
     "Đăng ký chuyển vùng quốc tế hoặc mua SIM/eSIM du lịch",
-    "Chuẩn bị ổ cắm chuyển đổi đa năng (chân dẹt chuẩn Nhật Bản)"
+    "Kiểm tra yêu cầu ổ cắm điện và chuẩn bị bộ chuyển đổi phù hợp với " + dest
   ];
   groupB.forEach(function(item, idx) {
     todoHtml += "<li class='todo-item'><input type='checkbox' id='todo-b-" + idx + "' onchange='toggleTodo(this)'><label for='todo-b-" + idx + "' class='todo-item-text'>" + item + "</label></li>";
@@ -1478,7 +1498,7 @@ function toggleTodo(checkbox) {
 }
 
 function copyItinerary() {
-  var dest = val("destination") || "Nhật Bản";
+  var dest = val("destination") || _tripCtx.destination || "điểm đến";
   var travelers = val("travelers") || "3 người lớn";
   var month = val("month") || "Tháng 7";
   var daysStr = val("days") || "5 ngày";
