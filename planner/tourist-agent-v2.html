@@ -253,6 +253,10 @@
       flex-wrap: wrap;
       margin-top: 24px;
     }
+    @media (max-width: 480px) {
+      .actions { flex-direction: column; }
+      .actions .btn, .actions .btn-secondary { width: 100%; text-align: center; }
+    }
     .step-panel {
       display: none;
     }
@@ -649,7 +653,7 @@
   
   <div class="header">
     <div class="phase-badge">v2 · End-User Edition</div>
-    <h1>Tourist Agent</h1>
+    <h1>✈️ Tourist Agent</h1>
     <p>Tự thiết kế lịch trình du lịch tự túc dễ dàng trong 4 bước — cho mọi điểm đến</p>
   </div>
 
@@ -814,8 +818,9 @@
       <div id="todo-list-container"></div>
     </div>
 
-    <div style="border-top: 2px solid var(--bg); margin-top: 32px; padding-top: 16px;">
-      <a class="reset-link" onclick="resetForm()">← Quay lại từ đầu</a>
+    <div style="border-top: 2px solid var(--bg); margin-top: 32px; padding-top: 16px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;">
+      <button class="btn btn-secondary" onclick="goToStep(3)" style="font-size: 13px; padding: 8px 16px;">← Quay lại Bước 3</button>
+      <a class="reset-link" onclick="resetForm()" style="margin-top: 0;">↺ Bắt đầu chuyến đi mới</a>
     </div>
   </div>
 
@@ -974,8 +979,14 @@ function generateDraftItinerary(){
   var constraints = val("constraints") || "Hạn chế đổi khách sạn quá nhiều";
 
   var n = parseDays(days);
+  if(n < 1 || n > 30){ alert("Số ngày phải từ 1 đến 30."); return; }
+  var adults = parseAdults(travelers);
+  if(adults < 1){ alert("Số người phải ít nhất là 1."); return; }
+  var budgetMax = parseBudgetMax(budget);
+  if(budgetMax <= 0){ alert("Ngân sách phải là số dương."); return; }
+
   _rows = buildRows(n, pace, interests, constraints, dest);
-  
+
   document.getElementById("summary-travelers").textContent = travelers;
   document.getElementById("summary-month").textContent = month;
   document.getElementById("summary-budget").textContent = budget;
@@ -996,9 +1007,7 @@ function generateDraftItinerary(){
   
   document.getElementById("draft-itin-container").innerHTML = html;
   document.getElementById("step-2-header").innerHTML = "<span>📅</span> Lịch trình nháp — " + dest + ", " + days;
-  
-  var adults = parseAdults(travelers);
-  var budgetMax = parseBudgetMax(budget);
+
   var budgetMin = Math.round(budgetMax * 0.875);
   var iataCode = mapDest(dest);
   var originRaw = val("origin_city") || "";
@@ -1587,15 +1596,27 @@ function copyTodoList() {
 }
 
 function resetForm(){
+  // Reset input fields về mặc định
+  document.getElementById("destination").value = "";
+  document.getElementById("origin_city").value = "";
+  document.getElementById("travelers").value = "3 người lớn";
+  document.getElementById("month").value = "Tháng 7";
+  document.getElementById("days").value = "5 ngày";
+  document.getElementById("budget").value = "35–40 triệu VND";
+  document.getElementById("pace").value = "cân bằng";
+  document.getElementById("interests").value = "Cảnh đẹp tự nhiên, quán ăn local ngon";
+  document.getElementById("constraints").value = "Hạn chế đổi khách sạn quá nhiều";
+
   // Reset outputs
   document.getElementById("json-input").value = "";
   document.getElementById("analysis-output").innerHTML = "";
   document.getElementById("column-right").style.display = "none";
-  
+  document.getElementById("draft-itin-container").innerHTML = "";
+
   _flightResult = null;
   _vgResult = null;
   _rows = [];
-  
+
   // Go back to step 1
   goToStep(1);
 }
