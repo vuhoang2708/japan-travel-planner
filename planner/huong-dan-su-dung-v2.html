@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Hướng Dẫn Sử Dụng — Tourist Agent Wizard</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #f1f5f9;
+      --paper: #ffffff;
+      --navy: #0f172a;
+      --orange: #f97316;
+      --orange-light: #fff7ed;
+      --green: #10b981;
+      --green-light: #ecfdf5;
+      --blue: #3b82f6;
+      --blue-light: #eff6ff;
+      --muted: #64748b;
+      --line: #e2e8f0;
+      --radius: 12px;
+      --teal: #0d9488;
+    }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: var(--bg);
+      color: #1e293b;
+      line-height: 1.65;
+      padding: 24px 16px 64px;
+    }
+    .container { max-width: 860px; margin: 0 auto; }
+
+    /* Header */
+    .header {
+      background: linear-gradient(135deg, #0f172a 0%, #1e3a5f 100%);
+      color: #fff;
+      border-radius: var(--radius);
+      padding: 28px 32px;
+      margin-bottom: 24px;
+    }
+    .badge {
+      display: inline-block;
+      background: var(--teal);
+      color: #fff;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: .07em;
+      text-transform: uppercase;
+      padding: 3px 10px;
+      border-radius: 20px;
+      margin-bottom: 12px;
+    }
+    .header h1 { font-size: 24px; font-weight: 800; margin-bottom: 8px; }
+    .header p { font-size: 14px; opacity: .85; max-width: 560px; }
+    .header .cta-row { margin-top: 20px; display: flex; gap: 10px; flex-wrap: wrap; }
+    .btn-hero {
+      display: inline-block;
+      background: var(--orange);
+      color: #fff;
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: 700;
+      padding: 10px 22px;
+      border-radius: 8px;
+      transition: opacity .15s;
+    }
+    .btn-hero:hover { opacity: .88; }
+    .btn-hero-outline {
+      display: inline-block;
+      border: 2px solid rgba(255,255,255,.5);
+      color: #fff;
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: 600;
+      padding: 9px 20px;
+      border-radius: 8px;
+      transition: border-color .15s;
+    }
+    .btn-hero-outline:hover { border-color: #fff; }
+
+    /* Card */
+    .card {
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 24px 28px;
+      margin-bottom: 20px;
+    }
+    .card-title {
+      font-size: 17px;
+      font-weight: 700;
+      color: var(--navy);
+      margin-bottom: 18px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    /* Progress strip */
+    .progress-strip {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0;
+      margin: 24px 0;
+      flex-wrap: wrap;
+    }
+    .prog-node {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+    }
+    .prog-circle {
+      width: 44px; height: 44px;
+      border-radius: 50%;
+      background: var(--orange);
+      color: #fff;
+      font-size: 16px;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 2px 8px rgba(249,115,22,.35);
+    }
+    .prog-label {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--muted);
+      text-align: center;
+      max-width: 72px;
+      line-height: 1.3;
+    }
+    .prog-arrow {
+      width: 40px; height: 3px;
+      background: var(--line);
+      margin: 0 4px;
+      margin-bottom: 20px;
+    }
+
+    /* Step cards */
+    .steps-grid { display: grid; gap: 16px; }
+    .step-card {
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      overflow: hidden;
+    }
+    .step-card-head {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 14px 18px;
+      background: var(--bg);
+      border-bottom: 1px solid var(--line);
+    }
+    .step-num {
+      width: 34px; height: 34px;
+      border-radius: 50%;
+      background: var(--orange);
+      color: #fff;
+      font-size: 15px;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .step-card-head h3 { font-size: 15px; font-weight: 700; color: var(--navy); }
+    .step-card-head .step-sub { font-size: 12px; color: var(--muted); margin-top: 2px; }
+    .step-card-body { padding: 16px 18px; font-size: 14px; }
+    .step-card-body p { margin-bottom: 10px; }
+    .step-card-body p:last-child { margin-bottom: 0; }
+    .step-card-body ul { padding-left: 18px; margin-bottom: 10px; }
+    .step-card-body li { margin-bottom: 5px; }
+
+    /* Highlight box */
+    .tip-box {
+      background: var(--blue-light);
+      border: 1px solid #bfdbfe;
+      border-left: 4px solid var(--blue);
+      border-radius: 8px;
+      padding: 12px 16px;
+      font-size: 13px;
+      color: #1e40af;
+      margin-top: 12px;
+    }
+    .tip-box strong { color: #1d4ed8; }
+
+    .note-box {
+      background: #fffbeb;
+      border: 1px solid #fde68a;
+      border-left: 4px solid #f59e0b;
+      border-radius: 8px;
+      padding: 12px 16px;
+      font-size: 13px;
+      color: #92400e;
+      margin-top: 12px;
+    }
+
+    .success-box {
+      background: var(--green-light);
+      border: 1px solid #a7f3d0;
+      border-left: 4px solid var(--green);
+      border-radius: 8px;
+      padding: 12px 16px;
+      font-size: 13px;
+      color: #065f46;
+      margin-top: 12px;
+    }
+
+    /* Output badges */
+    .output-row { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+    .out-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      background: var(--green-light);
+      border: 1px solid #a7f3d0;
+      color: #065f46;
+      font-size: 12px;
+      font-weight: 600;
+      padding: 4px 10px;
+      border-radius: 6px;
+    }
+
+    /* Comparison table */
+    .compare-table { width: 100%; border-collapse: collapse; font-size: 13px; margin-top: 8px; }
+    .compare-table th {
+      background: var(--navy);
+      color: #fff;
+      padding: 9px 12px;
+      text-align: left;
+      font-size: 12px;
+      font-weight: 700;
+    }
+    .compare-table td { padding: 9px 12px; border: 1px solid var(--line); vertical-align: top; }
+    .compare-table tr:nth-child(even) td { background: #f8fafc; }
+    .compare-table td:first-child { font-weight: 600; }
+    .tag-v2 { background: var(--orange-light); color: var(--orange); border: 1px solid #fed7aa; }
+    .tag-expert { background: #f0f4ff; color: #3730a3; border: 1px solid #c7d2fe; }
+    .version-tag {
+      display: inline-block;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 2px 8px;
+      border-radius: 4px;
+    }
+
+    /* FAQ */
+    details { margin-bottom: 10px; border: 1px solid var(--line); border-radius: 8px; overflow: hidden; }
+    summary {
+      background: #f8fafc;
+      padding: 13px 16px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      list-style: none;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    summary::-webkit-details-marker { display: none; }
+    summary::before { content: "›"; font-size: 18px; color: var(--muted); transition: transform .2s; }
+    details[open] summary::before { transform: rotate(90deg); }
+    details[open] summary { background: #e0f2fe; color: #0c4a6e; border-bottom: 1px solid var(--line); }
+    .faq-body { padding: 14px 16px; font-size: 14px; line-height: 1.65; }
+
+    /* Disclaimer */
+    .disclaimer {
+      background: #fffbeb;
+      border: 1px solid #fde68a;
+      border-radius: 10px;
+      padding: 18px 22px;
+      font-size: 13px;
+      color: #78350f;
+      margin-top: 20px;
+    }
+    .disclaimer strong { color: #92400e; }
+
+    /* Responsive */
+    @media (max-width: 600px) {
+      .header { padding: 20px 18px; }
+      .card { padding: 18px 16px; }
+      .prog-arrow { width: 20px; }
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+
+  <!-- Header -->
+  <div class="header">
+    <div class="badge">Hướng Dẫn Sử Dụng · Wizard Edition v2</div>
+    <h1>✈️ Tourist Agent — Wizard Edition</h1>
+    <p>Lên kế hoạch du lịch cùng AI trong 4 bước đơn giản. Không cần cài đặt, không cần tài khoản — chạy thẳng trên trình duyệt.</p>
+    <div class="cta-row">
+      <a href="tourist-agent-v2.html" class="btn-hero">🚀 Mở Tourist Agent ngay</a>
+      <a href="user_guide_tourist_agent.html" class="btn-hero-outline">📖 Xem tổng quan đầy đủ</a>
+    </div>
+  </div>
+
+  <!-- Tổng quan nhanh -->
+  <div class="card">
+    <div class="card-title"><span>⚡</span> Tóm tắt trong 30 giây</div>
+    <p>Tourist Agent Wizard giúp bạn đi từ <strong>"tôi muốn đi du lịch"</strong> đến <strong>"kế hoạch hoàn chỉnh + danh sách việc cần làm"</strong> chỉ trong một file HTML duy nhất.</p>
+    <p>Bạn không cần biết gì về AI, không cần biết "prompt" là gì. Chỉ cần điền thông tin, nhấn nút, và copy kết quả.</p>
+
+    <div class="progress-strip">
+      <div class="prog-node">
+        <div class="prog-circle">1</div>
+        <div class="prog-label">Nhập thông tin</div>
+      </div>
+      <div class="prog-arrow"></div>
+      <div class="prog-node">
+        <div class="prog-circle">2</div>
+        <div class="prog-label">Xem lịch trình nháp</div>
+      </div>
+      <div class="prog-arrow"></div>
+      <div class="prog-node">
+        <div class="prog-circle">3</div>
+        <div class="prog-label">Tìm vé máy bay</div>
+      </div>
+      <div class="prog-arrow"></div>
+      <div class="prog-node">
+        <div class="prog-circle">4</div>
+        <div class="prog-label">Kế hoạch cuối</div>
+      </div>
+    </div>
+
+    <div class="success-box">
+      <strong>Hoàn toàn miễn phí.</strong> Không đăng ký tài khoản, không API key, không kết nối internet. File HTML chạy offline ngay trên máy bạn.
+    </div>
+  </div>
+
+  <!-- Hướng dẫn từng bước -->
+  <div class="card">
+    <div class="card-title"><span>📋</span> Hướng dẫn từng bước</div>
+
+    <div class="steps-grid">
+
+      <!-- Bước 1 -->
+      <div class="step-card">
+        <div class="step-card-head">
+          <div class="step-num">1</div>
+          <div>
+            <h3>Nhập thông tin chuyến đi</h3>
+            <div class="step-sub">Mất khoảng 1–2 phút</div>
+          </div>
+        </div>
+        <div class="step-card-body">
+          <p>Điền 6 ô thông tin cơ bản: <strong>điểm đến, số người, tháng đi, số ngày, ngân sách, và nhịp độ</strong> (thư thả / cân bằng / nhiều điểm).</p>
+          <p>Muốn thêm chi tiết? Mở phần <em>"Thông tin thêm (tùy chọn)"</em> để điền sở thích và ràng buộc đặc biệt.</p>
+          <p>Nhấn <strong>"Xem lịch trình →"</strong> để sang bước tiếp theo.</p>
+          <div class="tip-box">
+            <strong>Mẹo:</strong> Các ô đã có giá trị mặc định sẵn — bạn chỉ cần chỉnh những thứ khác với ví dụ.
+          </div>
+        </div>
+      </div>
+
+      <!-- Bước 2 -->
+      <div class="step-card">
+        <div class="step-card-head">
+          <div class="step-num">2</div>
+          <div>
+            <h3>Xem và điều chỉnh lịch trình nháp</h3>
+            <div class="step-sub">Hệ thống tự động tạo ngay lập tức</div>
+          </div>
+        </div>
+        <div class="step-card-body">
+          <p>Lịch trình theo từng ngày sẽ tự động xuất hiện — mỗi ngày là một ô có thể mở ra xem chi tiết buổi sáng, chiều, tối và ngân sách ước tính.</p>
+          <p>Đây là lịch trình <strong>tham khảo để lên ngân sách</strong>. Bạn sẽ tinh chỉnh ở bước cuối.</p>
+          <ul>
+            <li>Muốn chỉnh thông tin → nhấn <strong>"← Chỉnh thông tin"</strong></li>
+            <li>Hài lòng → nhấn <strong>"Tìm vé máy bay →"</strong></li>
+          </ul>
+          <div class="output-row">
+            <span class="out-badge">📅 Lịch trình theo ngày</span>
+            <span class="out-badge">💰 Ngân sách ước tính</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Bước 3 -->
+      <div class="step-card">
+        <div class="step-card-head">
+          <div class="step-num">3</div>
+          <div>
+            <h3>Tìm phương án vé máy bay</h3>
+            <div class="step-sub">Tùy chọn — có thể bỏ qua</div>
+          </div>
+        </div>
+        <div class="step-card-body">
+          <p>Bước này giúp bạn so sánh 3 phương án vé thực tế từ AI. Làm theo 3 bước nhỏ:</p>
+          <ol style="padding-left: 18px; margin-bottom: 12px;">
+            <li style="margin-bottom: 6px;">Nhấn <strong>"🤖 Hỏi AI về vé"</strong> → yêu cầu tìm vé đã được copy vào clipboard</li>
+            <li style="margin-bottom: 6px;">Dán vào cửa sổ chat AI (Gemini, ChatGPT, hoặc Claude) và gửi</li>
+            <li style="margin-bottom: 6px;">Nhấn <strong>"Nhập kết quả thủ công"</strong> → dán câu trả lời của AI vào → <strong>"Phân tích kết quả"</strong></li>
+          </ol>
+          <p>Bảng so sánh 3 phương án vé sẽ hiện ra với nhãn thân thiện: <strong>✅ Đã xác minh / 🔶 Ước tính</strong>.</p>
+          <div class="note-box">
+            Không muốn tìm vé lúc này? Nhấn <strong>"Bỏ qua — dùng giá ước tính"</strong> để sang thẳng Bước 4.
+          </div>
+        </div>
+      </div>
+
+      <!-- Bước 4 -->
+      <div class="step-card">
+        <div class="step-card-head">
+          <div class="step-num">4</div>
+          <div>
+            <h3>Kế hoạch cuối — sẵn sàng lên đường!</h3>
+            <div class="step-sub">3 tab kết quả để copy và dùng ngay</div>
+          </div>
+        </div>
+        <div class="step-card-body">
+          <p>Toàn bộ thông tin hội tụ thành 3 tab:</p>
+          <ul>
+            <li><strong>📅 Lịch trình</strong> — lịch trình tổng hợp theo từng ngày, có thể copy gửi nhóm</li>
+            <li><strong>💬 Nhắn tin cho nhóm</strong> — tin nhắn soạn sẵn để gửi Zalo/Messenger, tự động kèm thông tin vé</li>
+            <li><strong>✅ Việc cần làm</strong> — checklist chia 3 nhóm: Làm ngay / Sau khi chốt vé / Cần kiểm tra thêm</li>
+          </ul>
+          <p>Mỗi tab đều có nút <strong>copy</strong> — nhấn một cái là lấy ngay nội dung dạng text sạch.</p>
+          <div class="success-box">
+            Muốn lên kế hoạch chuyến đi khác? Nhấn <strong>"← Bắt đầu lại"</strong> để reset toàn bộ.
+          </div>
+          <div class="output-row">
+            <span class="out-badge">📅 Lịch trình cuối</span>
+            <span class="out-badge">💬 Tin nhắn nhóm</span>
+            <span class="out-badge">✅ Checklist 3 nhóm</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- So sánh 2 phiên bản -->
+  <div class="card">
+    <div class="card-title"><span>🔀</span> Có 2 phiên bản — dùng cái nào?</div>
+    <table class="compare-table">
+      <thead>
+        <tr>
+          <th>Tiêu chí</th>
+          <th><span class="version-tag tag-v2">Wizard v2</span> (file này)</th>
+          <th><span class="version-tag tag-expert">Expert Edition</span> (5 phase)</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Dành cho</td>
+          <td>Người dùng phổ thông, gia đình, nhóm bạn</td>
+          <td>Người học AI, muốn hiểu bên trong hệ thống</td>
+        </tr>
+        <tr>
+          <td>Số file cần mở</td>
+          <td>1 file duy nhất</td>
+          <td>5 file riêng biệt (Phase 1 → 5)</td>
+        </tr>
+        <tr>
+          <td>Thuật ngữ kỹ thuật</td>
+          <td>Ẩn hoàn toàn (prompt, JSON, Verification Gate…)</td>
+          <td>Hiển thị đầy đủ để học</td>
+        </tr>
+        <tr>
+          <td>Prompt / JSON</td>
+          <td>Ẩn sau nút "Hỏi AI về vé"</td>
+          <td>Hiển thị, có thể chỉnh sửa</td>
+        </tr>
+        <tr>
+          <td>Phù hợp để</td>
+          <td>Lên kế hoạch thực tế, nhanh gọn</td>
+          <td>Demo lớp học AI, tìm hiểu kiến trúc agent</td>
+        </tr>
+        <tr>
+          <td>Mở file</td>
+          <td><a href="tourist-agent-v2.html" style="color: var(--orange); font-weight: 600;">tourist-agent-v2.html</a></td>
+          <td><a href="user_guide_tourist_agent.html" style="color: #3730a3; font-weight: 600;">Xem User Guide đầy đủ →</a></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- FAQ -->
+  <div class="card">
+    <div class="card-title"><span>❓</span> Câu hỏi thường gặp</div>
+
+    <details>
+      <summary>Tôi cần cài đặt gì không?</summary>
+      <div class="faq-body">
+        Không cần cài gì cả. Chỉ cần double-click vào file <strong>tourist-agent-v2.html</strong> để mở trong Chrome, Edge, hoặc Safari là dùng được ngay. File chạy hoàn toàn offline.
+      </div>
+    </details>
+
+    <details>
+      <summary>Bước 3 (tìm vé) — tôi cần dùng AI nào?</summary>
+      <div class="faq-body">
+        Bạn có thể dùng bất kỳ AI miễn phí nào: <strong>Gemini</strong> (gemini.google.com), <strong>ChatGPT</strong> (chatgpt.com), hoặc <strong>Claude</strong> (claude.ai). Nhấn nút "Hỏi AI về vé", dán vào chat AI, gửi, rồi copy kết quả trả về dán ngược lại vào tool.
+      </div>
+    </details>
+
+    <details>
+      <summary>Giá vé trong tool có chính xác không?</summary>
+      <div class="faq-body">
+        Dữ liệu giá vé là <strong>ước tính</strong> dựa trên kiến thức của AI — đủ để lên ngân sách tham khảo. Trước khi đặt vé thật, luôn kiểm tra lại trên <strong>Google Flights, Skyscanner, hoặc trang hãng bay</strong>.
+      </div>
+    </details>
+
+    <details>
+      <summary>Tôi có thể bỏ qua Bước 3 không?</summary>
+      <div class="faq-body">
+        Có. Nhấn <strong>"Bỏ qua — dùng giá ước tính"</strong> ở cuối Bước 3 để sang thẳng Bước 4. Kết quả cuối vẫn đầy đủ, chỉ dùng giá vé ước tính thay vì giá từ AI.
+      </div>
+    </details>
+
+    <details>
+      <summary>Tool này có lưu thông tin của tôi không?</summary>
+      <div class="faq-body">
+        Không. Toàn bộ dữ liệu chỉ tồn tại trong bộ nhớ tab trình duyệt hiện tại. Không gửi đi đâu, không lưu lên server, không dùng cookie. Đóng tab là mất dữ liệu.
+      </div>
+    </details>
+
+    <details>
+      <summary>Tôi muốn lên kế hoạch cho điểm đến khác (không phải Nhật Bản)?</summary>
+      <div class="faq-body">
+        Hoàn toàn được. Tại Bước 1, đổi ô <strong>"Điểm đến"</strong> thành bất kỳ điểm đến nào bạn muốn. Lịch trình nháp sẽ điều chỉnh theo — mặc dù địa điểm cụ thể vẫn là ví dụ Nhật Bản do đây là bản demo. Phiên bản tương lai sẽ hỗ trợ đa điểm đến đầy đủ hơn.
+      </div>
+    </details>
+
+    <details>
+      <summary>Bước 4 — nút copy không hoạt động?</summary>
+      <div class="faq-body">
+        Trình duyệt cần cho phép truy cập clipboard. Nếu bị chặn, hãy thử: (1) mở file bằng Chrome hoặc Edge, (2) cho phép khi trình duyệt hỏi. Nếu vẫn không được, bôi đen text trong tab rồi Ctrl+C cũng hoạt động.
+      </div>
+    </details>
+  </div>
+
+  <!-- Disclaimer -->
+  <div class="disclaimer">
+    <strong>⚠ Lưu ý quan trọng:</strong> Toàn bộ lịch trình, giá vé, và thông tin địa điểm trong Tourist Agent là <strong>ước tính do AI tạo ra</strong> để phục vụ lập kế hoạch. Luôn kiểm chứng giờ mở cửa, giá vé, và điều kiện đặt phòng trên <strong>trang web chính thức</strong> trước khi thanh toán bất cứ dịch vụ nào.
+  </div>
+
+</div>
+</body>
+</html>
