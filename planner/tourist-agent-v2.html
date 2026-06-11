@@ -1127,18 +1127,29 @@ function showFb(id) {
   setTimeout(function(){ fb.classList.remove("show"); }, 2000);
 }
 
+function extractJSON(str) {
+  // Ưu tiên 1: strip markdown code block ```json ... ``` hoặc ``` ... ```
+  var mdMatch = str.match(/```(?:json)?\s*([\s\S]*?)```/);
+  if (mdMatch) return mdMatch[1].trim();
+  // Ưu tiên 2: tìm { đầu tiên và } cuối cùng (bao gồm nested objects)
+  var start = str.indexOf("{");
+  var end = str.lastIndexOf("}");
+  if (start !== -1 && end !== -1 && end > start) return str.slice(start, end + 1);
+  return str;
+}
+
 function analyzeFlightData(){
   var raw = document.getElementById("json-input").value.trim();
   if(!raw){
     document.getElementById("analysis-output").innerHTML = "<div class='error-note'>Chưa có dữ liệu. Hãy dán kết quả từ AI vào ô bên cạnh.</div>";
     return;
   }
-  
+
   var data;
   try {
-    data = JSON.parse(raw);
+    data = JSON.parse(extractJSON(raw));
   } catch(e) {
-    document.getElementById("analysis-output").innerHTML = "<div class='error-note'>Kết quả dán vào không hợp lệ. Hãy chắc chắn bạn đã sao chép toàn bộ văn bản phản hồi dạng JSON từ AI và dán vào ô bên cạnh.</div>";
+    document.getElementById("analysis-output").innerHTML = "<div class='error-note'>Không tìm thấy dữ liệu JSON hợp lệ trong kết quả. Hãy thử copy lại toàn bộ phản hồi của AI (kể cả phần ```json nếu có).</div>";
     return;
   }
   
