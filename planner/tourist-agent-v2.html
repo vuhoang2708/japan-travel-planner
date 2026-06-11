@@ -872,13 +872,14 @@ function parseBudgetMax(s){
 }
 function mapDest(s){
   var l = s.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g,"");
-  if(l.indexOf("nhat") >= 0 || l.indexOf("japan") >= 0) return "TYO";
-  if(l.indexOf("han") >= 0 || l.indexOf("korea") >= 0) return "ICN";
-  if(l.indexOf("thai") >= 0 || l.indexOf("bangkok") >= 0) return "BKK";
-  if(l.indexOf("singapore") >= 0) return "SIN";
-  if(l.indexOf("paris") >= 0 || l.indexOf("phap") >= 0) return "CDG";
-  if(l.indexOf("london") >= 0 || l.indexOf("anh") >= 0) return "LHR";
-  if(l.indexOf("my") >= 0 || l.indexOf("usa") >= 0 || l.indexOf("america") >= 0) return "LAX";
+  if(l.indexOf("nhat") >= 0 || l.indexOf("japan") >= 0 || l === "tyo" || l === "nrt" || l === "osa") return "TYO";
+  if((l.indexOf("han quoc") >= 0 || l.indexOf("korea") >= 0 || l.indexOf("seoul") >= 0 || l === "icn") && l.indexOf("hanoi") < 0 && l.indexOf("ha noi") < 0) return "ICN";
+  if(l.indexOf("thai") >= 0 || l.indexOf("bangkok") >= 0 || l === "bkk") return "BKK";
+  if(l.indexOf("singapore") >= 0 || l === "sin") return "SIN";
+  if(l.indexOf("paris") >= 0 || l.indexOf("phap") >= 0 || l.indexOf("france") >= 0 || l === "cdg") return "CDG";
+  if((l.indexOf("london") >= 0 || l.indexOf("england") >= 0) && l.indexOf("anh") < 0) return "LHR";
+  if(l.indexOf("nuoc anh") >= 0 || l.indexOf("uk") === 0 || l === "lhr") return "LHR";
+  if(l.indexOf("my ") >= 0 || l.indexOf("usa") >= 0 || l.indexOf("america") >= 0 || l.indexOf("new york") >= 0 || l === "lax" || l === "jfk") return "LAX";
   return s.toUpperCase().replace(/\s+/g,"").substring(0,3) || "INT";
 }
 function mapFlexibility(pace){
@@ -888,9 +889,9 @@ function mapFlexibility(pace){
 }
 function getBudget(pace, i){
   var b = {
-    a: ["~150k-250k", "~200k-350k", "~100k-200k"],
-    b: ["~200k-350k", "~250k-400k", "~150k-250k"],
-    c: ["~250k-400k", "~300k-500k", "~200k-350k"]
+    a: ["~10–15% ngân sách/ngày", "~12–18% ngân sách/ngày", "~8–12% ngân sách/ngày"],
+    b: ["~12–18% ngân sách/ngày", "~15–20% ngân sách/ngày", "~10–15% ngân sách/ngày"],
+    c: ["~15–22% ngân sách/ngày", "~18–25% ngân sách/ngày", "~12–18% ngân sách/ngày"]
   };
   var key = pace.indexOf("thư") >= 0 ? "a" : pace.indexOf("tối") >= 0 ? "c" : "b";
   return b[key][i%3];
@@ -913,7 +914,8 @@ function buildRows(n, pace, interests, constraints, dest){
     } else if(d === n-1){
       morning = spots[0] + (spots[1] ? " → " + spots[1] : "");
       afternoon = "Mua quà lưu niệm, chuẩn bị hành lý";
-      evening = "Ra sân bay, bay về Việt Nam";
+      var originLabel = val("origin_city") ? val("origin_city") : "Việt Nam";
+      evening = "Ra sân bay, bay về " + originLabel;
     } else {
       morning = spots[0] + (spots[1] ? " → " + spots[1] : "");
       afternoon = spots[2] ? (spots[2] + (spots[3] ? " → " + spots[3] : "")) : "Tự do tham quan mua sắm";
