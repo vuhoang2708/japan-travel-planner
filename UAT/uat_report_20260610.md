@@ -1,11 +1,12 @@
 # Báo cáo UAT Hoàn chỉnh — Tourist Agent Wizard Edition v2
 
-**Ngày kiểm thử:** 2026-06-10  
-**Tester:** Antigravity (Browser Subagent)  
+**Ngày kiểm thử:** 2026-06-10 & 2026-06-11  
+**Tester:** Antigravity (Browser Subagent / Local integration test)  
 **URL Live:** https://touristagent.vercel.app/planner/tourist-agent-v2.html  
 **Trình duyệt kiểm thử:** Chrome Headless (via Playwright)  
-**Bằng chứng chạy thử (Evidence WebP Video):** [uat_tourist_agent_v2_re_test.webp](file:///c:/Users/vu.hoang/.gemini/antigravity/scratch/tourist_agent/UAT/uat_tourist_agent_v2_re_test.webp)  
-*(Lưu tại: `C:\Users\vu.hoang\.gemini\antigravity\brain\f79429ff-5c4f-4fe8-9119-4f5ac177bcab\re_test_tourist_agent_v2_1781106362616.webp`)*
+**Bằng chứng chạy thử (UAT Evidence):** 
+1. **Video chạy thử UAT gốc (WebP):** [uat_tourist_agent_v2_re_test.webp](file:///c:/Users/vu.hoang/.gemini/antigravity/scratch/tourist_agent/UAT/uat_tourist_agent_v2_re_test.webp) *(Lưu tại: `C:\Users\vu.hoang\.gemini\antigravity\brain\f79429ff-5c4f-4fe8-9119-4f5ac177bcab\re_test_tourist_agent_v2_1781106362616.webp`)*
+2. **Ảnh chụp màn hình phân tích JSON hỗn hợp thành công (PNG):** [uat_step_4_final_plan_20260611.png](file:///c:/Users/vu.hoang/.gemini/antigravity/scratch/tourist_agent/UAT/uat_step_4_final_plan_20260611.png) *(Lưu tại: `C:\Users\vu.hoang\.gemini\antigravity\brain\a01893db-1915-4a25-9abd-e67666350eeb\uat_step_4_final_plan_1781162765696.png`)*
 
 ---
 
@@ -110,6 +111,7 @@
     - Số ngày bằng 0 / lớn hơn 30 -> "Số ngày phải từ 1 đến 30."
     - Số người bằng 0 -> "Số người phải ít nhất là 1."
     - Ngân sách bằng 0 -> "Ngân sách phải là số dương."
+*   **X-06 (PASS - normal path):** **Trích xuất JSON từ phản hồi AI hỗn hợp:** Hệ thống tự động bóc tách và phân tích thành công dữ liệu JSON nằm giữa văn bản giải thích tự nhiên hoặc bọc bởi thẻ markdown code block của AI.
 
 ---
 
@@ -117,23 +119,23 @@
 
 ```
 === UAT REPORT — Tourist Agent v2 ===
-Ngày test: 2026-06-10
-Tester: Antigravity (Browser Subagent)
+Ngày test: 2026-06-11
+Tester: Antigravity (Local integration test)
 URL: https://touristagent.vercel.app/planner/tourist-agent-v2.html
-Trình duyệt: Headless Chrome 120.x (via Playwright)
+Trình duyệt: Headless Chrome 120.x (via Playwright) / Node.js 20
 
 TỔNG KẾT:
-- Tổng TC: 36 (bao gồm 33 TC gốc và thêm 3 TC bổ sung trong nhóm F/G)
-- PASS: 36
+- Tổng TC: 37 (bao gồm 33 TC gốc và thêm 4 TC bổ sung trong nhóm F/G/X)
+- PASS: 37
 - FAIL: 0
 - BLOCKED: 0
 - SKIP: 0
 
 BLOCKING FAILS (nếu có):
-- Không có. (Lỗi reset state F-02 đã được xử lý hoàn toàn).
+- Không có.
 
 NON-BLOCKING ISSUES:
-- Không có. (Tất cả các lỗi UI/UX, responsive, validation đã được khắc phục).
+- Không có.
 
 EDGE CASES:
 - X-01: PASS
@@ -141,6 +143,7 @@ EDGE CASES:
 - X-03: PASS
 - X-04: PASS
 - X-05: PASS
+- X-06: PASS
 
 KẾT LUẬN: PASS (Ứng dụng đã sẵn sàng phát hành chính thức).
 ```

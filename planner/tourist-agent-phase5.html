@@ -315,7 +315,65 @@ var MEALS=["Ramen dia phuong","Sushi conveyor belt","Udon tuoi","Tonkatsu","Okon
 var _tripCtx={};var _flightResult=null;var _vgResult=null;
 function parseDays(s){var m=s.match(/(\d+)/);return m?parseInt(m[1]):5;}
 function parseAdults(s){var m=s.match(/(\d+)/);return m?parseInt(m[1]):1;}
-function parseBudgetMax(s){var m=s.match(/(\d+)/g);if(!m)return 40000000;var nums=m.map(Number);return Math.max.apply(null,nums)*1000000;}
+function parseBudgetMax(s) {
+  if (!s) return 40000000;
+  
+  var lower = s.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "").replace(/đ/g, "d");
+  var hasMillion = lower.indexOf("trieu") >= 0 || 
+                   lower.indexOf("million") >= 0 || 
+                   /\btr\b/.test(lower) || 
+                   /\bm\b/.test(lower) || 
+                   lower.indexOf("tr ") >= 0 || 
+                   lower.indexOf("m ") >= 0;
+  
+  var match = s.replace(/\s+/g, "").match(/([0-9.,]+)/);
+  if (!match) return 40000000;
+  
+  var numStr = match[1];
+  
+  if (hasMillion) {
+    numStr = numStr.replace(/,/g, ".");
+    var parts = numStr.split(".");
+    var cleanNum = parts[0] + (parts.length > 1 ? "." + parts.slice(1).join("") : "");
+    var val = parseFloat(cleanNum);
+    return isNaN(val) ? 40000000 : Math.round(val * 1000000);
+  }
+  
+  var dotCount = (numStr.match(/\./g) || []).length;
+  var commaCount = (numStr.match(/,/g) || []).length;
+  
+  if (dotCount > 1) {
+    numStr = numStr.replace(/\./g, "");
+  } else if (commaCount > 1) {
+    numStr = numStr.replace(/,/g, "");
+  } else if (dotCount === 1 && commaCount === 1) {
+    if (numStr.indexOf(".") > numStr.indexOf(",")) {
+      numStr = numStr.replace(/,/g, "");
+    } else {
+      numStr = numStr.replace(/\./g, "").replace(/,/g, ".");
+    }
+  } else if (dotCount === 1) {
+    var parts = numStr.split(".");
+    if (parts[1].length === 3 && parseInt(parts[0]) >= 10) {
+      numStr = numStr.replace(/\./g, "");
+    }
+  } else if (commaCount === 1) {
+    var parts = numStr.split(",");
+    if (parts[1].length === 3 && parseInt(parts[0]) >= 10) {
+      numStr = numStr.replace(/,/g, "");
+    } else {
+      numStr = numStr.replace(/,/g, ".");
+    }
+  }
+  
+  var val = parseFloat(numStr);
+  if (isNaN(val)) return 40000000;
+  
+  if (val < 1000000) {
+    return Math.round(val * 1000000);
+  }
+  return Math.round(val);
+}
 function mapDest(s){var l=s.toLowerCase();if(l.indexOf("nhat")>=0||l.indexOf("japan")>=0)return"TYO";return"TYO";}
 function mapFlexibility(pace){if(pace.indexOf("thu")>=0)return"high";if(pace.indexOf("toi")>=0)return"low";return"medium";}
 function getBudget(pace,i){var b={a:["~150k-250k","~200k-350k","~100k-200k"],b:["~200k-350k","~250k-400k","~150k-250k"],c:["~250k-400k","~300k-500k","~200k-350k"]};var key=pace.indexOf("thu")>=0?"a":pace.indexOf("toi")>=0?"c":"b";return b[key][i%3];}

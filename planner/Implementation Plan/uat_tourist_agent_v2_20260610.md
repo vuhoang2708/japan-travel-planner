@@ -141,6 +141,8 @@ Những TC sau nếu FAIL thì không được xem là done:
 | X-02 | Nhập số ngày = 10 | Bước 1 nhập 10 ngày → xem lịch trình | Sinh đủ 10 ngày, scroll được |
 | X-03 | Dán JSON sai format vào Bước 3 | Dán text bất kỳ → nhấn Phân tích | Hiện thông báo lỗi, không crash trang |
 | X-04 | Nhấn Bước 4 khi bỏ qua Bước 3 | Bỏ qua → Bước 4 | Tab Lịch trình không có dòng vé trống gây lỗi hiển thị |
+| X-05 | Xác thực dữ liệu đầu vào (Input Validation) | Nhập số ngày = 0, số người = 0, ngân sách = -1 | Hiện cảnh báo lỗi tiếng Việt và chặn không cho chuyển bước |
+| X-06 | Dán JSON có kèm text giải thích của AI hoặc markdown block | Dán phản hồi thực tế từ AI (có chữ giải thích ở đầu/cuối hoặc bọc ```json) | Tự động bóc tách JSON và hiển thị bảng so sánh thành công |
 
 ---
 
