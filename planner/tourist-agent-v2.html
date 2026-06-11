@@ -1012,8 +1012,23 @@ function generateDraftItinerary(){
   var iataCode = mapDest(dest);
   var originRaw = val("origin_city") || "";
   var originCode = originRaw ? mapDest(originRaw) : "HAN";
-  var depDate = "2026-07-10";
-  var retDate = "2026-07-" + (10 + n - 1 < 10 ? "0" : "") + (10 + n - 1);
+
+  // Tính ngày bay từ field "Tháng đi" — parse "Tháng N" hoặc "tháng N" hoặc số tháng
+  var today = new Date();
+  var depMonth = (function(s){
+    var m = s.match(/(\d+)/);
+    if(!m) return today.getMonth() + 2; // fallback: tháng sau
+    var mo = parseInt(m[1]);
+    return (mo >= 1 && mo <= 12) ? mo : today.getMonth() + 2;
+  })(month);
+  var depYear = today.getFullYear();
+  if(depMonth <= today.getMonth() + 1) depYear += 1; // nếu tháng đã qua thì sang năm sau
+  var depDay = 10;
+  var depDate = depYear + "-" + (depMonth < 10 ? "0" : "") + depMonth + "-" + depDay;
+  var retRaw = new Date(depYear, depMonth - 1, depDay + n - 1);
+  var retDate = retRaw.getFullYear() + "-" +
+    (retRaw.getMonth() + 1 < 10 ? "0" : "") + (retRaw.getMonth() + 1) + "-" +
+    (retRaw.getDate() < 10 ? "0" : "") + retRaw.getDate();
 
   _tripCtx = {
     origin: originCode,
