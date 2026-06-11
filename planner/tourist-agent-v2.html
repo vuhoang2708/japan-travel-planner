@@ -657,6 +657,46 @@
       .progress-label { font-size: 9.5px; }
       .prog-line { margin-left: -8px; margin-right: -8px; }
     }
+
+    /* ===== PRINT / PDF EXPORT ===== */
+    @media print {
+      /* Ẩn toàn bộ UI chrome */
+      .header, .progress-bar, .card:not(#step-4),
+      #step-1, #step-2, #step-3 { display: none !important; }
+      
+      /* Hiện Bước 4 dù không active */
+      #step-4 { display: block !important; box-shadow: none !important; border: none !important; }
+      
+      /* Hiện tất cả tab panels */
+      .tab-content-panel { display: block !important; }
+      
+      /* Ẩn Tab 2 (Nhắn tin) — không cần trong PDF */
+      #tab-message { display: none !important; }
+      
+      /* Ẩn tất cả buttons và controls */
+      .tab-buttons, .actions, .btn, .btn-tab,
+      .copy-feedback, button, a.reset-link,
+      #email-modal-overlay { display: none !important; }
+      
+      /* Page breaks hợp lý */
+      .tab-content-panel { page-break-before: always; }
+      #tab-itin { page-break-before: avoid; }
+      .day-accordion { page-break-inside: avoid; }
+      
+      /* Reset layout */
+      body { padding: 8px; background: white; font-size: 12px; }
+      .container { max-width: 100%; }
+      .card { padding: 12px; border: 1px solid #ccc !important; margin-bottom: 12px; }
+      
+      /* Print header */
+      #step-4::before {
+        content: "✈️ Tourist Agent — Kế hoạch du lịch";
+        display: block;
+        font-size: 18px;
+        font-weight: 800;
+        margin-bottom: 4px;
+      }
+    }
   </style>
 </head>
 <body>
@@ -811,9 +851,30 @@
       <div id="todo-list-container"></div>
     </div>
 
+    <!-- Email modal overlay -->
+    <div id="email-modal-overlay" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.5); z-index:1000; align-items:center; justify-content:center;">
+      <div style="background:#fff; border-radius:14px; padding:28px 32px; max-width:420px; width:90%; box-shadow:0 20px 60px rgba(0,0,0,0.3);">
+        <h3 style="font-size:16px; font-weight:700; color:#0f172a; margin-bottom:16px;">📧 Gửi kế hoạch qua email</h3>
+        <div class="field" style="margin-bottom:16px;">
+          <label for="email-to" style="font-size:13px;">Địa chỉ email nhận</label>
+          <input type="email" id="email-to" placeholder="ten@email.com" style="margin-top:6px;" />
+        </div>
+        <div id="email-status" style="font-size:13px; min-height:20px; margin-bottom:12px;"></div>
+        <div style="display:flex; gap:10px; justify-content:flex-end;">
+          <button class="btn btn-secondary btn-sm" onclick="closeEmailModal()">Hủy</button>
+          <button class="btn btn-sm" id="btn-send-email" onclick="doSendEmail()">Gửi ngay</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer actions -->
     <div style="border-top: 2px solid var(--bg); margin-top: 32px; padding-top: 16px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;">
       <button class="btn btn-secondary" onclick="goToStep(3)" style="font-size: 13px; padding: 8px 16px;">← Quay lại Bước 3</button>
-      <a class="reset-link" onclick="resetForm()" style="margin-top: 0;">↺ Bắt đầu chuyến đi mới</a>
+      <div style="display:flex; gap:8px; flex-wrap:wrap; align-items:center;">
+        <button class="btn btn-secondary btn-sm" onclick="exportPDF()" title="Xuất kế hoạch thành file PDF">📄 Xuất PDF</button>
+        <button class="btn btn-secondary btn-sm" onclick="openEmailModal()" title="Gửi kế hoạch về email">📧 Gửi email</button>
+        <a class="reset-link" onclick="resetForm()" style="margin-top: 0; font-size: 13px;">↺ Bắt đầu lại</a>
+      </div>
     </div>
   </div>
 
@@ -1696,6 +1757,136 @@ function resetForm(){
 
   // Go back to step 1
   goToStep(1);
+}
+
+// ===== PDF EXPORT =====
+function exportPDF() {
+  if (!_rows || _rows.length === 0) {
+    alert('Chưa có lịch trình để xuất. Hãy hoàn thành các bước trước.');
+    return;
+  }
+  var dest = val('destination') || 'KeHoach';
+  var today = new Date().toISOString().slice(0, 10);
+  var origTitle = document.title;
+  document.title = 'Tourist-Agent-' + dest.replace(/\s+/g, '') + '-' + today;
+  window.print();
+  document.title = origTitle;
+}
+
+// ===== EMAIL =====
+function openEmailModal() {
+  if (!_rows || _rows.length === 0) {
+    alert('Chưa có kế hoạch để gửi. Hãy hoàn thành các bước trước.');
+    return;
+  }
+  document.getElementById('email-modal-overlay').style.display = 'flex';
+  document.getElementById('email-status').textContent = '';
+  document.getElementById('email-to').focus();
+}
+
+function closeEmailModal() {
+  document.getElementById('email-modal-overlay').style.display = 'none';
+}
+
+function buildEmailBody() {
+  var dest = val('destination') || 'điểm đến';
+  var travelers = val('travelers') || '3 người lớn';
+  var month = val('month') || 'Tháng 7';
+  var daysStr = val('days') || '5 ngày';
+  var budget = val('budget') || '';
+
+  var lines = [];
+  lines.push('KẾ HOẠCH DU LỊCH: ' + dest.toUpperCase());
+  lines.push('Thời gian: ' + month + ', ' + daysStr + ' | Nhóm: ' + travelers);
+  if (budget) lines.push('Ngân sách dự kiến: ' + budget + '/người');
+  lines.push('');
+
+  // Vé máy bay
+  if (_flightResult && _flightResult.options && _flightResult.options.length > 0) {
+    var opt = _flightResult.options.find(function(o) {
+      return o.option_id === _flightResult.recommended_option_id;
+    }) || _flightResult.options[0];
+    var p = opt.price || {};
+    var route = opt.route ? (opt.route.outbound + ' / ' + opt.route.return) : '—';
+    lines.push('VÉ MÁY BAY ĐỀ XUẤT:');
+    lines.push('- Hãng: ' + (opt.airline || '--') + ' (' + route + ')');
+    lines.push('- Ngày đi: ' + (opt.departure_date || '--') + '  Ngày về: ' + (opt.return_date || '--'));
+    lines.push('- Giá/người: ' + fmt(p.true_total_per_person_vnd) + '  Tổng nhóm: ' + fmt(p.total_all_passengers_vnd));
+    lines.push('');
+  }
+
+  // Lịch trình
+  lines.push('CHI TIẾT LỊCH TRÌNH:');
+  _rows.forEach(function(r) {
+    var meal = r.evening.indexOf('Ăn tối: ') === 0 ? r.evening.substring(8) : r.evening;
+    lines.push('');
+    lines.push('Ngày ' + r.day + ' — ' + r.region);
+    lines.push('  Sáng : ' + r.morning);
+    lines.push('  Chiều: ' + r.afternoon);
+    lines.push('  Tối  : ' + r.evening);
+    lines.push('  Ăn   : ' + meal);
+    lines.push('  Ngân sách ăn uống: ' + r.budget + '/người');
+  });
+  lines.push('');
+
+  // Checklist nhóm A
+  lines.push('VIỆC CẦN LÀM TRƯỚC CHUYẾN ĐI:');
+  var groupA = [
+    'Kiểm tra giá vé thực tế trên Google Flights / Skyscanner',
+    'Xác nhận yêu cầu visa đi ' + dest + ' cho công dân Việt Nam',
+    'Kiểm tra thời tiết ' + month + ' tại ' + dest,
+    'Đặt trước phòng khách sạn trên Booking.com / Agoda',
+    'Xác minh giờ mở cửa thực tế các điểm tham quan'
+  ];
+  groupA.forEach(function(item) { lines.push('  [ ] ' + item); });
+
+  lines.push('');
+  lines.push('---');
+  lines.push('Kế hoạch tạo tự động bởi Tourist Agent (https://touristagent.vercel.app)');
+  lines.push('Lưu ý: Lịch trình và giá vé mang tính tham khảo. Kiểm chứng thực tế trước khi đặt dịch vụ.');
+
+  return lines.join('\n');
+}
+
+async function doSendEmail() {
+  var toEl = document.getElementById('email-to');
+  var statusEl = document.getElementById('email-status');
+  var btn = document.getElementById('btn-send-email');
+
+  var to = toEl.value.trim();
+  if (!to || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(to)) {
+    statusEl.style.color = '#ef4444';
+    statusEl.textContent = '⚠ Địa chỉ email không hợp lệ.';
+    return;
+  }
+
+  btn.disabled = true;
+  btn.textContent = 'Đang gửi...';
+  statusEl.style.color = '#64748b';
+  statusEl.textContent = 'Đang gửi kế hoạch...';
+
+  var dest = val('destination') || 'chuyến đi';
+  var subject = '✈️ Kế hoạch du lịch ' + dest + ' — Tourist Agent';
+  var body = buildEmailBody();
+
+  try {
+    var res = await fetch('/api/send-email', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ to: to, subject: subject, body: body })
+    });
+    var data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Lỗi không xác định');
+    statusEl.style.color = '#10b981';
+    statusEl.textContent = '✓ Đã gửi thành công! Kiểm tra hộp thư (và thư mục spam nếu không thấy).';
+    btn.textContent = '✓ Đã gửi';
+    setTimeout(function() { closeEmailModal(); btn.disabled = false; btn.textContent = 'Gửi ngay'; }, 2500);
+  } catch (e) {
+    statusEl.style.color = '#ef4444';
+    statusEl.textContent = '⚠ Gửi thất bại: ' + e.message + '. Dùng nút Sao chép để lấy nội dung thủ công.';
+    btn.disabled = false;
+    btn.textContent = 'Gửi ngay';
+  }
 }
 </script>
 </body>
