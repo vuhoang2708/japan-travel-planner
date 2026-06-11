@@ -86,10 +86,24 @@
     }
     .progress-bar {
       display: flex;
-      align-items: center;
+      align-items: flex-start;
       justify-content: center;
       margin: 8px 0 32px;
       padding: 0 20px;
+    }
+    .progress-item {
+      min-width: 76px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+    }
+    .progress-label {
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 600;
+      line-height: 1.2;
+      text-align: center;
     }
     .prog-dot {
       width: 36px;
@@ -122,7 +136,7 @@
       height: 4px;
       background: #e2e8f0;
       max-width: 120px;
-      margin: 0 -2px;
+      margin: 16px -10px 0;
       transition: all 0.3s ease;
     }
     .prog-line.done {
@@ -448,55 +462,48 @@
       margin-bottom: 16px;
     }
     
-    /* Layout details in step 3 */
-    .columns-layout {
-      display: flex;
-      gap: 24px;
-      margin-bottom: 20px;
+    /* AI action in step 3 */
+    .ai-action-card {
+      background: var(--blue-light);
+      border: 1px solid #bfdbfe;
+      border-radius: var(--radius);
+      padding: 24px;
+      margin-bottom: 18px;
+      text-align: center;
     }
-    .column-left {
-      flex: 1.2;
+    .ai-action-card p {
+      color: var(--navy-light);
+      font-size: 14px;
+      margin-bottom: 16px;
     }
-    .column-right {
-      flex: 1;
+    .ai-spinner {
+      width: 16px;
+      height: 16px;
+      border: 2px solid rgba(255,255,255,.45);
+      border-top-color: #fff;
+      border-radius: 50%;
+      display: none;
+      animation: spin .8s linear infinite;
+    }
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+    .manual-fallback {
       background: #f8fafc;
       border: 1px solid #cbd5e1;
       border-radius: var(--radius);
-      padding: 20px;
-      display: none;
-      animation: fadeIn 0.3s ease-out;
-    }
-    @media (max-width: 680px) {
-      .columns-layout { flex-direction: column; }
-    }
-    .guide-steps {
-      display: flex;
-      flex-direction: column;
-      gap: 14px;
       margin-bottom: 20px;
+      padding: 0 20px;
     }
-    .guide-step {
-      display: flex;
-      gap: 12px;
-      align-items: flex-start;
-    }
-    .guide-num {
-      background: var(--navy);
-      color: #fff;
-      width: 24px;
-      height: 24px;
-      border-radius: 50%;
-      font-size: 12px;
+    .manual-fallback summary {
+      color: var(--blue);
+      cursor: pointer;
+      font-size: 13.5px;
       font-weight: 700;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-shrink: 0;
+      padding: 16px 0;
     }
-    .guide-text {
-      font-size: 14px;
-      color: var(--navy-light);
-      padding-top: 2px;
+    .manual-fallback-content {
+      padding: 0 0 20px;
     }
     
     /* Tab system in Step 4 */
@@ -645,6 +652,10 @@
       .card {
         padding: 20px;
       }
+      .progress-bar { padding: 0; }
+      .progress-item { min-width: 54px; }
+      .progress-label { font-size: 9.5px; }
+      .prog-line { margin-left: -8px; margin-right: -8px; }
     }
   </style>
 </head>
@@ -658,13 +669,13 @@
   </div>
 
   <div class="progress-bar">
-    <div class="prog-dot active" id="dot-1">1</div>
+    <div class="progress-item"><div class="prog-dot active" id="dot-1">1</div><div class="progress-label">Thông tin</div></div>
     <div class="prog-line" id="line-1"></div>
-    <div class="prog-dot" id="dot-2">2</div>
+    <div class="progress-item"><div class="prog-dot" id="dot-2">2</div><div class="progress-label">Lịch trình</div></div>
     <div class="prog-line" id="line-2"></div>
-    <div class="prog-dot" id="dot-3">3</div>
+    <div class="progress-item"><div class="prog-dot" id="dot-3">3</div><div class="progress-label">Vé máy bay</div></div>
     <div class="prog-line" id="line-3"></div>
-    <div class="prog-dot" id="dot-4">4</div>
+    <div class="progress-item"><div class="prog-dot" id="dot-4">4</div><div class="progress-label">Kế hoạch</div></div>
   </div>
 
   <!-- Bước 1: Nhập thông tin -->
@@ -723,43 +734,25 @@
   <!-- Bước 3: Tìm vé máy bay -->
   <div class="card step-panel" id="step-3">
     <h2><span>✈️</span> Tìm phương án vé máy bay tốt nhất</h2>
-    
-    <div class="columns-layout">
-      <!-- Cột trái: Hướng dẫn -->
-      <div class="column-left" id="column-left">
-        <div class="guide-steps">
-          <div class="guide-step">
-            <div class="guide-num">1</div>
-            <div class="guide-text">Nhấn nút bên dưới để sao chép yêu cầu tìm vé máy bay gửi cho AI.</div>
-          </div>
-          <div class="guide-step">
-            <div class="guide-num">2</div>
-            <div class="guide-text">Dán yêu cầu đã sao chép vào cửa sổ chat với AI (Gemini, ChatGPT hoặc Claude).</div>
-          </div>
-          <div class="guide-step">
-            <div class="guide-num">3</div>
-            <div class="guide-text">Sau khi AI trả lời, bấm "Dán kết quả" bên dưới để nhập kết quả phân tích.</div>
-          </div>
-        </div>
 
-        <div style="display: flex; flex-direction: column; align-items: flex-start; gap: 8px;">
-          <button class="btn btn-blue" onclick="copyCombinedPrompt()">
-            <span>🤖</span> Hỏi AI về vé
-          </button>
-          <span class="copy-feedback" id="copy-to-feedback" style="margin-top: 4px;">✓ Đã copy yêu cầu!</span>
-          <a href="#" onclick="showRightColumn(event)" style="font-size: 13px; color: var(--blue); margin-top: 8px; text-decoration: underline;">Nhập kết quả thủ công</a>
-        </div>
-      </div>
-
-      <!-- Cột phải: Dán JSON -->
-      <div class="column-right" id="column-right">
-        <div class="field" style="height: 100%; display: flex; flex-direction: column;">
-          <label for="json-input" style="margin-bottom: 8px;">Dán kết quả từ AI vào đây:</label>
-          <textarea id="json-input" style="flex: 1; font-family: monospace; font-size: 12px; min-height: 100px;" placeholder='Dán nội dung AI trả về...'></textarea>
-          <button class="btn btn-green btn-sm" style="margin-top: 12px; width: 100%;" onclick="analyzeFlightData()">Phân tích kết quả</button>
-        </div>
-      </div>
+    <div class="ai-action-card">
+      <p>AI sẽ phân tích hành trình, đề xuất phương án vé và kiểm tra ngân sách. Giá vé vẫn cần được xác minh trên website hãng bay trước khi đặt.</p>
+      <button class="btn btn-blue" id="btn-ask-ai" onclick="askAI()">
+        <span class="ai-spinner" id="ai-spinner"></span>
+        <span id="btn-ask-ai-label">🤖 Tìm vé ngay</span>
+      </button>
     </div>
+
+    <details class="manual-fallback" id="manual-fallback">
+      <summary>Nhập kết quả AI thủ công</summary>
+      <div class="manual-fallback-content">
+        <div class="field">
+          <label for="json-input" style="margin-bottom: 8px;">Dán toàn bộ phản hồi JSON từ AI vào đây:</label>
+          <textarea id="json-input" style="font-family: monospace; font-size: 12px; min-height: 120px;" placeholder="Dán JSON hoặc phản hồi có chứa JSON..."></textarea>
+          <button class="btn btn-green btn-sm" style="margin-top: 12px; width: 100%;" onclick="analyzeFlightData()">Phân tích dữ liệu đã dán</button>
+        </div>
+      </div>
+    </details>
 
     <div id="analysis-output" style="margin-top: 20px;"></div>
 
@@ -871,15 +864,25 @@ function parseBudgetMax(s){
   return Math.max.apply(null, nums) * 1000000;
 }
 function mapDest(s){
-  var l = s.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g,"");
-  if(l.indexOf("nhat") >= 0 || l.indexOf("japan") >= 0 || l === "tyo" || l === "nrt" || l === "osa") return "TYO";
-  if((l.indexOf("han quoc") >= 0 || l.indexOf("korea") >= 0 || l.indexOf("seoul") >= 0 || l === "icn") && l.indexOf("hanoi") < 0 && l.indexOf("ha noi") < 0) return "ICN";
-  if(l.indexOf("thai") >= 0 || l.indexOf("bangkok") >= 0 || l === "bkk") return "BKK";
-  if(l.indexOf("singapore") >= 0 || l === "sin") return "SIN";
-  if(l.indexOf("paris") >= 0 || l.indexOf("phap") >= 0 || l.indexOf("france") >= 0 || l === "cdg") return "CDG";
+  var l = s.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g,"").replace(/đ/g,"d");
+  var directCode = l.toUpperCase();
+  var directCodes = ["TYO","NRT","OSA","KIX","ICN","BKK","SIN","DPS","DXB","TPE","HKG","CDG","LHR","LAX","JFK","SYD"];
+  if(directCodes.indexOf(directCode) >= 0) return directCode;
+  if(l.indexOf("osaka") >= 0) return "KIX";
+  if(l.indexOf("nhat") >= 0 || l.indexOf("japan") >= 0 || l.indexOf("tokyo") >= 0) return "TYO";
+  if((l.indexOf("han quoc") >= 0 || l.indexOf("korea") >= 0 || l.indexOf("seoul") >= 0) && l.indexOf("hanoi") < 0 && l.indexOf("ha noi") < 0) return "ICN";
+  if(l.indexOf("thai") >= 0 || l.indexOf("bangkok") >= 0) return "BKK";
+  if(l.indexOf("singapore") >= 0) return "SIN";
+  if(l.indexOf("bali") >= 0 || l.indexOf("denpasar") >= 0) return "DPS";
+  if(l.indexOf("dubai") >= 0) return "DXB";
+  if(l.indexOf("dai bac") >= 0 || l.indexOf("taipei") >= 0 || l.indexOf("taiwan") >= 0 || l.indexOf("dai loan") >= 0) return "TPE";
+  if(l.indexOf("hong kong") >= 0 || l.indexOf("hongkong") >= 0) return "HKG";
+  if(l.indexOf("paris") >= 0 || l.indexOf("phap") >= 0 || l.indexOf("france") >= 0) return "CDG";
   if((l.indexOf("london") >= 0 || l.indexOf("england") >= 0) && l.indexOf("anh") < 0) return "LHR";
-  if(l.indexOf("nuoc anh") >= 0 || l.indexOf("uk") === 0 || l === "lhr") return "LHR";
-  if(l.indexOf("my ") >= 0 || l.indexOf("usa") >= 0 || l.indexOf("america") >= 0 || l.indexOf("new york") >= 0 || l === "lax" || l === "jfk") return "LAX";
+  if(l.indexOf("nuoc anh") >= 0 || l === "uk" || l.indexOf("uk ") === 0) return "LHR";
+  if(l.indexOf("new york") >= 0) return "JFK";
+  if(l === "my" || l.indexOf("my ") === 0 || l.indexOf("usa") >= 0 || l.indexOf("america") >= 0) return "LAX";
+  if(l === "uc" || l.indexOf("nuoc uc") >= 0 || l.indexOf("sydney") >= 0 || l.indexOf("australia") >= 0) return "SYD";
   return s.toUpperCase().replace(/\s+/g,"").substring(0,3) || "INT";
 }
 function mapFlexibility(pace){
@@ -895,6 +898,38 @@ function getBudget(pace, i){
   };
   var key = pace.indexOf("thư") >= 0 ? "a" : pace.indexOf("tối") >= 0 ? "c" : "b";
   return b[key][i%3];
+}
+
+function getBudgetDefaults(destination, budgetMax) {
+  var code = mapDest(destination || "");
+  var affordable = ["BKK", "DPS"];
+  var expensive = ["DXB", "CDG", "LHR", "LAX", "JFK", "SYD"];
+  var ratios = affordable.indexOf(code) >= 0 ?
+    {hotel: 0.20, transport: 0.08, food: 0.14, attraction: 0.08} :
+    expensive.indexOf(code) >= 0 ?
+      {hotel: 0.30, transport: 0.12, food: 0.18, attraction: 0.12} :
+      {hotel: 0.25, transport: 0.10, food: 0.16, attraction: 0.10};
+  var round = function(value){ return Math.max(500000, Math.round(value / 100000) * 100000); };
+  return {
+    hotel: round(budgetMax * ratios.hotel),
+    transport: round(budgetMax * ratios.transport),
+    food: round(budgetMax * ratios.food),
+    attraction: round(budgetMax * ratios.attraction)
+  };
+}
+
+function escapeHTML(value) {
+  return String(value == null ? "" : value)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+}
+
+function money(value) {
+  var amount = Number(value);
+  return Number.isFinite(amount) && amount >= 0 ? fmt(Math.round(amount)) : "—";
 }
 
 function buildRows(n, pace, interests, constraints, dest){
@@ -1050,92 +1085,46 @@ function generateDraftItinerary(){
   goToStep(2);
 }
 
-function buildCombinedPrompt(ctx){
-  var n = parseDays(val("days"));
-  return "Ban la tro ly thuc hien 2 nhiem vu cho hanh trinh du lich:\n\n" +
-         "NHIEM VU 1 - Tim phuong an ve may bay:\n" +
-         "Tim toi da 3 phuong an ve cho hanh trinh " + ctx.origin + " -> " + ctx.destination + " -> " + ctx.origin + ", khoi hanh " + ctx.departure_date + ", ve " + ctx.return_date + ", " + ctx.adults + " nguoi lon, economy, checked_bag.\n" +
-         "Tinh true_total_per_person_vnd cho moi phuong an. Tra ve truong 'options' va 'recommended_option_id'.\n\n" +
-         "NHIEM VU 2 - Kiem tra lich trinh truoc khi dat (Verification):\n" +
-         "Chay kiem tra truoc khi dat cho phuong an ve khuyen nghi:\n" +
-         "1. deals: Tim deal/promo con hieu luc cho hanh trinh nay.\n" +
-         "2. checklist_per_day: Voi moi ngay trong " + n + " ngay, tao checklist 5 hang muc: weather_season, opening_hours, transport_cost, distance_between_spots, schedule_density_risk. Phan loai trang thai: confirmed/assumption/needs_verification. Khi needs_verification, ghi ro action_required cu the.\n" +
-         "3. budget_alert: Tinh tong uoc tinh vs budget_max=" + ctx.budget_max + " VND/nguoi.\n\n" +
-         "Yeu cau tra ve DUY NHAT mot doi tuong JSON co dang:\n" +
-         "{\n" +
-         "  \"options\": [\n" +
-         "    {\n" +
-         "      \"rank\": 1,\n" +
-         "      \"option_id\": \"OPT-001\",\n" +
-         "      \"airline\": \"...\",\n" +
-         "      \"tags\": [\"[DIRECT]\"],\n" +
-         "      \"route\": {\"outbound\":\"...\",\"return\":\"...\"},\n" +
-         "      \"departure_date\": \"...\",\n" +
-         "      \"return_date\": \"...\",\n" +
-         "      \"price\": {\n" +
-         "        \"advertised_per_person_vnd\": 0,\n" +
-         "        \"true_total_per_person_vnd\": 0,\n" +
-         "        \"total_all_passengers_vnd\": 0\n" +
-         "      },\n" +
-         "      \"flexibility_score\": {\"score\": 80},\n" +
-         "      \"data_confidence\": \"live\"\n" +
-         "    }\n" +
-         "  ],\n" +
-         "  \"recommended_option_id\": \"OPT-001\",\n" +
-         "  \"budget_alert\": {\n" +
-         "    \"over_budget\": false,\n" +
-         "    \"total_estimated_per_person_vnd\": 0,\n" +
-         "    \"budget_max_per_person_vnd\": " + ctx.budget_max + ",\n" +
-         "    \"overage_vnd\": 0,\n" +
-         "    \"cost_reduction_suggestions\": []\n" +
-         "  },\n" +
-         "  \"deals\": [\n" +
-         "    {\n" +
-         "      \"description\": \"...\",\n" +
-         "      \"discount_vnd\": 0,\n" +
-         "      \"valid_until\": \"...\",\n" +
-         "      \"confidence_level\": \"confirmed\"\n" +
-         "    }\n" +
-         "  ],\n" +
-         "  \"checklist_per_day\": [\n" +
-         "    {\n" +
-         "      \"day\": 1,\n" +
-         "      \"date\": \"...\",\n" +
-         "      \"checks\": [\n" +
-         "        {\n" +
-         "          \"category\": \"weather_season\",\n" +
-         "          \"status\": \"confirmed\",\n" +
-         "          \"detail\": \"...\",\n" +
-         "          \"action_required\": \"...\"\n" +
-         "        }\n" +
-         "      ]\n" +
-         "    }\n" +
-         "  ],\n" +
-         "  \"generated_at\": \"ISO8601\"\n" +
-         "}\n\n" +
-         "Quy tac (Anti-hallucination): Neu thong tin nao khong chac, danh dau data_confidence = \"estimated\" hoac trang thai checklist = \"needs_verification\". Khong bia gia ve, khong bia gio mo cua.";
+function showAnalysisError(message) {
+  var output = document.getElementById("analysis-output");
+  output.innerHTML = "";
+  var error = document.createElement("div");
+  error.className = "error-note";
+  error.textContent = message;
+  output.appendChild(error);
 }
 
-function copyCombinedPrompt(){
-  var text = buildCombinedPrompt(_tripCtx);
-  navigator.clipboard.writeText(text).then(function(){
-    showFb("copy-to-feedback");
-    document.getElementById("column-right").style.display = "block";
-  }).catch(function(){
-    var ta = document.createElement("textarea");
-    ta.value = text;
-    document.body.appendChild(ta);
-    ta.select();
-    document.execCommand("copy");
-    document.body.removeChild(ta);
-    showFb("copy-to-feedback");
-    document.getElementById("column-right").style.display = "block";
-  });
-}
+async function askAI() {
+  var btn = document.getElementById("btn-ask-ai");
+  var spinner = document.getElementById("ai-spinner");
+  var label = document.getElementById("btn-ask-ai-label");
+  btn.disabled = true;
+  spinner.style.display = "inline-block";
+  label.textContent = "Đang phân tích...";
+  document.getElementById("analysis-output").innerHTML = "";
 
-function showRightColumn(e) {
-  if(e) e.preventDefault();
-  document.getElementById("column-right").style.display = "block";
+  try {
+    var response = await fetch("/api/ask-ai", {
+      method: "POST",
+      headers: {"Content-Type": "application/json"},
+      body: JSON.stringify({
+        tripCtx: _tripCtx,
+        days: parseDays(val("days"))
+      })
+    });
+    var data = await response.json().catch(function(){ return {}; });
+    if(!response.ok) {
+      throw new Error(data.error || "Dịch vụ AI chưa phản hồi.");
+    }
+    renderFlightAnalysis(data);
+  } catch(error) {
+    showAnalysisError("Không lấy được dữ liệu từ AI: " + error.message + " Bạn có thể dùng chế độ nhập thủ công bên dưới.");
+    document.getElementById("manual-fallback").open = true;
+  } finally {
+    btn.disabled = false;
+    spinner.style.display = "none";
+    label.textContent = "🤖 Tìm vé ngay";
+  }
 }
 
 function showFb(id) {
@@ -1158,7 +1147,7 @@ function extractJSON(str) {
 function analyzeFlightData(){
   var raw = document.getElementById("json-input").value.trim();
   if(!raw){
-    document.getElementById("analysis-output").innerHTML = "<div class='error-note'>Chưa có dữ liệu. Hãy dán kết quả từ AI vào ô bên cạnh.</div>";
+    showAnalysisError("Chưa có dữ liệu. Hãy dán toàn bộ phản hồi JSON từ AI.");
     return;
   }
 
@@ -1166,13 +1155,16 @@ function analyzeFlightData(){
   try {
     data = JSON.parse(extractJSON(raw));
   } catch(e) {
-    document.getElementById("analysis-output").innerHTML = "<div class='error-note'>Không tìm thấy dữ liệu JSON hợp lệ trong kết quả. Hãy thử copy lại toàn bộ phản hồi của AI (kể cả phần ```json nếu có).</div>";
+    showAnalysisError("Không tìm thấy dữ liệu JSON hợp lệ. Hãy thử dán lại toàn bộ phản hồi của AI.");
     return;
   }
-  
+  renderFlightAnalysis(data);
+}
+
+function renderFlightAnalysis(data){
   if(!data.options || !Array.isArray(data.options) || data.options.length === 0){
-    document.getElementById("analysis-output").innerHTML = "<div class='error-note'>Kết quả thiếu thông tin vé máy bay. Vui lòng kiểm tra lại phản hồi của AI.</div>";
-    return;
+    showAnalysisError("Kết quả thiếu thông tin vé máy bay. Vui lòng thử lại hoặc nhập thủ công.");
+    return false;
   }
   
   _flightResult = data;
@@ -1190,7 +1182,7 @@ function analyzeFlightData(){
     if(ba.cost_reduction_suggestions && ba.cost_reduction_suggestions.length) {
       html += "<ul>";
       ba.cost_reduction_suggestions.forEach(function(s){
-        html += "<li>" + s + "</li>";
+        html += "<li>" + escapeHTML(s) + "</li>";
       });
       html += "</ul>";
     } else {
@@ -1209,24 +1201,26 @@ function analyzeFlightData(){
       if (t === "[LCC]") displayTag = "Hãng giá rẻ";
       if (t === "[FSC]") displayTag = "Hãng truyền thống";
       if (t === "[DIRECT]") displayTag = "Bay thẳng";
-      return "<span class='tag'>" + displayTag + "</span>";
+      return "<span class='tag'>" + escapeHTML(displayTag) + "</span>";
     }).join("");
     
     var confClass = o.data_confidence === "live" ? "conf-live" : o.data_confidence === "cached_24h" ? "conf-cached" : "conf-est";
     var confLabel = o.data_confidence === "live" ? "Đã xác minh" : o.data_confidence === "cached_24h" ? "Dữ liệu cũ" : "Ước tính";
     
     var p = o.price || {};
-    var flex = o.flexibility_score ? o.flexibility_score.score + "/100" : "—";
-    var route = o.route ? o.route.outbound + " / " + o.route.return : "—";
+    var flexScore = Number(o.flexibility_score && o.flexibility_score.score);
+    var flex = Number.isFinite(flexScore) ? Math.max(0, Math.min(100, Math.round(flexScore))) + "/100" : "—";
+    var route = o.route ? escapeHTML(o.route.outbound) + " / " + escapeHTML(o.route.return) : "—";
+    var rank = Number.isFinite(Number(o.rank)) ? Number(o.rank) : "—";
     
     html += "<tr" + (isRec ? " class='recommended'" : "") + ">";
-    html += "<td>" + o.rank + (isRec ? "<br><span class='rec-badge'>Khuyên dùng</span>" : "") + "</td>";
-    html += "<td><strong>" + (o.airline || "—") + "</strong><br>" + tags + "</td>";
+    html += "<td>" + rank + (isRec ? "<br><span class='rec-badge'>Khuyên dùng</span>" : "") + "</td>";
+    html += "<td><strong>" + escapeHTML(o.airline || "—") + "</strong><br>" + tags + "</td>";
     html += "<td>" + route + "</td>";
-    html += "<td>" + (o.departure_date || "—") + "<br>" + (o.return_date || "") + "</td>";
-    html += "<td>" + fmt(p.advertised_per_person_vnd) + "</td>";
-    html += "<td><strong>" + fmt(p.true_total_per_person_vnd) + "</strong></td>";
-    html += "<td>" + fmt(p.total_all_passengers_vnd) + "</td>";
+    html += "<td>" + escapeHTML(o.departure_date || "—") + "<br>" + escapeHTML(o.return_date || "") + "</td>";
+    html += "<td>" + money(p.advertised_per_person_vnd) + "</td>";
+    html += "<td><strong>" + money(p.true_total_per_person_vnd) + "</strong></td>";
+    html += "<td>" + money(p.total_all_passengers_vnd) + "</td>";
     html += "<td>" + flex + "</td>";
     html += "<td><span class='" + confClass + "'>" + confLabel + "</span></td>";
     html += "</tr>";
@@ -1239,16 +1233,17 @@ function analyzeFlightData(){
   var adults = _tripCtx.adults || 3;
   var budgetMax = _tripCtx.budget_max || 40000000;
   var daysCount = parseDays(val("days"));
+  var defaults = getBudgetDefaults(val("destination"), budgetMax);
   
   html += "<h3 style='font-size:14px;font-weight:700;color:var(--navy);margin-bottom:10px;'>Phân bổ ngân sách chi tiết</h3>";
   html += "<table class='budget-table'><thead><tr><th>Hạng mục</th><th>Mức chi/người (VND)</th><th>Tổng nhóm (VND)</th><th>Tỷ lệ</th></tr></thead><tbody>";
   
   var items = [
     {name: "Vé máy bay (khứ hồi)", val: flightCost, editable: false},
-    {name: "Khách sạn (" + (daysCount - 1) + " đêm)", val: 8000000, editable: true, id: "b_hotel"},
-    {name: "Di chuyển nội địa", val: 3000000, editable: true, id: "b_transport"},
-    {name: "Ăn uống (" + daysCount + " ngày)", val: 5000000, editable: true, id: "b_food"},
-    {name: "Vé tham quan vui chơi", val: 3000000, editable: true, id: "b_attraction"},
+    {name: "Khách sạn (" + (daysCount - 1) + " đêm)", val: defaults.hotel, editable: true, id: "b_hotel"},
+    {name: "Di chuyển nội địa", val: defaults.transport, editable: true, id: "b_transport"},
+    {name: "Ăn uống (" + daysCount + " ngày)", val: defaults.food, editable: true, id: "b_food"},
+    {name: "Vé tham quan vui chơi", val: defaults.attraction, editable: true, id: "b_attraction"},
     {name: "Dự phòng (10%)", val: 0, editable: false, id: "b_reserve"}
   ];
   
@@ -1270,6 +1265,7 @@ function analyzeFlightData(){
   html += "<p style='font-size:11px;color:var(--muted);margin-top:6px;'>Ngân sách mục tiêu: " + fmt(budgetMax) + "/người. Bạn có thể thay đổi các ô nhập liệu để cập nhật tổng ngân sách.</p>";
   
   document.getElementById("analysis-output").innerHTML = html;
+  return true;
 }
 
 function recalcBudget(){
@@ -1286,7 +1282,7 @@ function recalcBudget(){
       flight = recOpt.price.true_total_per_person_vnd;
     }
   } else {
-    flight = 10000000;
+    flight = 18000000;
   }
   
   var subtotal = flight + vals.reduce(function(s, v){ return s + v; }, 0);
@@ -1357,17 +1353,17 @@ function renderFinalPlan() {
   if (_flightResult && _flightResult.options && _flightResult.options.length > 0) {
     var opt = _flightResult.options.find(function(o) { return o.option_id === _flightResult.recommended_option_id; }) || _flightResult.options[0];
     var p = opt.price || {};
-    var route = opt.route ? opt.route.outbound + " / " + opt.route.return : "—";
-    flightHtml = "<div class='flight-summary-card'>✈️ <strong>Vé máy bay khuyến nghị:</strong> Hãng <strong>" + (opt.airline || "--") + "</strong> (" + route + "), đi ngày " + (opt.departure_date || "--") + " - về ngày " + (opt.return_date || "") + ". Mức chi: <strong>" + fmt(p.true_total_per_person_vnd) + "/người</strong> (Tổng nhóm: " + fmt(p.total_all_passengers_vnd) + ").</div>";
+    var route = opt.route ? escapeHTML(opt.route.outbound) + " / " + escapeHTML(opt.route.return) : "—";
+    flightHtml = "<div class='flight-summary-card'>✈️ <strong>Vé máy bay khuyến nghị:</strong> Hãng <strong>" + escapeHTML(opt.airline || "--") + "</strong> (" + route + "), đi ngày " + escapeHTML(opt.departure_date || "--") + " - về ngày " + escapeHTML(opt.return_date || "") + ". Mức chi: <strong>" + money(p.true_total_per_person_vnd) + "/người</strong> (Tổng nhóm: " + money(p.total_all_passengers_vnd) + ").</div>";
   } else {
-    flightHtml = "<div class='flight-summary-card' style='background:var(--yellow-light);border-color:#fde68a;color:#92400e;'>✈️ <strong>Vé máy bay:</strong> Chưa cập nhật dữ liệu vé chính thức. Đang hiển thị mức chi phí ước tính mặc định (10.000.000 VND/người).</div>";
+    flightHtml = "<div class='flight-summary-card' style='background:var(--yellow-light);border-color:#fde68a;color:#92400e;'>✈️ <strong>Vé máy bay:</strong> Chưa cập nhật dữ liệu vé chính thức. Đang hiển thị mức chi phí ước tính mặc định (18.000.000 VND/người).</div>";
   }
   document.getElementById("itin-flight-summary").innerHTML = flightHtml;
 
   // 3. Tab 1 Overview Table
   var tableHtml = "<table class='itin-table'><thead><tr><th>Ngày</th><th>Khu vực du lịch</th><th>Trạng thái kiểm tra</th></tr></thead><tbody>";
   _rows.forEach(function(r) {
-    var dayStatus = "<span class='status-confirmed'>Chắc chắn ✅</span>";
+    var dayStatus = "<span class='status-assumption'>Chưa kiểm tra ⬜</span>";
     if (_vgResult && _vgResult.checklist_per_day) {
       var dayData = _vgResult.checklist_per_day.find(function(d) { return d.day === r.day; });
       if (dayData && dayData.checks && dayData.checks.length > 0) {
@@ -1408,9 +1404,9 @@ function renderFinalPlan() {
         dayData.checks.forEach(function(c) {
           var labelClass = c.status === "confirmed" ? "status-confirmed" : c.status === "assumption" ? "status-assumption" : "status-needs";
           var labelText = c.status === "confirmed" ? "Chắc chắn" : c.status === "assumption" ? "Dự kiến" : "Cần kiểm tra";
-          detailsHtml += "<li style='font-size: 12px;'>• " + c.detail + " (<span class='" + labelClass + "'>" + labelText + "</span>)</li>";
+          detailsHtml += "<li style='font-size: 12px;'>• " + escapeHTML(c.detail) + " (<span class='" + labelClass + "'>" + labelText + "</span>)</li>";
           if (c.status === "needs_verification" && c.action_required) {
-            detailsHtml += "<div class='action-required' style='margin-left: 10px; margin-bottom: 4px;'>" + c.action_required + "</div>";
+            detailsHtml += "<div class='action-required' style='margin-left: 10px; margin-bottom: 4px;'>" + escapeHTML(c.action_required) + "</div>";
           }
         });
         detailsHtml += "</ul></div>";
@@ -1517,7 +1513,7 @@ function renderFinalPlan() {
   if (groupC.length > 0) {
     todoHtml += "<div class='todo-group'><h4>Nhóm C — Cần làm thêm (Từ kết quả kiểm tra tự động)</h4><ul class='todo-items'>";
     groupC.forEach(function(item, idx) {
-      todoHtml += "<li class='todo-item'><input type='checkbox' id='todo-c-" + idx + "' onchange='toggleTodo(this)'><label for='todo-c-" + idx + "' class='todo-item-text'>" + item + "</label></li>";
+      todoHtml += "<li class='todo-item'><input type='checkbox' id='todo-c-" + idx + "' onchange='toggleTodo(this)'><label for='todo-c-" + idx + "' class='todo-item-text'>" + escapeHTML(item) + "</label></li>";
     });
     todoHtml += "</ul></div>";
   }
@@ -1638,7 +1634,7 @@ function resetForm(){
   // Reset outputs
   document.getElementById("json-input").value = "";
   document.getElementById("analysis-output").innerHTML = "";
-  document.getElementById("column-right").style.display = "none";
+  document.getElementById("manual-fallback").open = false;
   document.getElementById("draft-itin-container").innerHTML = "";
 
   _flightResult = null;
